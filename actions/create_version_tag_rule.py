@@ -69,7 +69,7 @@ def main(args):
         },
         'criteria': {
             'trigger.action_name': {
-                'pattern': 'st2cd.st2_packaging',
+                'pattern': 'st2cd.st2_pkg_ubuntu14',
                 'type': 'equals'
             },
             'trigger.parameters.branch': {
