@@ -43,10 +43,10 @@ def _get_st2_rules_url(base_url):
         return base_url + '/rules'
 
 
-def _create_distro_rule_meta(distro, branch):
+def _create_distro_rule_meta(distro, branch, dl_server):
     rule_meta = {
-        'name': 'st2_pkg_prod_v0.12_%s_%s' % (distro.lower(), branch),
-        'description': 'Build ubuntu packages on completion of st2cd.st2_deploy_test.',
+        'name': 'st2_pkg_prod_%s_%s' % (branch, distro.lower()),
+        'description': 'Build %s production packages.' % distro.lower(),
         'enabled': True,
         'trigger': {
             'type': 'core.st2.generic.actiontrigger'
@@ -70,9 +70,14 @@ def _create_distro_rule_meta(distro, branch):
             }
         },
         'action': {
-            'ref': 'st2cd.st2_finalize_release',
+            'ref': 'st2cd.st2_pkg_%s' % distro.lower(),
             'parameters': {
-                'branch': branch
+                'repo': '{{trigger.parameters.repo}}',
+                'branch': branch,
+                'dl_server': dl_server,
+                'environment': 'production',
+                'revision': '{{trigger.parameters.revision}}',
+                'build': '{{trigger.parameters.build}}'
             }
         }
     }
@@ -99,7 +104,8 @@ def main(args):
 
     # ubuntu14 rule
     try:
-        rule_meta = _create_distro_rule_meta(distro='ubuntu14', branch=args.branch)
+        rule_meta = _create_distro_rule_meta(distro='ubuntu14', branch=args.branch,
+                                             dl_server='{{system.apt_origin_production}}')
         create_rule(_get_st2_rules_url(args.st2_base_url), rule_meta)
         sys.stdout.write('Successfully created rule %s\n' % rule_meta['name'])
     except Exception as e:
@@ -108,7 +114,8 @@ def main(args):
 
     # f20 rule
     try:
-        rule_meta = _create_distro_rule_meta(distro='f20', branch=args.branch)
+        rule_meta = _create_distro_rule_meta(distro='f20', branch=args.branch,
+                                             dl_server='{{system.yum_origin_production}}')
         create_rule(_get_st2_rules_url(args.st2_base_url), rule_meta)
         sys.stdout.write('Successfully created rule %s\n' % rule_meta['name'])
     except Exception as e:

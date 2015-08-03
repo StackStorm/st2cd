@@ -1,9 +1,9 @@
 ---
-  name: "create_prod_pkg_rule"
+  name: "create_pkg_prod_rule"
   runner_type: "run-remote-script"
-  description: "Create a rule to listen for prod package builds on a release branch."
+  description: "Create a rule to create prod package builds on a release branch."
   enabled: true
-  entry_point: "create_prod_pkg_rule.py"
+  entry_point: "create_pkg_prod_rule.py"
   parameters:
     st2-base-url:
       type: "string"
