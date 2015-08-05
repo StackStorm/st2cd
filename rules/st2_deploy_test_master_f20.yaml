@@ -27,4 +27,5 @@
             branch: "{{trigger.parameters.branch}}"
             revision: "{{trigger.parameters.revision}}"
             repo: "{{trigger.parameters.repo}}"
+            instance_type: "m4.large"
             distro: "F20"
