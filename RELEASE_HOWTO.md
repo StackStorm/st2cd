@@ -27,9 +27,6 @@ Following documentation is written with specific examples. Patch version we are 
 
 * Note that fedora e2e_tests usually fail. Re-run them using st2 execution re-run ${fail_exec_id}.
 
+* Edit github releases to include info about the new release. For example, https://github.com/StackStorm/st2/releases/tag/v0.12.2
 
-
-
-
-
-
+* Inform slack community about the new release.
