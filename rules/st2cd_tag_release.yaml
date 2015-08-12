@@ -14,4 +14,4 @@
     action:
         ref: "st2cd.tag_release"
         parameters:
-            branch: "{{trigger.body.ref | replace("refs/heads/", "")}}"
+            branch: "{{trigger.body.ref | replace('refs/heads/', '')}}"
