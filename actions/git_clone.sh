@@ -8,7 +8,8 @@ BRANCH=$3
 
 if [[ -d $TARGET ]]
 then
-    echo $TARGET
+    # Use printf so a newline character is not included.
+    printf $TARGET
     exit 0
 fi
 
@@ -16,7 +17,8 @@ GITOUTPUT=`$GIT clone -b ${BRANCH} --single-branch $REPO $TARGET`
 
 if [[ $? == 0 ]]
 then
-  echo $TARGET
+  # Use printf so a newline character is not included.
+  printf $TARGET
 else
   echo $GITOUTPUT
   exit 1
