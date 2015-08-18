@@ -27,10 +27,3 @@
       description: "used by rule with actiontrigger"
       immutable: true
       default: "slack"
-  skip_notify:
-    default:
-      - get_instance_dns
-      - get_instances
-      - id
-      - destroy_vm
-      - delete_cname
