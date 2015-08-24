@@ -50,7 +50,6 @@
         branch: "v{{st2_release_base_ver}}"
         cmd: "st2 run st2_pkg_ubuntu14 repo={{st2_repo}} branch=v{{st2_release_base_ver}} dl_server={{system.apt_origin_production}} environment=production revision={{st2_revision}} build={{build_key}} -a"
       on-success: "run_f20_prod_pkg_for_release"
-      on-failure: "slack_failure"
     -
       name: "run_f20_prod_pkg_for_release"
       ref: "core.local"
@@ -60,18 +59,10 @@
         branch: "v{{st2_release_base_ver}}"
         cmd: "st2 run st2_pkg_f20 repo={{st2_repo}} branch=v{{st2_release_base_ver}} dl_server={{system.apt_origin_production}} environment=production revision={{st2_revision}} build={{build_key}} -a"
       on-success: "slack_success"
-      on-failure: "slack_failure"
     -
       name: "slack_success"
       ref: "slack.post_message"
       params:
         channel: "#releasemgmt"
         message: "```[RELEASE_HAPPY_ENDING]\n STATUS: SUCCESS\n VERSION: {{st2_release_base_ver}}```"
-    -
-      name: "slack_failure"
-      ref: "slack.post_message"
-      params:
-        channel: "#releasemgmt"
-        message: "```[RELEASE_HAPPY_ENDING]\n STATUS: FAILURE\n VERSION: {{st2_release_base_ver}}```"
-
   default: "short_version"
