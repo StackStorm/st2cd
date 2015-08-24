@@ -1,0 +1,68 @@
+---
+  chain:
+    -
+      name: "short_version"
+      ref: "core.local"
+      params:
+        cmd: "echo {{st2_release_version}} | cut -d \".\" -f1-2"
+      publish:
+        st2_release_base_ver: "{{short_version.stdout}}"
+        build_key: "st2_v{{st2_release_base_ver}}_build_number"
+      on-success: "get_current_build"
+    -
+      name: "get_build_server"
+      ref: "linux.dig"
+      params:
+        hostname: "st2-build-slave-ubuntu.service.consul"
+        rand: true
+        count: 1
+      on-success: "setup_st2client_rule_for_branch"
+    -
+      name: "setup_st2client_rule_for_branch"
+      ref: "st2cd.create_version_release_st2client_rule"
+      params:
+        hosts: "{{get_build_server.result[0]}}"
+        st2-base-url: "{{st2_base_url}}"
+        branch: "v{{st2_release_base_ver}}"
+      on-success: "setup_tag_rule_for_branch"
+    -
+      name: "setup_tag_rule_for_branch"
+      ref: "st2cd.create_version_tag_rule"
+      params:
+        hosts: "{{get_build_server.result[0]}}"
+        st2-base-url: "{{st2_base_url}}"
+        branch: "v{{st2_release_base_ver}}"
+      on-success: "setup_prod_pkg_rule_for_branch"
+    -
+      name: "setup_prod_pkg_rule_for_branch"
+      ref: "st2cd.create_prod_pkg_rule"
+      params:
+        hosts: "{{get_build_server.result[0]}}"
+        st2-base-url: "{{st2_base_url}}"
+        branch: "v{{st2_release_base_ver}}"
+      on-success: "run_ubuntu_prod_pkg_for_release"
+    -
+      name: "run_ubuntu_prod_pkg_for_release"
+      ref: "core.local"
+      params:
+        hosts: "{{get_build_server.result[0]}}"
+        st2-base-url: "{{st2_base_url}}"
+        branch: "v{{st2_release_base_ver}}"
+        cmd: "st2 run st2_pkg_ubuntu14 repo={{st2_repo}} branch=v{{st2_release_base_ver}} dl_server={{system.apt_origin_production}} environment=production revision={{st2_revision}} build={{build_key}} -a"
+      on-success: "run_f20_prod_pkg_for_release"
+    -
+      name: "run_f20_prod_pkg_for_release"
+      ref: "core.local"
+      params:
+        hosts: "{{get_build_server.result[0]}}"
+        st2-base-url: "{{st2_base_url}}"
+        branch: "v{{st2_release_base_ver}}"
+        cmd: "st2 run st2_pkg_f20 repo={{st2_repo}} branch=v{{st2_release_base_ver}} dl_server={{system.apt_origin_production}} environment=production revision={{st2_revision}} build={{build_key}} -a"
+      on-success: "slack_success"
+    -
+      name: "slack_success"
+      ref: "slack.post_message"
+      params:
+        channel: "#releasemgmt"
+        message: "```[RELEASE_HAPPY_ENDING]\n STATUS: SUCCESS\n VERSION: {{st2_release_base_ver}}```"
+  default: "short_version"

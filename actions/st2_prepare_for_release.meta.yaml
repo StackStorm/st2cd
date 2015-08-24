@@ -3,7 +3,7 @@
   runner_type: "action-chain"
   description: "Look at workflows/st2_prepare_for_release.yaml"
   enabled: true
-  entry_point: "workflows/st2_pytests_setup.yaml"
+  entry_point: "workflows/st2_prepare_for_release.yaml"
   parameters:
     st2_repo:
       type: "string"
