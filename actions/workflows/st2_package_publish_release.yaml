@@ -8,7 +8,7 @@
       publish:
         st2_release_base_ver: "{{short_version.stdout}}"
         build_key: "st2_v{{short_version.stdout}}_build_number"
-      on-success: "get_current_build"
+      on-success: "get_build_server"
     -
       name: "get_build_server"
       ref: "linux.dig"
