@@ -80,7 +80,8 @@ def _create_distro_rule_meta(distro, branch, action_ref):
                 'hostname': 'st2-%s-{{trigger.execution_id}}' % branch,
                 'repo': '{{trigger.parameters.repo}}',
                 'revision': '{{trigger.parameters.revision}}',
-                'version': branch[1:]   # v0.x -> 0.x
+                # The weird lookup is brittle but the only reasonably way to get to the full version.
+                'version': '{{trigger.result.tasks[4].result.stdout}}'
             }
         }
     }
