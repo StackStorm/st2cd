@@ -47,7 +47,7 @@ ${GIT} checkout -b ${BRANCH}
 
 if [[ $(grep -c . <<< "${REQUIREMENTS}") > 1 ]]; then
     echo "Updating requirements.txt..."
-    REQUIREMENTS=`echo "${REQUIREMENTS}" | sed '/https:\/\/github.com\/stackstorm\/mistral.git/d'`
+    REQUIREMENTS=`echo "${REQUIREMENTS}" | sed '/https:\/\/github.com\/stackstorm/d'`
     echo "${REQUIREMENTS}" > requirements.txt
     ${GIT} add requirements.txt
     ${GIT} commit -m "Pin dependencies in requirements.txt"
