@@ -46,6 +46,7 @@ def _get_st2_rules_url(base_url):
 def _create_distro_rule_meta(distro, branch, dl_server):
     rule_meta = {
         'name': 'st2_pkg_prod_%s_%s' % (branch, distro.lower()),
+        'pack': 'st2cd',
         'description': 'Build %s production packages.' % distro.lower(),
         'enabled': True,
         'trigger': {
