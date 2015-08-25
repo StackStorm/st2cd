@@ -76,6 +76,7 @@
         action: "tests.test_quickstart"
         params: "token={{st2_token}}"
         hosts: "{{hostname}}"
+        timeout: 180
       on-success: "test_quickstart_key"
     -
       name: "test_quickstart_key"
