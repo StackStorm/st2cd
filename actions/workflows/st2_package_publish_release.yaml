@@ -7,7 +7,7 @@
         cmd: "echo {{st2_release_version}} | cut -d \".\" -f1-2"
       publish:
         st2_release_base_ver: "{{short_version.stdout}}"
-        build_key: "st2_v{{st2_release_base_ver}}_build_number"
+        build_key: "st2_v{{short_version.stdout}}_build_number"
       on-success: "get_current_build"
     -
       name: "get_build_server"
