@@ -43,17 +43,18 @@ def _get_st2_rules_url(base_url):
         return base_url + '/rules'
 
 
-def _create_distro_rule_meta(distro, branch, action_name):
+def _create_distro_rule_meta(distro, branch, action_ref, version_task_index):
     rule_meta = {
         'name': 'st2_deploy_test_%s_%s' % (branch, distro.lower()),
+        'pack': 'st2cd',
         'description': 'Run deploy_test for %s.' % distro,
         'enabled': True,
         'trigger': {
             'type': 'core.st2.generic.actiontrigger'
         },
         'criteria': {
-            'trigger.action_name': {
-                'pattern': action_name,
+            'trigger.action_ref': {
+                'pattern': action_ref,
                 'type': 'equals'
             },
             'trigger.status': {
@@ -79,7 +80,8 @@ def _create_distro_rule_meta(distro, branch, action_name):
                 'hostname': 'st2-%s-{{trigger.execution_id}}' % branch,
                 'repo': '{{trigger.parameters.repo}}',
                 'revision': '{{trigger.parameters.revision}}',
-                'version': branch[1:]   # v0.x -> 0.x
+                # The weird lookup is brittle but the only reasonably way to get to the full version.
+                'version': '{{trigger.result.tasks[%d].result.stdout}}' % version_task_index
             }
         }
     }
@@ -107,7 +109,8 @@ def main(args):
     # ubuntu14 rule
     try:
         rule_meta = _create_distro_rule_meta(distro='ubuntu14', branch=args.branch,
-                                             action_name='st2_pkg_ubuntu14')
+                                             action_ref='stcd.st2_pkg_ubuntu14',
+                                             version_task_index=4)
         create_rule(_get_st2_rules_url(args.st2_base_url), rule_meta)
         sys.stdout.write('Successfully created rule %s\n' % rule_meta['name'])
     except Exception as e:
@@ -117,7 +120,8 @@ def main(args):
     # f20 rule
     try:
         rule_meta = _create_distro_rule_meta(distro='f20', branch=args.branch,
-                                             action_name='st2_pkg_f20')
+                                             action_ref='st2cd.st2_pkg_f20',
+                                             version_task_index=3)
         create_rule(_get_st2_rules_url(args.st2_base_url), rule_meta)
         sys.stdout.write('Successfully created rule %s\n' % rule_meta['name'])
     except Exception as e:

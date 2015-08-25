@@ -37,6 +37,8 @@
         repo: "{{repodir}}"
       on-success: "echo_version"
     -
+      # Please don't change my position in this list.
+      # rule st2_deploy_tests_ubuntu14 depends on position.
       name: "echo_version"
       ref: "core.local"
       params:

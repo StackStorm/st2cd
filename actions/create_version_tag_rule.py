@@ -62,6 +62,7 @@ def main(args):
 
     rule_meta = {
         'name': 'st2_tag_release_' + args.branch,
+        'pack': 'st2cd',
         'description': 'Tag branch on build completion.',
         'enabled': True,
         'trigger': {

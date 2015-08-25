@@ -62,6 +62,7 @@ def main(args):
 
     rule_meta = {
         'name': 'st2_pkg_st2client_' + args.branch,
+        'pack': 'st2cd',
         'description': 'Release st2client to pypi on build completion.',
         'enabled': True,
         'trigger': {
