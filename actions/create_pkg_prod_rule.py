@@ -52,7 +52,7 @@ def _create_distro_rule_meta(distro, branch, dl_server):
             'type': 'core.st2.generic.actiontrigger'
         },
         'criteria': {
-            'trigger.action_name': {
+            'trigger.action_ref': {
                 'pattern': 'st2cd.st2_deploy_test',
                 'type': 'equals'
             },
