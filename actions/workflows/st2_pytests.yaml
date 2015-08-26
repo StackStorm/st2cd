@@ -27,10 +27,10 @@
       publish:
         build_server: "{{get_build_server.result[0]}}"
       on-success: "clone_repo"
-    - 
+    -
       name: "clone_repo"
       ref: "st2cd.git_clone"
-      params: 
+      params:
         hosts: "{{get_build_server.result[0]}}"
         repo: "{{repo}}"
         branch: "{{branch}}"
@@ -38,18 +38,31 @@
       publish:
         repodir: "{{clone_repo[build_server].stdout}}"
       on-success: "pytests"
-    - 
+    -
       name: "pytests"
       ref: "st2cd.make_pytests"
-      params: 
+      params:
         hosts: "{{build_server}}"
         repo: "{{repodir}}"
         timeout: 600
+      on-success: "upload_coverage_report"
+    -
+      name: "upload_coverage_report"
+      ref: "st2cd.publish_coverage_report"
+      params:
+        hosts: "{{build_server}}"
+        cover_dir: "{{repodir}}/cover"
+        bucket: "st2coverage.stackstorm.net"
+      notify:
+        on-success:
+          routes:
+            - slack
+          message: "Coverage report at: http://st2coverage.stackstorm.net/index.html"
       on-success: "clean_repo"
-    - 
+    -
       name: "clean_repo"
       ref: "st2cd.git_clean"
-      params: 
+      params:
         hosts: "{{build_server}}"
         repo: "{{repodir}}"
 
