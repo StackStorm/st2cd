@@ -40,6 +40,7 @@
         hosts: "{{hostname}}"
         cmd: "{{root_dir}}/script/bootstrap-st2express"
         cwd: "{{root_dir}}"
+        timeout: 1200
       on-success: "run_tests"
     -
       name: "run_tests"
