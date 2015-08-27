@@ -53,11 +53,12 @@
         hosts: "{{build_server}}"
         cover_dir: "{{repodir}}/cover"
         bucket: "st2coverage.stackstorm.net"
+        branch: "{{branch}}"
       notify:
         on-success:
           routes:
             - slack
-          message: "Coverage report at: http://st2coverage.stackstorm.net/"
+          message: "Coverage report at: http://st2coverage.stackstorm.net/{{branch}}/index.html"
       on-success: "clean_repo"
     -
       name: "clean_repo"

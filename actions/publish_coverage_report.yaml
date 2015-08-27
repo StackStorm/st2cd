@@ -16,6 +16,11 @@
       default: "st2coverage.stackstorm.net"
       description: "The base path to the bucket"
       position: 1
+    branch:
+      type: "string"
+      required: true
+      default: "master"
+      position: 2
     timeout:
       default: 180
     kwarg_op:
