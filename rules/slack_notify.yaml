@@ -1,0 +1,17 @@
+---
+name: "slack_notify"
+pack: "st2cd"
+enabled: true
+description: "Notification rule to send messages to Slack"
+trigger:
+  pack: "chatops"
+  type: "core.st2.generic.notifytrigger"
+criteria:
+  trigger.route:
+    pattern: "slack"
+    type: "equals"
+action:
+  ref: slack.post_message
+  parameters:
+    channel: "#thunderdome"
+    message: "{{trigger.execution_id}}: {{trigger.message}}"

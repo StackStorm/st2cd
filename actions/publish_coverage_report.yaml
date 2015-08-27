@@ -1,0 +1,29 @@
+---
+  name: "publish_coverage_report"
+  runner_type: "run-remote-script"
+  description: "Upload coverage report to S3."
+  enabled: true
+  entry_point: "s3_upload_coverage.sh"
+  parameters:
+    cover_dir:
+      type: "string"
+      required: true
+      default: "st2_master/cover/"
+      position: 0
+    bucket:
+      type: "string"
+      required: true
+      default: "st2coverage.stackstorm.net"
+      description: "The base path to the bucket"
+      position: 1
+    branch:
+      type: "string"
+      required: true
+      default: "master"
+      position: 2
+    timeout:
+      default: 180
+    kwarg_op:
+      immutable: true
+      default: ""
+
