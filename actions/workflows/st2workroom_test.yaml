@@ -1,4 +1,6 @@
 ---
+  vars:
+    root_dir: "/opt/puppet"
   chain:
     -
       name: "create_vm_role"
@@ -11,20 +13,40 @@
         keyfile: "{{keyfile}}"
         distro: "{{distro}}"
         role: "{{role}}"
-      on-success: "setup_st2workroom"
+      on-success: "delete_existing_puppet"
     -
-      name: "setup_st2workroom"
+      name: "delete_existing_puppet"
+      ref: "linux.rm"
+      params:
+        hosts: "{{hostname}}"
+        target: "{{root_dir}}"
+        force: true
+        recursive: true
+        sudo: true
+      on-success: "clone_st2workroom"
+    -
+      name: "clone_st2workroom"
+      ref: "st2cd.git_clone"
+      params:
+        repo: "{{repo}}"
+        target: "{{root_dir}}"
+        branch: "{{branch}}"
+        hosts: "{{hostname}}"
+      on-success: "bootstrap_workroom"
+    -
+      name: "bootstrap_dat_workroom"
       ref: "core.remote_sudo"
       params:
         hosts: "{{hostname}}"
-        cmd: "curl -sSL https://raw.githubusercontent.com/StackStorm/st2workroom/master/script/bootstrap-st2express | sh"
+        cmd: "{{root_dir}}/script/bootstrap-st2express"
+        cwd: "{{root_dir}}"
       on-success: "run_tests"
     -
       name: "run_tests"
       ref: "st2cd.e2e_tests"
       params:
         hostname: "{{hostname}}"
-        build: "0"
+        build: "{{build}}"
       on-success: "destroy_vm"
     -
       name: "destroy_vm"
