@@ -8,10 +8,10 @@
     repo:
       type: "string"
       description: "Url of the repo to clone"
-      default: "https://github.com/StackStorm/st2.git"
+      default: "https://github.com/StackStorm/st2workroom.git"
     branch:
       type: "string"
-      description: "The branch to build the packages were built from."
+      description: "The branch of st2workroom to bootstrap"
       default: "master"
       required: true
     revision:
