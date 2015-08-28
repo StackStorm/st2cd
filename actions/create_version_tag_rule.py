@@ -80,6 +80,10 @@ def main(args):
             'trigger.parameters.environment': {
                 'pattern': 'production',
                 'type': 'equals'
+            },
+            'trigger.status': {
+                'pattern': 'succeeded',
+                'type': 'equals'
             }
         },
         'action': {
