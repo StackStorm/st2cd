@@ -29,9 +29,9 @@ workflows:
                     mis_repo_branch: <% $.mis_repo_branch %>
                     st2_repo_branch: <% $.st2_repo_branch %>
                 publish:
-                    hosts: <% $.run_test.hosts %>
-                    shas: <% $.run_test.shas %>
-                    deps: <% $.run_test.deps %>
+                    hosts: <% $.test.hosts %>
+                    shas: <% $.test.shas %>
+                    deps: <% $.test.deps %>
                 on-success:
                     - release
             release:
