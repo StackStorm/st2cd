@@ -13,7 +13,6 @@
       type: "string"
       description: "The branch of st2workroom to bootstrap"
       default: "master"
-      required: true
     revision:
       type: "string"
       description: ""

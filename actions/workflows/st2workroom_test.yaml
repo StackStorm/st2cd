@@ -32,6 +32,7 @@
         target: "{{root_dir}}"
         branch: "{{branch}}"
         hosts: "{{hostname}}"
+        sudo: true
       on-success: "bootstrap_workroom"
     -
       name: "bootstrap_workroom"
