@@ -1,6 +1,8 @@
 ---
   vars:
     root_dir: "/opt/puppet"
+    username: "cibuild"
+    password: "cibuild"
   chain:
     -
       name: "create_vm_role"
@@ -39,6 +41,30 @@
         cmd: "{{root_dir}}/script/bootstrap-st2express"
         cwd: "{{root_dir}}"
         timeout: 3000
+      on-success: "add_ci_user"
+    -
+      name: "add_ci_user"
+      ref: "core.remote_sudo"
+      params:
+        hosts: "{{hostname}}"
+        cmd: "useradd {{username}}"
+      on-success: "set_ci_password"
+    -
+      name: "set_ci_password"
+      ref: "core.remote_sudo"
+      params:
+        hosts: "{{hostname}}"
+        cmd: "echo {{password}} | passwd {{username}} --stdin"
+      on-success: "get_st2_token"
+    -
+      name: "get_st2_token"
+      ref: "st2cd.get_st2_token"
+      params:
+        hosts: "{{hostname}}"
+        st2_username: "{{username}}"
+        st2_password: "{{password}}"
+      publish:
+        st2_token: "{{get_st2_token[hostname].stdout.token}}"
       on-success: "run_tests"
     -
       name: "run_tests"
@@ -46,10 +72,11 @@
       params:
         hostname: "{{hostname}}"
         build: "{{build}}"
+        token: "{{st2_token}}"
       on-success: "destroy_vm"
     -
       name: "destroy_vm"
       ref: "st2cd.destroy_vm"
       params:
         hostname: "{{hostname}}"
-  default: "create_vm_role"
+  default: "get_st2_token"
