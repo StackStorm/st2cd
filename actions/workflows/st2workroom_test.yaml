@@ -38,7 +38,7 @@
         hosts: "{{hostname}}"
         cmd: "{{root_dir}}/script/bootstrap-st2express"
         cwd: "{{root_dir}}"
-        timeout: 1200
+        timeout: 3000
       on-success: "run_tests"
     -
       name: "run_tests"
