@@ -89,7 +89,7 @@ def main(args):
         'action': {
             'ref': 'st2cd.st2_pkg_st2client',
             'parameters': {
-                'repo': '{{trigger.body.repository.clone_url}}',
+                'repo': '{{trigger.parameters.repo}}',
                 'branch': args.branch
             }
         }
