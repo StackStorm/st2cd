@@ -35,7 +35,7 @@
         sudo: true
       on-success: "bootstrap_workroom"
     -
-      name: "bootstrap_dat_workroom"
+      name: "bootstrap_workroom"
       ref: "core.remote_sudo"
       params:
         hosts: "{{hostname}}"
