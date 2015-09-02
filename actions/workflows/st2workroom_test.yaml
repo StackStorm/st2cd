@@ -26,7 +26,7 @@
       on-success: "clone_st2workroom"
     -
       name: "clone_st2workroom"
-      ref: "core.local"
+      ref: "core.remote"
       params:
         cmd: "git clone {{repo}} {{root_dir}} -b {{branch}}"
         hosts: "{{hostname}}"
