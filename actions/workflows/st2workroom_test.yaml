@@ -79,4 +79,4 @@
       ref: "st2cd.destroy_vm"
       params:
         hostname: "{{hostname}}"
-  default: "get_st2_token"
+  default: "create_vm_role"
