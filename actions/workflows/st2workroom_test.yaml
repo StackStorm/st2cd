@@ -26,11 +26,9 @@
       on-success: "clone_st2workroom"
     -
       name: "clone_st2workroom"
-      ref: "st2cd.git_clone"
+      ref: "core.remote"
       params:
-        repo: "{{repo}}"
-        target: "{{root_dir}}"
-        branch: "{{branch}}"
+        cmd: "git clone {{repo}} {{root_dir}} -b {{branch}}"
         hosts: "{{hostname}}"
         sudo: true
       on-success: "bootstrap_workroom"

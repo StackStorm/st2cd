@@ -24,6 +24,7 @@
       position: 2
       default: "master"
     sudo:
+      immutable: true
       default: false
     cmd:
       immutable: true
