@@ -47,14 +47,7 @@
       ref: "core.remote_sudo"
       params:
         hosts: "{{hostname}}"
-        cmd: "useradd {{username}}"
-      on-success: "set_ci_password"
-    -
-      name: "set_ci_password"
-      ref: "core.remote_sudo"
-      params:
-        hosts: "{{hostname}}"
-        cmd: "echo {{password}} | passwd {{username}} --stdin"
+        cmd: "useradd {{username}} -p `mkpasswd {{password}}`"
       on-success: "get_st2_token"
     -
       name: "get_st2_token"
