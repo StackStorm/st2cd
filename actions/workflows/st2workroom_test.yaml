@@ -40,7 +40,7 @@
         hosts: "{{hostname}}"
         cmd: "{{root_dir}}/script/bootstrap-st2express"
         cwd: "{{root_dir}}"
-        timeout: 3000
+        timeout: 900
       on-success: "add_ci_user"
     -
       name: "add_ci_user"
