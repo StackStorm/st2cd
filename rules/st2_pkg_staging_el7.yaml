@@ -1,5 +1,6 @@
 ---
     name: "st2_pkg_staging_el7"
+    pack: "st2cd"
     description: "Build st2 packages after tests succeed and push them to staging"
     enabled: true
     trigger:
