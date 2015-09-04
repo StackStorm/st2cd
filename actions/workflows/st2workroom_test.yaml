@@ -40,6 +40,9 @@
         hosts: "{{hostname}}"
         cmd: "{{root_dir}}/script/bootstrap-st2express"
         cwd: "{{root_dir}}"
+        env:
+          SKIP_OK_CHECK: true
+          DISABLE_HUBOT: true
         timeout: 900
       on-success: "add_ci_user"
     -
