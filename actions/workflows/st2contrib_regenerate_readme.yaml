@@ -19,7 +19,7 @@
         branch: "{{branch}}"
         target: "{{repo_target}}"
       publish:
-        repo_dir: "{{git_clone_repo[build_server].stdout}}"
+        repo_dir: "/tmp/{{git_clone_repo[build_server].stdout}}"
       on-success: "regenerate_readme"
     -
       name: "regenerate_readme"
