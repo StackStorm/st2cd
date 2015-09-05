@@ -38,6 +38,7 @@
         commit_msg: "\"Re-generate README.md\""
         hosts: "{{build_server}}"
       on-success: "push_changes_to_remote"
+      on-failure: "git_clean_repo"
     -
       name: "push_changes_to_remote"
       ref: "st2cd.git_push_branch"
