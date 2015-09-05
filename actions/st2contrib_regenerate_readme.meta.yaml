@@ -7,8 +7,8 @@
   parameters:
     repo:
       type: "string"
-      description: "Url of the repo to clone"
-      default: "https://github.com/StackStorm/st2contrib.git"
+      description: "Url of the repo to clone and push to"
+      default: "git@github.com:StackStorm/st2contrib.git"
       required: true
     branch:
       type: "string"
