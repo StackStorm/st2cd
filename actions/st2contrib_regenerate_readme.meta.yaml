@@ -1,0 +1,29 @@
+---
+  name: "st2contrib_regenerate_readme"
+  runner_type: "action-chain"
+  description: "Regenerate README.md in st2contrib repo and push changes upstream"
+  enabled: true
+  entry_point: "workflows/workflows/st2contrib_regenerate_readme.yaml"
+  parameters:
+    repo:
+      type: "string"
+      description: "Url of the repo to clone"
+      default: "https://github.com/StackStorm/st2contrib.git"
+      required: true
+    branch:
+      type: "string"
+      description: "The branch to use"
+      default: "master"
+      required: true
+    repo_target:
+      type: "string"
+      description: "Directory where to clone the repo."
+      default: "st2contrib_master"
+    revision:
+      type: "string"
+      description: "Pushed revision."
+      required: true
+    author:
+      type: "string"
+      description: "Author of the pushed revision."
+      required: true

@@ -1,0 +1,55 @@
+---
+  chain:
+    -
+      name: "get_build_server"
+      ref: "linux.dig"
+      params:
+        hostname: "st2-build-slave-ubuntu.service.consul"
+        rand: true
+        count: 1
+      publish:
+        build_server: "{{get_build_server.result[0]}}"
+      on-success: "git_clone_repo"
+    -
+      name: "git_clone_repo"
+      ref: "st2cd.git_clone"
+      params:
+        hosts: "{{build_server}}"
+        repo: "{{repo}}"
+        branch: "{{branch}}"
+        target: "{{repo_target}}"
+      publish:
+        repo_dir: "{{git_clone_repo[build_server].stdout}}"
+      on-success: "regenerate_readme"
+    -
+      name: "regenerate_readme"
+      ref: "core.remote"
+      params:
+        hosts: "{{build_server}}"
+        cwd: "{{repo_dir}}"
+        cmd: "python scripts/update-readme-with-pack-list.py"
+      on-success: "git_commit_changes"
+    -
+      name: "git_commit_changes"
+      ref: "st2cd.git_commit_changes"
+      params:
+        repo: "{{repo_dir}}"
+        branch: "{{branch}}"
+        commit_msg: "\"Re-generate README.md\""
+        hosts: "{{build_server}}"
+      on-success: "push_changes_to_remote"
+    -
+      name: "push_changes_to_remote"
+      ref: "st2cd.git_push_branch"
+      params:
+        repo: "{{repo_dir}}"
+        branch: "{{branch}}"
+        hosts: "{{build_server}}"
+      on-success: "git_clean_repo"
+      on-failure: "git_clean_repo"
+    -
+      name: "git_clean_repo"
+      ref: "st2cd.git_clean"
+      params:
+        hosts: "{{build_server}}"
+        repo: "{{repo_dir}}"
