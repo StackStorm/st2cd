@@ -56,7 +56,7 @@
       name: "get_st2_token"
       ref: "core.remote_sudo"
       params:
-        cmd: "st2 auth {{st2_username}} -p {{st2_password}} -j"
+        cmd: "st2 auth {{username}} -p {{password}} -j"
         hosts: "{{hostname}}"
         sudo: true
       env:
