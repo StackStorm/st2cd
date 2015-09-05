@@ -3,7 +3,7 @@
   runner_type: "action-chain"
   description: "Regenerate README.md in st2contrib repo and push changes upstream"
   enabled: true
-  entry_point: "workflows/workflows/st2contrib_regenerate_readme.yaml"
+  entry_point: "workflows/st2contrib_regenerate_readme.yaml"
   parameters:
     repo:
       type: "string"
