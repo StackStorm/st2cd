@@ -60,18 +60,18 @@
         hosts: "{{hostname}}"
       publish:
         st2_token: "{{get_st2_token[hostname].stdout.token}}"
-#      on-success: "run_tests"
-#    -
-#      name: "run_tests"
-#      ref: "st2cd.e2e_tests"
-#      params:
-#        hostname: "{{hostname}}"
-#        build: "{{build}}"
-#        token: "{{st2_token}}"
-#      on-success: "destroy_vm"
-#    -
-#      name: "destroy_vm"
-#      ref: "st2cd.destroy_vm"
-#      params:
-#        hostname: "{{hostname}}"
-#  default: "create_vm_role"
+      on-success: "run_tests"
+    -
+      name: "run_tests"
+      ref: "st2cd.e2e_tests"
+      params:
+        hostname: "{{hostname}}"
+        build: "{{build}}"
+        token: "{{st2_token}}"
+      on-success: "destroy_vm"
+    -
+      name: "destroy_vm"
+      ref: "st2cd.destroy_vm"
+      params:
+        hostname: "{{hostname}}"
+  default: "create_vm_role"
