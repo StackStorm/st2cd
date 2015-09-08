@@ -1,10 +1,14 @@
 ---
-  name: "st2_pkg_el6"
+  name: "st2_pkg_el"
   runner_type: "action-chain"
   description: "Clones a repo to a remote host and builds packages for EL6"
   enabled: true
-  entry_point: "workflows/st2_pkg_el6.yaml"
+  entry_point: "workflows/st2_pkg_el.yaml"
   parameters:
+    distro_release:
+      type: "string"
+      description: "major release number of the distro"
+      default: "6"
     repo:
       type: "string"
       description: "Url of the repo to clone"
