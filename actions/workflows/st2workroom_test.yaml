@@ -56,25 +56,23 @@
       name: "get_st2_token"
       ref: "core.remote_sudo"
       params:
-        cmd: "st2 auth {{username}} -p {{password}} -j"
+        cmd: "st2 --config-file /root/.st2/config auth {{username}} -p {{password}} -j"
         hosts: "{{hostname}}"
         sudo: true
-      env:
-        ST2_CONFIG_FILE: "/root/.st2/config"
       publish:
         st2_token: "{{get_st2_token[hostname].stdout.token}}"
-      on-success: "run_tests"
-    -
-      name: "run_tests"
-      ref: "st2cd.e2e_tests"
-      params:
-        hostname: "{{hostname}}"
-        build: "{{build}}"
-        token: "{{st2_token}}"
-      on-success: "destroy_vm"
-    -
-      name: "destroy_vm"
-      ref: "st2cd.destroy_vm"
-      params:
-        hostname: "{{hostname}}"
-  default: "create_vm_role"
+#      on-success: "run_tests"
+#    -
+#      name: "run_tests"
+#      ref: "st2cd.e2e_tests"
+#      params:
+#        hostname: "{{hostname}}"
+#        build: "{{build}}"
+#        token: "{{st2_token}}"
+#      on-success: "destroy_vm"
+#    -
+#      name: "destroy_vm"
+#      ref: "st2cd.destroy_vm"
+#      params:
+#        hostname: "{{hostname}}"
+#  default: "create_vm_role"
