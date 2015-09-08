@@ -58,7 +58,6 @@
       params:
         cmd: "st2 --config-file /root/.st2/config auth {{username}} -p {{password}} -j"
         hosts: "{{hostname}}"
-        sudo: true
       publish:
         st2_token: "{{get_st2_token[hostname].stdout.token}}"
 #      on-success: "run_tests"
