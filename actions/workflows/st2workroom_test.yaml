@@ -1,8 +1,8 @@
 ---
   vars:
     root_dir: "/opt/puppet"
-    username: "cibuild"
-    password: "cibuild"
+    st2_username: "cibuild"
+    st2_password: "cibuild"
   chain:
     -
       name: "create_vm_role"
@@ -50,13 +50,13 @@
       ref: "core.remote_sudo"
       params:
         hosts: "{{hostname}}"
-        cmd: "useradd {{username}} -p `mkpasswd {{password}}`"
+        cmd: "useradd {{st2_username}} -p `mkpasswd {{st2_password}}`"
       on-success: "get_st2_token"
     -
       name: "get_st2_token"
       ref: "core.remote_sudo"
       params:
-        cmd: "st2 --config-file /root/.st2/config auth {{username}} -p {{password}} -j"
+        cmd: "st2 --config-file /root/.st2/config auth {{st2_username}} -p {{st2_password}} -j"
         hosts: "{{hostname}}"
       publish:
         st2_token: "{{get_st2_token[hostname].stdout.token}}"
@@ -67,7 +67,8 @@
       params:
         hostname: "{{hostname}}"
         build: "{{build}}"
-        token: "{{st2_token}}"
+        st2_username: "{{st2_username}}"
+        st2_password: "{{st2_password}}"
       on-success: "destroy_vm"
     -
       name: "destroy_vm"
