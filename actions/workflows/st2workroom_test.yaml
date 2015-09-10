@@ -51,15 +51,13 @@
       params:
         hosts: "{{hostname}}"
         cmd: "useradd {{st2_username}} -p `mkpasswd {{st2_password}}`"
-      on-success: "get_st2_token"
+      on-success: "copy_credentials_for_stanley"
     -
-      name: "get_st2_token"
+      name: "copy_credentials_for_stanley"
       ref: "core.remote_sudo"
       params:
-        cmd: "st2 --config-file /root/.st2/config auth {{st2_username}} -p {{st2_password}} -j"
         hosts: "{{hostname}}"
-      publish:
-        st2_token: "{{get_st2_token[hostname].stdout.token}}"
+        cmd: "mkdir ~/.st2; cp /root/.st2/config ~/.st2; chmod 444 ~/.st2/config"
       on-success: "run_tests"
     -
       name: "run_tests"
