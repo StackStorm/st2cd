@@ -54,13 +54,6 @@
         cmd: "useradd {{st2_username}} -p `mkpasswd {{st2_password}}`"
       on-success: "copy_credentials_for_stanley"
     -
-      name: "copy_credentials_for_stanley"
-      ref: "core.remote_sudo"
-      params:
-        hosts: "{{hostname}}"
-        cmd: "mkdir ~/.st2; cp /root/.st2/config ~/.st2; chmod 444 ~/.st2/config"
-      on-success: "run_tests"
-    -
       name: "run_tests"
       ref: "st2cd.e2e_tests"
       params:
