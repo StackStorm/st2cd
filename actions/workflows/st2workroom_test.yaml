@@ -52,7 +52,7 @@
       params:
         hosts: "{{hostname}}"
         cmd: "useradd {{st2_username}} -p `mkpasswd {{st2_password}}`"
-      on-success: "copy_credentials_for_stanley"
+      on-success: "run_tests"
     -
       name: "run_tests"
       ref: "st2cd.e2e_tests"
