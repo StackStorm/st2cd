@@ -11,7 +11,7 @@ Following documentation is written with specific examples. Patch version we are 
 
 * Set the correct patch version in installation docs. See [PR](https://github.com/StackStorm/st2/pull/1809) for an example.  ```(XXX: Automate)```
 
-* Set st2_version in st2web package.json for the respective parent branch. (In this case v0.12). See [PR](https://github.com/StackStorm/st2web/pull/178]) for an example.
+* Set st2_version in st2web package.json for the respective parent branch. (In this case v0.12). See [PR](https://github.com/StackStorm/st2web/pull/178) for an example.
 
 * Merge st2web PR first. Never merge this without a ``+1``.
 
