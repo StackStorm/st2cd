@@ -43,6 +43,7 @@
         env:
           SKIP_OK_CHECK: "true"
           DISABLE_HUBOT: "true"
+          CI: "true"
         timeout: 900
       on-success: "add_ci_user"
     -
