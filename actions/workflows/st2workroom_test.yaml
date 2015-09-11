@@ -30,7 +30,7 @@
       name: "clone_st2workroom"
       ref: "core.remote_sudo"
       params:
-        cmd: "git clone {{repo}} {{root_dir}} -b {{branch}}"
+        cmd: "git clone {{repo}} {{root_dir}} -b {{branch}} --depth 1"
         hosts: "{{hostname}}"
       on-success: "bootstrap_workroom"
     -
