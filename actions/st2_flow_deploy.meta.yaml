@@ -1,0 +1,15 @@
+---
+  name: "st2_flow_deploy"
+  runner_type: "action-chain"
+  description: "Deploys the latest flow on a server"
+  enabled: true
+  entry_point: "workflows/st2_flow_deploy.yaml"
+  parameters:
+    hostname:
+      type: "string"
+      description: "Hostname to deploy Flow on"
+      required: true
+    version:
+      type: "string"
+      description: "Version of Flow to deploy"
+      required: true

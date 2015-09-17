@@ -1,0 +1,71 @@
+---
+  chain:
+    -
+      name: "get_build_server"
+      ref: "linux.dig"
+      params:
+        hostname: "st2-build-slave-ubuntu.service.consul"
+        rand: true
+        count: 1
+      publish:
+        build_server: "{{get_build_server.result[0]}}"
+      on-success: "clone_repo"
+    -
+      name: "clone_repo"
+      ref: "st2cd.git_clone"
+      params:
+        hosts: "{{build_server}}"
+        repo: "{{repo}}"
+        target: "{{repo_target}}"
+        branch: "{{branch}}"
+      publish:
+        repodir: "{{clone_repo[build_server].stdout}}"
+      on-success: "install_build_dependencies"
+    -
+      name: "install_build_dependencies"
+      ref: "core.remote"
+      params:
+        hosts: "{{build_server}}"
+        cmd: "cd {{repodir}} && npm install bower ; npm install gulp"
+        timeout: 600
+      on-success: "install_npm_library_dependencies"
+    -
+      name: "install_npm_library_dependencies"
+      ref: "core.remote"
+      params:
+        hosts: "{{build_server}}"
+        cmd: "cd {{repodir}} && npm install"
+        timeout: 600
+      on-success: "build_flow"
+    -
+      name: "build_flow"
+      ref: "core.remote"
+      params:
+        hosts: "{{build_server}}"
+        cmd: "cd {{repodir}} && node_modules/.bin/gulp build"
+        timeout: 600
+      on-success: "create_build_artifact"
+    -
+      name: "create_build_artifact"
+      ref: "core.remote"
+      params:
+        hosts: "{{build_server}}"
+        cmd: "cd {{repodir}} && tar --transform='s/dist/flow/' -cvzpf flow-{{version}}.tar.gz dist/"
+        timeout: 300
+      on-success: "s3_build_artifact"
+    -
+      name: "s3_build_artifact"
+      ref: "core.remote_sudo"
+      params:
+        hosts: "{{build_server}}"
+        cmd: "s3cmd put --no-mime-magic --guess-mime-type --recursive --force {{repodir}}/flow-{{version}}.tar.gz s3://st2flow/"
+        timeout: 600
+      on-success: "clean_repo"
+    -
+      name: "clean_repo"
+      ref: "core.remote"
+      params:
+        hosts: "{{build_server}}"
+        cmd: "rm -Rf {{repodir}}"
+
+  default: "get_build_server"
