@@ -97,6 +97,7 @@
         action: "tests.test_quickstart_rules"
         params: "token={{st2_token}}"
         hosts: "{{hostname}}"
+        timeout: 600
       on-success: "test_quickstart_packs"
     -
       name: "test_quickstart_packs"

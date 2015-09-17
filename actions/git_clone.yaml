@@ -4,14 +4,14 @@
   description: "Clone a git repo"
   enabled: true
   entry_point: "git_clone.sh"
-  parameters: 
-    repo: 
+  parameters:
+    repo:
       type: "string"
       description: "Git repository to clone"
       required: true
       position: 0
       default: null
-    target: 
+    target:
       type: "string"
       description: "Where to clone the repo to"
       required: true
@@ -22,13 +22,13 @@
       description: "The branch to clone"
       required: true
       position: 2
-      default: "master"  
-    sudo: 
+      default: "master"
+    sudo:
       immutable: true
       default: false
-    cmd: 
+    cmd:
       immutable: true
       default: ""
-    kwarg_op: 
+    kwarg_op:
       immutable: true
       default: "--"

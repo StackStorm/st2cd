@@ -44,10 +44,10 @@
         hosts: "{{build_server}}"
         repo: "{{repodir}}"
         build: "{{build}}"
-      on-success: "make_rhel_rpms"
+      on-success: "make_rpms"
     -
-      name: "make_rhel_rpms"
-      ref: "st2cd.make_rhel_rpms"
+      name: "make_rpms"
+      ref: "st2cd.make_rpms"
       params:
         hosts: "{{build_server}}"
         repo: "{{repodir}}"

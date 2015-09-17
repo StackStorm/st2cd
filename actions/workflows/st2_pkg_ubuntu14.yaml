@@ -52,7 +52,7 @@
         repo: "{{repodir}}"
         build: "{{build}}"
       publish:
-        version: "{{version[build_server].stdout}}"
+        version: "{{version[build_server].stdout | replace('\n', '')}}"
       on-success: "make_debs"
     -
       name: "make_debs"

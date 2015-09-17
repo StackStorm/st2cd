@@ -1,0 +1,50 @@
+---
+  chain:
+    -
+      name: "get_build_server"
+      ref: "linux.dig"
+      params:
+        hostname: "st2-build-slave-ubuntu.service.consul"
+        rand: true
+        count: 1
+      publish:
+        build_server: "{{get_build_server.result[0]}}"
+      on-success: "get_flow"
+    -
+      name: "get_flow"
+      ref: "core.remote"
+      params:
+        hosts: "st2build001"
+        cmd: "s3cmd get --force s3://st2flow/flow-{{version}}.tar.gz /tmp/{{hostname}}-flow.tar.gz"
+      on-success: "scp_flow"
+    -
+      name: "scp_flow"
+      ref: "linux.scp"
+      params:
+        hosts: "st2build001"
+        source: "/tmp/{{hostname}}-flow.tar.gz"
+        keyfile: "/home/stanley/.ssh/st2_stanley_key"
+        dest_server: "{{hostname}}"
+        destination: "/tmp/"
+      on-success: "clean_flow"
+    -
+      name: "clean_flow"
+      ref: "core.remote_sudo"
+      params:
+        hosts: "{{hostname}}"
+        cmd: "rm -Rf /opt/stackstorm/static/webui/flow && mkdir -p /opt/stackstorm/static/webui/flow"
+      on-success: "deploy_flow"
+    -
+      name: "deploy_flow"
+      ref: "core.remote_sudo"
+      params:
+        hosts: "{{hostname}}"
+        cmd: "tar -xvf /tmp/{{hostname}}-flow.tar.gz -C /opt/stackstorm/static/webui/flow --strip-components=1"
+      on-success: "clean_up"
+    -
+      name: "clean_up"
+      ref: "core.remote"
+      params:
+        hosts: "st2build001"
+        cmd: "rm -Rf /tmp/{{hostname}}-flow.tar.gz"
+  default: "get_build_server"

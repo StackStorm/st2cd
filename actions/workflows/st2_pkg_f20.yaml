@@ -29,7 +29,7 @@
         hosts: "{{build_server}}"
         repo: "{{repodir}}"
       publish:
-        version: "{{version[build_server].stdout}}"
+        version: "{{version[build_server].stdout | replace('\n', '')}}"
       on-success: "echo_version"
     -
       # Please don't change my position in this list.

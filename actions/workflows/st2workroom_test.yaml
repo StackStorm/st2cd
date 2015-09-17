@@ -1,0 +1,70 @@
+---
+  vars:
+    root_dir: "/opt/puppet"
+    st2_username: "cibuild"
+    st2_password: "cibuild"
+  chain:
+    -
+      name: "create_vm_role"
+      ref: "st2cd.create_vm_role"
+      params:
+        hostname: "{{hostname}}"
+        instance_type: "{{instance_type}}"
+        environment: "{{environment}}"
+        key_name: "{{key_name}}"
+        keyfile: "{{keyfile}}"
+        distro: "{{distro}}"
+        role: "{{role}}"
+      on-success: "delete_existing_puppet"
+    -
+      name: "delete_existing_puppet"
+      ref: "linux.rm"
+      params:
+        hosts: "{{hostname}}"
+        target: "{{root_dir}}"
+        force: true
+        recursive: true
+        sudo: true
+      on-success: "clone_st2workroom"
+    -
+      name: "clone_st2workroom"
+      ref: "core.remote_sudo"
+      params:
+        cmd: "git clone {{repo}} {{root_dir}} -b {{branch}} --depth 1"
+        hosts: "{{hostname}}"
+      on-success: "bootstrap_workroom"
+    -
+      name: "bootstrap_workroom"
+      ref: "core.remote_sudo"
+      params:
+        hosts: "{{hostname}}"
+        cmd: "{{root_dir}}/script/bootstrap-st2express"
+        cwd: "{{root_dir}}"
+        env:
+          SKIP_OK_CHECK: "true"
+          DISABLE_HUBOT: "true"
+          CI: "true"
+        timeout: 900
+      on-success: "add_ci_user"
+    -
+      name: "add_ci_user"
+      ref: "core.remote_sudo"
+      params:
+        hosts: "{{hostname}}"
+        cmd: "useradd {{st2_username}} -p `mkpasswd {{st2_password}}`"
+      on-success: "run_tests"
+    -
+      name: "run_tests"
+      ref: "st2cd.e2e_tests"
+      params:
+        hostname: "{{hostname}}"
+        build: "{{build}}"
+        st2_username: "{{st2_username}}"
+        st2_password: "{{st2_password}}"
+      on-success: "destroy_vm"
+    -
+      name: "destroy_vm"
+      ref: "st2cd.destroy_vm"
+      params:
+        hostname: "{{hostname}}"
+  default: "create_vm_role"
