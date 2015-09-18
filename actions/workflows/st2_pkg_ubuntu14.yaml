@@ -135,7 +135,7 @@
       ref: "core.remote_sudo"
       params:
         hosts: "{{dl_server}}"
-        cmd: "echo '{{build}}    {{revision}} >> /var/www/sites/releases/html/releases/st2/{{version}}/SHAMAP.txt"
+        cmd: "echo '{{build}}    {{revision}}' >> /var/www/sites/releases/html/releases/st2/{{version}}/SHAMAP.txt"
       on-success: "cp_requirements"
     -
       name: "cp_requirements"
