@@ -129,6 +129,13 @@
         hosts: "{{dl_server}}"
         cmd: "mkdir -p /var/www/sites/releases/html/releases/st2/{{version}}/debs/ && cp -Rf {{version_dir}}/st2_deploy.sh /var/www/sites/releases/html/releases/st2/{{version}}/debs/"
         timeout: 1800
+      on-success: "update_sha_map"
+    -
+      name: "update_sha_map"
+      ref: "core.remote_sudo"
+      params:
+        hosts: "{{dl_server}}"
+        cmd: "echo '{{build}}    {{revision}}' >> /var/www/sites/releases/html/releases/st2/{{version}}/SHAMAP.txt"
       on-success: "cp_requirements"
     -
       name: "cp_requirements"
