@@ -44,7 +44,7 @@
       params:
         hosts: "{{build_server}}"
         repo: "{{repodir}}"
-        timeout: 600
+        timeout: 650
       on-success: "upload_coverage_report"
     -
       name: "upload_coverage_report"
