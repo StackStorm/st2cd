@@ -30,6 +30,13 @@
       params:
         hosts: "{{hostname}}"
         pack: "tests"
+      on-success: "install_webui"
+    -
+      name: "install_webui"
+      ref: "st2cd.install_tests"
+      params:
+        hosts: "{{hostname}}"
+        pack: "webui"
       on-success: "install_examples"
     -
       name: "install_examples"
@@ -187,7 +194,7 @@
         hosts: "{{hostname}}"
         timeout: 600
       on-success: "test_windows_runners"
-      on-failure: "test_windows_runners"      
+      on-failure: "test_windows_runners"
     -
       name: "test_windows_runners"
       ref: "st2cd.action_run"
