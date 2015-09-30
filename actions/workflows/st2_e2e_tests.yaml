@@ -183,6 +183,7 @@
         hosts: "{{hostname}}"
         timeout: 600
       on-success: "test_timer_rule"
+      on-failure: "test_timer_rule"
     -
       name: "test_timer_rule"
       ref: "st2cd.action_run"
