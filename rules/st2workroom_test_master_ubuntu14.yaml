@@ -26,5 +26,5 @@
             environment: "sandbox"
             branch: "{{trigger.parameters.branch}}"
             revision: "{{trigger.parameters.revision}}"
-            repo: "{{trigger.parameters.repo}}"
+            repo: "https://github.com/StackStorm/st2workroom.git"
             distro: "UBUNTU14"
