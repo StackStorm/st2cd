@@ -28,7 +28,7 @@
         hosts: "{{build_server}}"
         repo_path: "{{repodir}}"
       publish:
-        web_version: "{{retrieve_version[build_server].stdout}}"
+        web_version: "{{retrieve_version[build_server].stdout | replace('\n', '')}}"
       on-success: "install_build_dependencies"
     -
       name: "install_build_dependencies"

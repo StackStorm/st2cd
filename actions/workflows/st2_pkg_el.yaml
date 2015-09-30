@@ -35,7 +35,7 @@
       name: "echo_version"
       ref: "core.local"
       params:
-        cmd: "echo '{{version}}'"
+        cmd: "echo -e '{{version}}'"
       on-success: "version_hack"
     - 
       name: "version_hack"
