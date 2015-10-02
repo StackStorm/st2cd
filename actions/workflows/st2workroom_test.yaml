@@ -61,6 +61,7 @@
         build: "{{build}}"
         st2_username: "{{st2_username}}"
         st2_password: "{{st2_password}}"
+        protocol: "https"
       on-success: "destroy_vm"
     -
       name: "destroy_vm"
