@@ -42,7 +42,7 @@
       name: "echo_version"
       ref: "core.local"
       params:
-        cmd: "echo '{{version[build_server].stdout}}'"
+        cmd: "echo -e '{{version[build_server].stdout}}'"
       on-success: "version_hack"
     -
       name: "version_hack"

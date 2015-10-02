@@ -32,7 +32,7 @@
     instance_type:
       type: "string"
       description: "Flavor of to use for instance creation"
-      default: "m3.medium"
+      default: "m3.large"
     environment:
       type: "string"
       description: "Environment to deploy host to"

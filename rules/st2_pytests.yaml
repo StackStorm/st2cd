@@ -1,9 +1,10 @@
 ---
     name: "st2_pytests"
     description: "Run pytests on each commit to master"
+    pack: "st2cd"
     enabled: true
     trigger:
-        type: "webhooks.github_event"
+        type: "GitHubWebhook.github_event"
     criteria:
         trigger.body.ref:
             pattern: "refs/heads/master"

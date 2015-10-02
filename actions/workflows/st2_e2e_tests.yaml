@@ -183,6 +183,7 @@
         hosts: "{{hostname}}"
         timeout: 600
       on-success: "test_timer_rule"
+      on-failure: "test_timer_rule"
     -
       name: "test_timer_rule"
       ref: "st2cd.action_run"
@@ -209,11 +210,14 @@
       on-failure: "selenium"
     -
       name: "selenium"
-      ref: "webui.selenium"
+      ref: "st2cd.action_run"
       params:
-        branch: "master"
-        repo: "https://github.com/StackStorm/st2e2e.git"
-        web_host: "{{hostname}}"
+        name: "webui_selenium"
+        token: "{{st2_token}}"
+        action: "webui.selenium"
+        params: "token={{st2_token}} branch=master repo=https://github.com/StackStorm/st2e2e.git web_host={{hostname}}"
+        hosts: "{{hostname}}"
+        timeout: 600
       on-failure: "ignore_selenium_failure"
     -
       name: "ignore_selenium_failure"
