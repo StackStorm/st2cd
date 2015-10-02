@@ -44,3 +44,7 @@
       type: "string"
       description: "Windows password"
       default: ""
+    protocol:
+      type: "string"
+      description: "http/https"
+      default: "http"
