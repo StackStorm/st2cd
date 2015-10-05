@@ -15,6 +15,8 @@
         keyfile: "{{keyfile}}"
         distro: "{{distro}}"
         role: "{{role}}"
+      publish:
+        distro: "{{distro}}"
       on-success: "delete_existing_puppet"
     -
       name: "delete_existing_puppet"
@@ -48,10 +50,12 @@
       on-success: "add_ci_user"
     -
       name: "add_ci_user"
-      ref: "core.remote_sudo"
+      ref: "st2cd.add_ci_user"
       params:
         hosts: "{{hostname}}"
-        cmd: "useradd {{st2_username}} -p `mkpasswd {{st2_password}}`"
+        distro: "{{distro}}"
+        user: "{{st2_username}}"
+        pass: "{{st2_password}}"
       on-success: "run_tests"
     -
       name: "run_tests"
