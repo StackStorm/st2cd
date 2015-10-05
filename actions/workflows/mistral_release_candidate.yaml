@@ -7,9 +7,9 @@ workflows:
     main:
         type: direct
         input:
+            - version
             - test_host
             - build_host
-            - version
             - mis_repo_main
             - mis_repo_client
             - mis_repo_action

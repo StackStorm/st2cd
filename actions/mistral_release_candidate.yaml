@@ -5,18 +5,18 @@ enabled: true
 runner_type: mistral-v2
 entry_point: workflows/mistral_release_candidate.yaml
 parameters:
-  test_host:
-    type: string
-    description: The name of the hosts where the integration test(s) will run.
-    required: true
-  build_host:
-    type: string
-    description: The name of the hosts where the build process will run.
-    required: true
   version:
     type: string
     description: The release version major.minor.patch.
     required: true
+  test_host:
+    type: string
+    description: The name of the hosts where the integration test(s) will run.
+    default: None
+  build_host:
+    type: string
+    description: The name of the hosts where the build process will run.
+    default: None
   mis_repo_main:
     type: string
     default: git@github.com:StackStorm/mistral.git
