@@ -1,0 +1,38 @@
+---
+  name: "add_ci_user"
+  runner_type: "run-remote-script"
+  description: "Add a user to box"
+  enabled: true
+  entry_point: "add_ci_user.sh"
+  parameters:
+    user:  # Don't use ``username``. It's reserved for runner.
+      type: "string"
+      description: "Username for login."
+      required: true
+      position: 0
+    pass:  # Don't use ``password``. It's reserved for runner.
+      type: "string"
+      description: "Password for login."
+      required: true
+      position: 1
+    distro:
+      type: "string"
+      description: "Distro info. E.g. UBUNTU, RHEL"
+      required: true
+      position: 2
+      default: "UBUNTU"
+    salt:
+      type: "string"
+      description: "Password salt"
+      required: false
+      position: 3
+      default: "mkpasswd"
+    sudo:
+      immutable: true
+      default: true
+    cmd:
+      immutable: true
+      default: ""
+    kwarg_op:
+      immutable: true
+      default: "--"
