@@ -40,11 +40,10 @@
       on-success: "pytests"
     -
       name: "pytests"
-      ref: "st2cd.make_pytests"
+      ref: "st2cd.pytests_split"
       params:
-        hosts: "{{build_server}}"
-        repo: "{{repodir}}"
-        timeout: 650
+        build_server: "{{build_server}}"
+        repo_target: "{{repo_target}}"
       on-success: "upload_coverage_report"
     -
       name: "upload_coverage_report"

@@ -1,0 +1,44 @@
+---
+  chain:
+    -
+      name: "make_compile"
+      ref: "core.remote"
+      params:
+        cmd: "cd {{repo_target}} && make compile"
+        hosts: "{{build_server}}"
+        timeout: 60
+      on-success: "make_reqmnts"
+    -
+      name: "make_reqmnts"
+      ref: "core.remote"
+      params:
+        cmd: "cd {{repo_target}} && make requirements"
+        hosts: "{{build_server}}"
+        timeout: 300
+      notify:
+        on-failure:
+          routes:
+            - slack
+          message: "Pytests failed on installing requirements."
+      on-success: "make_lint"
+    -
+      name: "make_lint"
+      ref: "core.remote"
+      params:
+        cmd: "cd {{repo_target}} && make .lint"  # .flake8 and .pylint
+        hosts: "{{build_server}}"
+        timeout: 180
+      on-success: "make_tests"
+    -
+      name: "make_tests"
+      ref: "core.remote"
+      params:
+        cmd: "cd {{repo_target}} && make .pytests-coverage"  # unit and integration tests
+        hosts: "{{build_server}}"
+        timeout: 360
+      notify:
+        on-failure:
+          routes:
+            - slack
+          message: "Pytests failed on running unit/integration tests."
+  default: "make_compile"
