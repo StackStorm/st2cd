@@ -33,7 +33,7 @@
       name: "make_tests"
       ref: "core.remote"
       params:
-        cmd: "cd {{repo_target}} && make .pytests"  # unit and integration tests
+        cmd: "cd {{repo_target}} && make .pytests-coverage"  # unit and integration tests
         hosts: "{{build_server}}"
         timeout: 360
       notify:
