@@ -1,7 +1,7 @@
 ---
   name: "pytests_split"
   runner_type: "action-chain"
-  description: "Clones a repo to a remote host, and runs python tests"
+  description: "Runs st2 python tests on a remote build server."
   enabled: true
   entry_point: "workflows/pytests_split.yaml"
   parameters:
