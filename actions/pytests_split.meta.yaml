@@ -1,0 +1,15 @@
+---
+  name: "pytests_split"
+  runner_type: "action-chain"
+  description: "Clones a repo to a remote host, and runs python tests"
+  enabled: true
+  entry_point: "workflows/pytests_split.yaml"
+  parameters:
+    repo_target:
+      type: "string"
+      default: "/tmp/st2_{{branch}}"
+      description: "Possible options are all, actions, rules."
+    build_server:
+      type: "string"
+      required: true
+      description: "Build slave host"
