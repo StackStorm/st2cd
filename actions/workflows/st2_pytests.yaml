@@ -43,7 +43,7 @@
       ref: "st2cd.pytests_split"
       params:
         build_server: "{{build_server}}"
-        repo_target: "{{repo_target}}"
+        repo_target: "{{repodir}}"
       on-success: "upload_coverage_report"
     -
       name: "upload_coverage_report"
