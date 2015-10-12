@@ -3,7 +3,7 @@
     description: "Re-generate README.md on push to master in st2contrib"
     enabled: true
     trigger:
-        type: "webhooks.github_event"
+        type: "GitHubWebhook.github_event"
     criteria:
         trigger.body.ref:
             pattern: "refs/heads/master"
