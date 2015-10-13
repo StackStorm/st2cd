@@ -65,7 +65,7 @@ def main(args):
         'description': 'Run pytests on each commit to branch.',
         'enabled': True,
         'trigger': {
-            'type': 'webhooks.github_event'
+            'type': 'GitHubWebhook.github_event'
         },
         'criteria': {
             'trigger.body.ref': {

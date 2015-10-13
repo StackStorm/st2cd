@@ -3,7 +3,7 @@
     description: "Post to Slack on matching GitHub event"
     enabled: true
     trigger:
-        type: "webhooks.github_event"
+        type: "GitHubWebhook.github_event"
     criteria:
         trigger.body.ref:
             pattern: "refs/heads/master"
