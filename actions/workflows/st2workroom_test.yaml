@@ -46,7 +46,7 @@
           SKIP_OK_CHECK: "true"
           DISABLE_HUBOT: "true"
           CI: "true"
-        timeout: 900
+        timeout: 1800
       on-success: "add_ci_user"
     -
       name: "add_ci_user"
