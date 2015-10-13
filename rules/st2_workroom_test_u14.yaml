@@ -1,0 +1,26 @@
+---
+    name: "st2_workroom_test_u14.yaml"
+    description: "Run st2workroom_tests on each commit to st2workroom/master"
+    pack: "st2cd"
+    enabled: true
+    trigger:
+        type: "GitHubWebhook.github_event"
+    criteria:
+        trigger.body.ref:
+            pattern: "refs/heads/master"
+            type: "equals"
+        trigger.body.repository.full_name:
+            pattern: "StackStorm/st2workroom"
+            type: "equals"
+    action:
+        ref: "st2cd.st2workroom_test"
+        parameters:
+            # Would be nice to be able to use trigger.id since that is guaranteed to be unique.
+            hostname: "st2w-master-u14-{{trigger.body.head_commit.id | truncate(10, False, '')}}"
+            build: "{{system.st2_master_build_number}}"
+            version: "{{system.st2_unstable_version}}"
+            environment: "sandbox"
+            branch: "master"
+            revision: "{{trigger.body.head_commit.id}}"
+            repo: "https://github.com/StackStorm/st2workroom.git"
+            distro: "UBUNTU14"
