@@ -8,8 +8,11 @@
         trigger.action_name:
             pattern: "st2cd.st2workroom_test"
             type: "equals"
+        trigger.parameters.distro:
+            pattern: "UBUNTU14"
+            type: "equals"
     action:
         ref: "slack.post_message"
         parameters:
             channel: "{% if trigger.status == 'succeeded' %}#thunderdome{% else %}#stackstorm{% endif %}"
-            message: "{% if trigger.status != 'succeeded' %}channel\n{% endif %}```[{{trigger.action_name}}: {{trigger.status.upper()}}]\n    BRANCH: {{trigger.parameters.branch}}\n    SHA: {{trigger.parameters.revision}}\n    BUILD: {{trigger.parameters.build}}```"
+            message: "{% if trigger.status != 'succeeded' %}channel\n{% endif %}```[{{trigger.action_name}}: {{trigger.status.upper()}}]\n    BRANCH: {{trigger.parameters.branch}}\n    SHA: {{trigger.parameters.revision}}\n    BUILD: {{trigger.parameters.build}}\n    DISTRO: {{trigger.parameters.distro}}```"
