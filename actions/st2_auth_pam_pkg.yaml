@@ -23,7 +23,7 @@
       type: "string"
       description: "GitHub repo ex. ORG/REPO"
       required: true
-      default: "st2-auth-backend-pam"
+      default: "StackStorm/st2-auth-backend-pam"
     repo_target:
       type: "string"
       default: "/home/stanley/st2_pam_auth_{{branch}}"
