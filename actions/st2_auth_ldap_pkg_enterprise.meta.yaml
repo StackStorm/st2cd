@@ -1,15 +1,20 @@
 ---
-  name: "st2enterprise_pkg"
+  name: "st2_auth_ldap_pkg_enterprise"
   runner_type: "action-chain"
-  description: "Builds st2enterprise project artifacts"
+  description: "Builds st2enterprise LDAP auth backend egg"
   enabled: true
-  entry_point: "workflows/st2enterprise_pkg.yaml"
+  entry_point: "workflows/st2_auth_backend_pkg.yaml"
   parameters:
     repo:
       type: "string"
       description: "Url of the repo to clone."
       default: "https://{{github_token}}:x-oauth-basic@github.com/{{repo_name}}.git"
       immutable: true
+    s3_bucket:
+      type: "string"
+      description: "S3 bucket to push built egg to."
+      required: true
+      default: "st2enterprise"
     github_token:
       type: "string"
       description: "GitHub auth token"
@@ -18,9 +23,10 @@
       type: "string"
       description: "GitHub repo ex. ORG/REPO"
       required: true
+      default: "StackStorm/st2-enterprise-auth-backend-ldap"
     repo_target:
       type: "string"
-      default: "/home/stanley/st2_webui_{{branch}}"
+      default: "/home/stanley/st2_ldap_auth_{{branch}}"
       description: "Directory where the repo is cloned."
     branch:
       type: "string"

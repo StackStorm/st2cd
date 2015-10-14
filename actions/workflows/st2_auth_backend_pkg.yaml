@@ -34,7 +34,7 @@
       ref: "core.remote_sudo"
       params:
         hosts: "{{build_server}}"
-        cmd: "s3cmd put --no-mime-magic --guess-mime-type --recursive --force {{repodir}}/dist/*.egg s3://st2enterprise/"
+        cmd: "s3cmd put --no-mime-magic --guess-mime-type --recursive --force {{repodir}}/dist/*.egg s3://{{s3_bucket}}/"
         timeout: 600
       on-success: "clean_repo"
     -
