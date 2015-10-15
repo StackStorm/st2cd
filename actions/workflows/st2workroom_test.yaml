@@ -39,6 +39,8 @@
       name: "bootstrap_workroom"
       ref: "core.remote_sudo"
       params:
+        env:
+          ENV: "{{branch}}"
         hosts: "{{hostname}}"
         cmd: "{{root_dir}}/script/bootstrap-st2express"
         cwd: "{{root_dir}}"

@@ -1,0 +1,8 @@
+---
+name: "workroom_test"
+pack: "st2cd"
+action_ref: "st2cd.st2workroom_test"
+formats:
+  - "workroom ci {{branch}} on {{hostname}} {{build=chatops}}"
+  - "workroom ci on {{hostname}} {{build=chatops}}"
+description: "Test out st2workroom"
