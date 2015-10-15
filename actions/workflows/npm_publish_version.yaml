@@ -1,0 +1,43 @@
+---
+  chain:
+    -
+      name: "get_build_server"
+      ref: "linux.dig"
+      params:
+        hostname: "st2-build-slave-ubuntu.service.consul"
+        rand: true
+        count: 1
+      publish:
+        build_server: "{{get_build_server.result[0]}}"
+      on-success: "clone_repo"
+    -
+      name: "clone_repo"
+      ref: "st2cd.git_clone"
+      params:
+        hosts: "{{build_server}}"
+        repo: "{{repo}}"
+        branch: "{{branch}}"
+        target: "{{repo_target}}"
+      publish:
+        repodir: "{{clone_repo[build_server].stdout}}"
+      on-success: "npm_publish"
+    -
+      name: "npm_publish"
+      ref: "core.remote"
+      params:
+        hosts: "{{build_server}}"
+        cmd: "cd {{repodir}} && npm version {{update_type}} && npm publish"
+      on-success: "git_commit_updates"
+    -
+      name: "git_commit_updates"
+      ref: "core.remote"
+      params:
+        hosts: "{{build_server}}"
+        cmd: "cd {{repodir}} && git push origin {{branch}} && git push --tags"
+      on-success: "clean_repo"
+    -
+      name: "clean_repo"
+      ref: "st2cd.git_clean"
+      params:
+        hosts: "{{build_server}}"
+        repo: "{{repodir}}"
