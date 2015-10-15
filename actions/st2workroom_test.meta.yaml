@@ -57,3 +57,11 @@
     role:
       type: "string"
       default: ""
+    skip_notify:
+      default:
+        - delete_existing_puppet
+        - clone_st2workroom
+        - bootstrap_workroom
+        - add_ci_user
+        - run_tests
+        - destroy_vm
