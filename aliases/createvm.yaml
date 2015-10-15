@@ -1,0 +1,9 @@
+---
+name: "createvm"
+pack: "st2cd"
+action_ref: "st2cd.create_vm_role"
+formats:
+  - "createvm {{hostname}} on {{distro}} with {{role}}"
+  - "createvm {{hostname}} on {{distro}} {{role=default}}"
+  - "createvm {{hostname}} {{distro=UBUNTU14}} {{role=default}}"
+description: "Create a vm"
