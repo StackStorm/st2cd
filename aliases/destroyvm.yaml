@@ -1,0 +1,7 @@
+---
+name: "destroyvm"
+pack: "st2cd"
+action_ref: "st2cd.destroy_vm"
+formats:
+  - "destroyvm {{hostname}}"
+description: "Destroy a vm"
