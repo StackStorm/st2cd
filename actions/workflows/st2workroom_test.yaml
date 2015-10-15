@@ -40,7 +40,7 @@
       ref: "core.remote_sudo"
       params:
         hosts: "{{hostname}}"
-        cmd: "{{root_dir}}/script/bootstrap-st2express"
+        cmd: "ENV={{branch}} {{root_dir}}/script/bootstrap-st2express"
         cwd: "{{root_dir}}"
         env:
           SKIP_OK_CHECK: "true"
