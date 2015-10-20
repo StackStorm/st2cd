@@ -27,13 +27,6 @@
         force: true
         recursive: true
         sudo: true
-      on-success: "clone_st2workroom"
-    -
-      name: "clone_st2workroom"
-      ref: "core.remote_sudo"
-      params:
-        cmd: "git clone {{repo}} {{root_dir}} -b {{branch}} --depth 1"
-        hosts: "{{hostname}}"
       on-success: "bootstrap_workroom"
     -
       name: "bootstrap_workroom"
@@ -41,13 +34,11 @@
       params:
         env:
           ENV: "{{branch}}"
-        hosts: "{{hostname}}"
-        cmd: "{{root_dir}}/script/bootstrap-st2express"
-        cwd: "{{root_dir}}"
-        env:
           SKIP_OK_CHECK: "true"
           DISABLE_HUBOT: "true"
           CI: "true"
+        hosts: "{{hostname}}"
+        cmd: "curl -sSL http://stackstorm.com/install.sh | sudo sh"
         timeout: 1800
       on-success: "add_ci_user"
     -
