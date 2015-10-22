@@ -41,6 +41,20 @@
         cmd: "curl -sSL http://stackstorm.com/install.sh | sudo sh"
         timeout: 1800
       on-success: "add_ci_user"
+      on-failure: "rerun_bootstrap_workroom"
+    -
+      name: "rerun_bootstrap_workroom"
+      ref: "core.remote_sudo"
+      params:
+        env:
+          ENV: "{{branch}}"
+          SKIP_OK_CHECK: "true"
+          DISABLE_HUBOT: "true"
+          CI: "true"
+        hosts: "{{hostname}}"
+        cmd: "curl -sSL http://stackstorm.com/install.sh | sudo sh"
+        timeout: 1800
+      on-success: "add_ci_user"
     -
       name: "add_ci_user"
       ref: "st2cd.add_ci_user"
@@ -52,6 +66,17 @@
       on-success: "run_tests"
     -
       name: "run_tests"
+      ref: "st2cd.e2e_tests"
+      params:
+        hostname: "{{hostname}}"
+        build: "{{build}}"
+        st2_username: "{{st2_username}}"
+        st2_password: "{{st2_password}}"
+        protocol: "https"
+      on-success: "destroy_vm"
+      on-failure: "rerun_tests"
+    -
+      name: "rerun_tests"
       ref: "st2cd.e2e_tests"
       params:
         hostname: "{{hostname}}"
