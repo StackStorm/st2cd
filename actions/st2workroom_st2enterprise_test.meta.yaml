@@ -1,0 +1,66 @@
+---
+  name: "st2workroom_st2enterprise_test"
+  runner_type: "action-chain"
+  description: "Tests st2enterprise workroom based deployment"
+  enabled: true
+  entry_point: "workflows/st2workroom_st2enterprise_test.yaml"
+  parameters:
+    repo:
+      type: "string"
+      description: "Url of the repo to clone"
+      default: "https://github.com/StackStorm/st2workroom.git"
+    branch:
+      type: "string"
+      description: "The branch of st2workroom to bootstrap"
+      default: "master"
+    revision:
+      type: "string"
+      description: ""
+    build:
+      type: "string"
+      description: "Build number"
+      required: true
+    version:
+      type: "string"
+      description: "Version of StackStorm to deploy"
+      default: "0.14dev"
+    distro:
+      type: "string"
+      description: "Linux distro to test against"
+      default: "UBUNTU14"
+    instance_type:
+      type: "string"
+      description: "Flavor of to use for instance creation"
+      default: "m4.large"
+    environment:
+      type: "string"
+      description: "Environment to deploy host to"
+      default: "sandbox"
+    key_name:
+      type: "string"
+      description: "SSH key to use during intial instance creation"
+      default: "st2_deploy"
+    base_user:
+      type: "string"
+      description: "Username for initial ssh test"
+      default: "ubuntu"
+    keyfile:
+      type: "string"
+      description: "Path to local private key that corresponds to {{key_name}}"
+      default: "/home/stanley/.ssh/stanley_rsa"
+    hostname:
+      type: "string"
+      required: true
+    role:
+      type: "string"
+      default: ""
+    skip_notify:
+      default:
+        - delete_existing_puppet_directory
+        - bootstrap_workroom_with_answers_file
+        - add_ci_user
+        - verify_rbac_is_enabled
+        - verify_flow_is_installed
+        - verify_ldap_auth_backend_is_installed
+        - run_tests
+        - destroy_vm
