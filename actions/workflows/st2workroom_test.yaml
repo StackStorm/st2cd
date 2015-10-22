@@ -74,7 +74,15 @@
         st2_password: "{{st2_password}}"
         protocol: "https"
       on-success: "destroy_vm"
-      on-failure: "rerun_tests"
+      on-failure: "restart_st2"
+    -
+      name: "restart_st2"
+      ref: "core.remote_sudo"
+      params:
+        hosts: "{{hostname}}"
+        cmd: "st2ctl restart"
+        timeout: 120
+      on-success: "rerun_tests"
     -
       name: "rerun_tests"
       ref: "st2cd.e2e_tests"
