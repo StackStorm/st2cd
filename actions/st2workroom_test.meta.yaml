@@ -57,6 +57,10 @@
     role:
       type: "string"
       default: ""
+    pkg_st2:
+      description: "Pass through property for downstream consumption."
+      type: "boolean"
+      default: false
     skip_notify:
       default:
         - delete_existing_puppet
