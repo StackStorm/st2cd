@@ -68,6 +68,10 @@ def _create_distro_rule_meta(distro, branch, dl_server, distro_release=None):
             'trigger.parameters.distro': {
                 'pattern': distro.upper(),
                 'type': 'equals'
+            },
+            'trigger.parameters.pkg_st2': {
+                'pattern': True,
+                'type': 'equals'
             }
         },
         'action': {

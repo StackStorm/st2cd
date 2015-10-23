@@ -82,7 +82,8 @@ def _create_distro_rule_meta(distro, branch, action_ref, version_task_index, dis
                 'revision': '{{trigger.parameters.revision}}',
                 'instance_type': 'm3.large',
                 # The weird lookup is brittle but the only reasonably way to get to the full version.
-                'version': '{{trigger.result.tasks[%d].result.stdout}}' % version_task_index
+                'version': '{{trigger.result.tasks[%d].result.stdout}}' % version_task_index,
+                'pkg_st2': True
             }
         }
     }
