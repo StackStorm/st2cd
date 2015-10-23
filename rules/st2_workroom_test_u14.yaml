@@ -1,5 +1,5 @@
 ---
-    name: "st2_workroom_test_u14.yaml"
+    name: "st2_workroom_test_u14"
     description: "Run st2workroom_tests on each commit to st2workroom/master"
     pack: "st2cd"
     enabled: true
