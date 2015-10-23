@@ -18,6 +18,9 @@
         trigger.parameters.distro:
             pattern: "UBUNTU14"
             type: "equals"
+        trigger.parameters.pkg_st2:
+            pattern: true
+            type: "equals"
     action:
         ref: "st2cd.st2_pkg_ubuntu14"
         parameters:

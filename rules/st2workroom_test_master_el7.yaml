@@ -30,6 +30,7 @@
             environment: "sandbox"
             branch: "{{trigger.parameters.branch}}"
             revision: "{{trigger.parameters.revision}}"
-            repo: "https://github.com/StackStorm/st2workroom.git"
+            repo: "{{trigger.parameters.repo}}"
             instance_type: "m3.large"
             distro: "RHEL7"
+            pkg_st2: true
