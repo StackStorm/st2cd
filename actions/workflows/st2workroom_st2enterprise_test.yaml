@@ -89,7 +89,7 @@
       ref: "core.remote_sudo"
       params:
         hosts: "{{hostname}}"
-        cmd: 'curl -k https://'
+        cmd: 'curl -sSL -k --fail https://127.0.0.1/flow'
         timeout: 10
       on-success: "verify_ldap_auth_backend_is_installed"
       on-failure: "destroy_vm"
@@ -111,7 +111,7 @@
         timeout: 10
       on-success: "verify_ldap_auth_backend_is_configured"
       on-failure: "destroy_vm"
-     -
+    -
       name: "verify_ldap_auth_backend_is_configured"
       ref: "core.remote_sudo"
       params:
