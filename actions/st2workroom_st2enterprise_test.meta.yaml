@@ -58,9 +58,10 @@
       default:
         - delete_existing_puppet_directory
         - bootstrap_workroom_with_answers_file
-        - add_ci_user
         - verify_rbac_is_enabled
         - verify_flow_is_installed
+        - verify_flow_is_available
         - verify_ldap_auth_backend_is_installed
-        - run_tests
+        - verify_ldap_auth_backend_is_enabled
+        - verify_ldap_auth_backend_is_configured
         - destroy_vm
