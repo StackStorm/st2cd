@@ -21,10 +21,6 @@
       type: "string"
       description: "Url of the st2express repo to clone"
       default: "git@github.com:StackStorm/st2express.git"
-    st2_workroom_repo:
-      type: "string"
-      description: "Url of the st2workroom repo to clone"
-      default: "git@github.com:StackStorm/st2workroom.git"
     st2_repo_target:
       type: "string"
       default: "/home/stanley/st2"
