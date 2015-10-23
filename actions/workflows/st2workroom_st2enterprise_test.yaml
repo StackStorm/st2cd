@@ -55,17 +55,7 @@
         hosts: "{{hostname}}"
         cmd: "curl -sSL https://stackstorm.com/install.sh -o /tmp/bootstrap.sh && chmod +x /tmp/bootstrap.sh && /tmp/bootstrap.sh -a /tmp/answers.yaml"
         timeout: 1800
-      on-success: "add_ci_user"
-    -
-      name: "add_ci_user"
-      ref: "st2cd.add_ci_user"
-      params:
-        hosts: "{{hostname}}"
-        distro: "{{distro}}"
-        user: "{{st2_username}}"
-        pass: "{{st2_password}}"
       on-success: "verify_rbac_is_enabled"
-      on-failure: "destroy_vm"
     -
       name: "verify_rbac_is_enabled"
       ref: "core.remote_sudo"
