@@ -130,7 +130,7 @@ def main(args):
         rule_meta = _create_distro_rule_meta(distro='rhel7', branch=args.branch,
                                              action_ref='st2cd.st2_pkg_el',
                                              version_task_index=3,
-                                             distro_release=7)
+                                             distro_release='7')
         create_rule(_get_st2_rules_url(args.st2_base_url), rule_meta)
         sys.stdout.write('Successfully created rule %s\n' % rule_meta['name'])
     except Exception as e:
@@ -142,7 +142,7 @@ def main(args):
         rule_meta = _create_distro_rule_meta(distro='rhel6', branch=args.branch,
                                              action_ref='st2cd.st2_pkg_el',
                                              version_task_index=3,
-                                             distro_release=6)
+                                             distro_release='6')
         create_rule(_get_st2_rules_url(args.st2_base_url), rule_meta)
         sys.stdout.write('Successfully created rule %s\n' % rule_meta['name'])
     except Exception as e:
