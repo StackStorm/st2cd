@@ -80,7 +80,7 @@
       ref: "core.remote_sudo"
       params:
         hosts: "{{hostname}}"
-        cmd: 'test -d /opt/stackstorm/static/webui/flow || (echo "Flow directory doesnt exist" ; exit 1)'
+        cmd: '(test -d /opt/stackstorm/static/webui/flow && test -f /opt/stackstorm/static/webui/flow/index.html) || (echo "Flow directory doesnt exist" ; exit 1)'
         timeout: 10
       on-success: "verify_flow_is_available"
       on-failure: "destroy_vm"
