@@ -82,6 +82,15 @@
         hosts: "{{hostname}}"
         cmd: 'test -d /opt/stackstorm/static/webui/flow || (echo "Flow directory doesnt exist" ; exit 1)'
         timeout: 10
+      on-success: "verify_flow_is_available"
+      on-failure: "destroy_vm"
+    -
+      name: "verify_flow_is_available"
+      ref: "core.remote_sudo"
+      params:
+        hosts: "{{hostname}}"
+        cmd: 'curl -k https://'
+        timeout: 10
       on-success: "verify_ldap_auth_backend_is_installed"
       on-failure: "destroy_vm"
     -
@@ -113,7 +122,27 @@
         st2_password: "{{st2_password}}"
         protocol: "https"
       on-success: "destroy_vm"
-      on-failure: "destroy_vm"
+      on-failure: "restart_st2"
+    -
+      name: "restart_st2"
+      ref: "core.remote_sudo"
+      params:
+        hosts: "{{hostname}}"
+        cmd: "st2ctl restart && sleep 20"
+        timeout: 40
+      on-success: "rerun_tests"
+      on-failure: "rerun_tests"
+    -
+      name: "rerun_tests"
+      ref: "st2cd.e2e_tests"
+      params:
+        hostname: "{{hostname}}"
+        build: "{{build}}"
+        st2_username: "{{st2_username}}"
+        st2_password: "{{st2_password}}"
+        protocol: "https"
+      on-success: "destroy_vm"
+
     -
       name: "destroy_vm"
       ref: "st2cd.destroy_vm"
