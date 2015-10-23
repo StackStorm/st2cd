@@ -62,6 +62,7 @@ def main(args):
 
     rule_meta = {
         'name': 'st2_pytests_' + args.branch,
+        'pack': 'st2cd',
         'description': 'Run pytests on each commit to branch.',
         'enabled': True,
         'trigger': {
