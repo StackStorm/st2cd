@@ -100,15 +100,23 @@
         hosts: "{{hostname}}"
         cmd: 'python -c "import st2auth_enterprise_ldap_backend"'
         timeout: 10
-      on-success: "verify_ldap_auth_backend_is_configured"
+      on-success: "verify_ldap_auth_backend_is_enabled"
       on-failure: "destroy_vm"
     -
-      # TODO: Also check backend_kwargs are configured correctly
-      name: "verify_ldap_auth_backend_is_configured"
+      name: "verify_ldap_auth_backend_is_enabled"
       ref: "core.remote_sudo"
       params:
         hosts: "{{hostname}}"
         cmd: "grep -zlP 'backend\\s?=\\s?ldap' /etc/st2/st2.conf"
+        timeout: 10
+      on-success: "verify_ldap_auth_backend_is_configured"
+      on-failure: "destroy_vm"
+     -
+      name: "verify_ldap_auth_backend_is_configured"
+      ref: "core.remote_sudo"
+      params:
+        hosts: "{{hostname}}"
+        cmd: "grep backend_kwargs /w/stackstorm/stanley/conf/st2.dev.conf | awk -F \" = \" '{ print $2 }' | tr -d \" \" | python -c 'import json, sys; data = json.load(sys.stdin); print data[\"'host'\"];print data[\"'users_ou'\"]';"
         timeout: 10
       on-success: "run_tests"
       on-failure: "destroy_vm"
