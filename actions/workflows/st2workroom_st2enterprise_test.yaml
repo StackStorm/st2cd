@@ -142,7 +142,6 @@
         st2_password: "{{st2_password}}"
         protocol: "https"
       on-success: "destroy_vm"
-
     -
       name: "destroy_vm"
       ref: "st2cd.destroy_vm"
