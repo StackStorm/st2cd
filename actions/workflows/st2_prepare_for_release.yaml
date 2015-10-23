@@ -87,6 +87,22 @@
         hosts: "{{get_build_server.result[0]}}"
         repo: "{{st2_express_repo}}"
         target: "{{st2_express_repo_target}}"
+      on-success: "clone_st2_workroom_repo"
+    -
+      name: "clone_st2_workroom_repo"
+      ref: "st2cd.git_simple_clone"
+      params:
+        hosts: "{{get_build_server.result[0]}}"
+        repo: "{{st2_workroom_repo}}"
+        target: "{{st2_workroom_repo_target}}"
+      on-success: "branch_st2_workroom"
+    -
+      name: "branch_st2_workroom"
+      ref: "st2cd.git_simple_branch"
+      params:
+        hosts: "{{get_build_server.result[0]}}"
+        repo: "{{st2_workroom_repo_target}}"
+        branch: "v{{st2_release_base_ver}}"
       on-success: "branch_st2_contrib"
     -
       name: "branch_st2_contrib"

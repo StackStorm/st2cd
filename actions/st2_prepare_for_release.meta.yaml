@@ -21,6 +21,10 @@
       type: "string"
       description: "Url of the st2express repo to clone"
       default: "git@github.com:StackStorm/st2express.git"
+    st2_workroom_repo:
+      type: "string"
+      description: "Url of the st2workroom repo to clone"
+      default: "git@github.com:StackStorm/st2workroom.git"
     st2_repo_target:
       type: "string"
       default: "/home/stanley/st2"
@@ -37,6 +41,10 @@
       type: "string"
       default: "/home/stanley/st2express"
       description: "Path to clone st2express repo to."
+    st2_workroom_repo_target:
+      type: "string"
+      default: "/home/stanley/st2workroom"
+      description: "Path to clone st2workroom repo to."
     st2_release_version:
       type: "string"
       description: "Version to use for the release. Should include the patch e.g. 0.1.0"
