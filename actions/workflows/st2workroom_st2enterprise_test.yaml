@@ -118,38 +118,9 @@
         hosts: "{{hostname}}"
         cmd: "grep backend_kwargs /w/stackstorm/stanley/conf/st2.dev.conf | awk -F \" = \" '{ print $2 }' | tr -d \" \" | python -c 'import json, sys; data = json.load(sys.stdin); print data[\"'host'\"];print data[\"'users_ou'\"]';"
         timeout: 10
-      on-success: "run_tests"
+      on-success: "destroy_vm"
       on-failure: "destroy_vm"
-    -
-      name: "run_tests"
-      ref: "st2cd.e2e_tests"
-      params:
-        hostname: "{{hostname}}"
-        build: "{{build}}"
-        st2_username: "{{st2_username}}"
-        st2_password: "{{st2_password}}"
-        protocol: "https"
-      on-success: "destroy_vm"
-      on-failure: "restart_st2"
-    -
-      name: "restart_st2"
-      ref: "core.remote_sudo"
-      params:
-        hosts: "{{hostname}}"
-        cmd: "st2ctl restart && sleep 20"
-        timeout: 40
-      on-success: "rerun_tests"
-      on-failure: "rerun_tests"
-    -
-      name: "rerun_tests"
-      ref: "st2cd.e2e_tests"
-      params:
-        hostname: "{{hostname}}"
-        build: "{{build}}"
-        st2_username: "{{st2_username}}"
-        st2_password: "{{st2_password}}"
-        protocol: "https"
-      on-success: "destroy_vm"
+    # TODO: Also run tests when we configure actual LDAP backend so tests can authenticate
     -
       name: "destroy_vm"
       ref: "st2cd.destroy_vm"
