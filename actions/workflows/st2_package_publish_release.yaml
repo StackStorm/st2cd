@@ -46,12 +46,18 @@
       ref: "core.local"
       params:
         cmd: "st2 run st2cd.st2_pkg_ubuntu14 repo={{st2_repo}} branch=v{{st2_release_base_ver}} dl_server={{system.apt_origin_production}} environment=production revision={{st2_revision}} build={{build_key}} -a"
-      on-success: "run_f20_prod_pkg_for_release"
+      on-success: "run_rhel6_prod_pkg_for_release"
     -
-      name: "run_f20_prod_pkg_for_release"
+      name: "run_rhel6_prod_pkg_for_release"
       ref: "core.local"
       params:
-        cmd: "st2 run st2cd.st2_pkg_f20 repo={{st2_repo}} branch=v{{st2_release_base_ver}} dl_server={{system.apt_origin_production}} environment=production revision={{st2_revision}} build={{build_key}} -a"
+        cmd: "st2 run st2cd.st2_pkg_el repo={{st2_repo}} branch=v{{st2_release_base_ver}} dl_server={{system.yum_origin_production}} environment=production revision={{st2_revision}} build={{build_key}} distro_release=6 -a"
+      on-success: "run_rhel7_prod_pkg_for_release"
+    -
+      name: "run_rhel7_prod_pkg_for_release"
+      ref: "core.local"
+      params:
+        cmd: "st2 run st2cd.st2_pkg_el repo={{st2_repo}} branch=v{{st2_release_base_ver}} dl_server={{system.yum_origin_production}} environment=production revision={{st2_revision}} build={{build_key}} distro_release=7 -a"
       on-success: "slack_success"
     -
       name: "slack_success"
