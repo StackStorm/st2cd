@@ -1,0 +1,31 @@
+---
+    name: "st2workroom_st2enterprise_test_master_ubuntu14"
+    description: "Test st2workroom on each build"
+    pack: "st2cd"
+    enabled: true
+    trigger:
+        type: "core.st2.generic.actiontrigger"
+    criteria:
+        trigger.action_name:
+            pattern: "st2cd.st2_pkg_ubuntu14"
+            type: "equals"
+        trigger.status:
+            pattern: "succeeded"
+            type: "equals"
+        trigger.parameters.environment:
+            pattern: "staging"
+            type: "equals"
+        trigger.parameters.branch:
+            pattern: "master"
+            type: "equals"
+    action:
+        ref: "st2cd.st2workroom_st2enterprise_test"
+        parameters:
+            hostname: "st2w-st2enterprise-{{trigger.parameters.branch}}-u14-{{trigger.execution_id}}"
+            build: "{{trigger.parameters.build}}"
+            version: "{{system.st2_unstable_version}}"
+            environment: "sandbox"
+            branch: "{{trigger.parameters.branch}}"
+            revision: "{{trigger.parameters.revision}}"
+            repo: "https://github.com/StackStorm/st2workroom.git"
+            distro: "UBUNTU14"

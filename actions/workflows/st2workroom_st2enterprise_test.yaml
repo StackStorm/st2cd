@@ -1,0 +1,119 @@
+---
+  # TODO: Split verify taks in small bash scripts
+  vars:
+    root_dir: "/opt/puppet"
+    st2_username: "cibuild"
+    st2_password: "cibuild"
+  chain:
+    -
+      name: "create_vm_role"
+      ref: "st2cd.create_vm_role"
+      params:
+        hostname: "{{hostname}}"
+        instance_type: "{{instance_type}}"
+        environment: "{{environment}}"
+        key_name: "{{key_name}}"
+        keyfile: "{{keyfile}}"
+        distro: "{{distro}}"
+        role: "{{role}}"
+      publish:
+        distro: "{{distro}}"
+      on-success: "delete_existing_puppet_directory"
+    -
+      name: "delete_existing_puppet_directory"
+      ref: "linux.rm"
+      params:
+        hosts: "{{hostname}}"
+        target: "{{root_dir}}"
+        force: true
+        recursive: true
+        sudo: true
+      on-success: "write_answers_file"
+    -
+      name: "write_answers_file"
+      ref: "core.remote_sudo"
+      params:
+        hosts: "{{hostname}}"
+        cmd: |
+            cat <<EOT >> /tmp/answers.yaml
+            st2enterprise::token: "st2tester"
+            st2::ldap: true
+            st2::ldap::host: "localhost"
+            st2::ldap::base_dn: "dc=stackstorm,dc=com"
+            EOT
+      on-success: "bootstrap_workroom_with_answers_file"
+      on-failure: "destroy_vm"
+    -
+      name: "bootstrap_workroom_with_answers_file"
+      ref: "core.remote_sudo"
+      params:
+        env:
+          ENV: "{{branch}}"
+          SKIP_OK_CHECK: "true"
+          DISABLE_HUBOT: "true"
+          CI: "true"
+        hosts: "{{hostname}}"
+        cmd: "curl -sSL https://stackstorm.com/install.sh -o /tmp/bootstrap.sh && chmod +x /tmp/bootstrap.sh && /tmp/bootstrap.sh -a /tmp/answers.yaml"
+        timeout: 1800
+      on-success: "verify_rbac_is_enabled"
+    -
+      name: "verify_rbac_is_enabled"
+      ref: "core.remote_sudo"
+      params:
+        hosts: "{{hostname}}"
+        cmd: "grep -zlP '\\[rbac\\]\\senable\\s?=\\s?True' /etc/st2/st2.conf"
+        timeout: 10
+      on-success: "verify_flow_is_installed"
+      on-failure: "destroy_vm"
+    -
+      name: "verify_flow_is_installed"
+      ref: "core.remote_sudo"
+      params:
+        hosts: "{{hostname}}"
+        cmd: '(test -d /opt/stackstorm/static/webui/flow && test -f /opt/stackstorm/static/webui/flow/index.html) || (echo "Flow directory doesnt exist" ; exit 1)'
+        timeout: 10
+      on-success: "verify_flow_is_available"
+      on-failure: "destroy_vm"
+    -
+      name: "verify_flow_is_available"
+      ref: "core.remote_sudo"
+      params:
+        hosts: "{{hostname}}"
+        cmd: 'sleep 20 && curl -sSL -k --fail https://127.0.0.1/flow'
+        timeout: 30
+      on-success: "verify_ldap_auth_backend_is_installed"
+      on-failure: "destroy_vm"
+    -
+      name: "verify_ldap_auth_backend_is_installed"
+      ref: "core.remote_sudo"
+      params:
+        hosts: "{{hostname}}"
+        cmd: 'python -c "import st2auth_enterprise_ldap_backend"'
+        timeout: 10
+      on-success: "verify_ldap_auth_backend_is_enabled"
+      on-failure: "destroy_vm"
+    -
+      name: "verify_ldap_auth_backend_is_enabled"
+      ref: "core.remote_sudo"
+      params:
+        hosts: "{{hostname}}"
+        cmd: "grep -zlP 'backend\\s?=\\s?ldap' /etc/st2/st2.conf"
+        timeout: 10
+      on-success: "verify_ldap_auth_backend_is_configured"
+      on-failure: "destroy_vm"
+    -
+      name: "verify_ldap_auth_backend_is_configured"
+      ref: "core.remote_sudo"
+      params:
+        hosts: "{{hostname}}"
+        cmd: "grep backend_kwargs /etc/st2/st2.conf | awk -F \"backend_kwargs[[:space:]]*=[[:space:]]*\" '{ print $2 }' | tr -d \" \" | python -c 'import json, sys; data = json.load(sys.stdin); print data[\"'host'\"];print data[\"'users_ou'\"]';"
+        timeout: 10
+      on-success: "destroy_vm"
+      on-failure: "destroy_vm"
+    # TODO: Also run tests when we configure actual LDAP backend so tests can authenticate
+    -
+      name: "destroy_vm"
+      ref: "st2cd.destroy_vm"
+      params:
+        hostname: "{{hostname}}"
+  default: "create_vm_role"
