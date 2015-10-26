@@ -2,7 +2,7 @@
     name: "st2_deploy_test_master_el6"
     pack: "st2cd"
     description: "Test st2_deploy.sh on each build"
-    enabled: true
+    enabled: false
     trigger:
         type: "core.st2.generic.actiontrigger"
     criteria:
