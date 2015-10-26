@@ -21,7 +21,7 @@
     action:
         ref: "st2cd.st2workroom_test"
         parameters:
-            hostname: "st2w-{{trigger.parameters.branch}}-u14-{{trigger.execution_id}}"
+            hostname: "st2w-{{trigger.parameters.branch}}-u14-{{trigger.execution_id | truncate(10, False, '')}}"
             build: "{{trigger.parameters.build}}"
             version: "{{system.st2_unstable_version}}"
             environment: "sandbox"
