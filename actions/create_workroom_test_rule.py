@@ -118,7 +118,7 @@ def main(args):
     # ubuntu14 rule
     try:
         rule_meta = _create_distro_rule_meta(distro='ubuntu14', branch=args.branch,
-                                             action_ref='stcd.st2_pkg_ubuntu14',
+                                             action_ref='st2cd.st2_pkg_ubuntu14',
                                              version_task_index=4)
         create_rule(_get_st2_rules_url(args.st2_base_url), rule_meta)
         sys.stdout.write('Successfully created rule %s\n' % rule_meta['name'])
