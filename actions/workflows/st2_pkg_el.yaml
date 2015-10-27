@@ -108,7 +108,6 @@
       params:
         hosts: "{{dl_server}}"
         cmd: "mkdir -p /var/www/sites/releases/html/releases/st2/{{version}}/rpms"
-        timeout: 1800
       on-success: "cp_st2_deploy"
     - 
       name: "cp_st2_deploy"
