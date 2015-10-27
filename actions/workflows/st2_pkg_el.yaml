@@ -101,6 +101,14 @@
         dest_server: "{{dl_server}}"
         destination: "{{build_dir}}/"
         timeout: 600
+      on-success: "make_version_rpm_dir"
+    -
+      name: "make_version_rpm_dir"
+      ref: "core.remote_sudo"
+      params:
+        hosts: "{{dl_server}}"
+        cmd: "mkdir -p /var/www/sites/releases/html/releases/st2/{{version}}/rpms"
+        timeout: 1800
       on-success: "cp_st2_deploy"
     - 
       name: "cp_st2_deploy"
