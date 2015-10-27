@@ -73,7 +73,8 @@ def _create_distro_rule_meta(distro, branch, action_ref, version_task_index, dis
         'action': {
             'ref': 'st2cd.st2workroom_test',
             'parameters': {
-                'hostname': 'st2-%s-%s-{{trigger.execution_id}}' % (distro, branch),
+                'hostname': 'st2-%s-%s-{{trigger.execution_id | truncate(10, False, '')}}' %
+                            (distro, branch),
                 'build': '{{trigger.parameters.build}}',
                 'branch': branch,
                 'distro': distro.upper(),
