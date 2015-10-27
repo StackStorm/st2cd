@@ -78,7 +78,7 @@ def _create_distro_rule_meta(distro, branch, action_ref, version_task_index, dis
                 'branch': branch,
                 'distro': distro.upper(),
                 'environment': 'sandbox',
-                'repo': 'https://github.com/StackStorm/st2workroom.git',
+                'repo': '{{trigger.parameters.repo}}',
                 'revision': '{{trigger.parameters.revision}}',
                 'instance_type': 'm3.large',
                 # The weird lookup is brittle but the only reasonably way to get to the full version.
