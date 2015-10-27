@@ -39,7 +39,7 @@
           CI: "true"
         hosts: "{{hostname}}"
         cmd: "curl -sSL http://stackstorm.com/install.sh | sudo sh"
-        timeout: 1800
+        timeout: 3600
       on-success: "add_ci_user"
       on-failure: "rerun_bootstrap_workroom"
     -
@@ -53,7 +53,7 @@
           CI: "true"
         hosts: "{{hostname}}"
         cmd: "curl -sSL http://stackstorm.com/install.sh | sudo sh"
-        timeout: 1800
+        timeout: 3600
       on-success: "add_ci_user"
     -
       name: "add_ci_user"
