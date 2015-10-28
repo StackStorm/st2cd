@@ -7,8 +7,8 @@ workflows:
     main:
         type: direct
         input:
-            - host
             - version
+            - host
             - repo_main
             - repo_client
             - repo_action
@@ -16,21 +16,29 @@ workflows:
             - repo_dir
             - debug
         tasks:
+            get_hosts:
+                workflow: get_build_hosts
+                input:
+                    hosts: <% dict(build=>$.host) %>
+                publish:
+                    hosts: <% $.get_hosts.hosts %>
+                on-success:
+                    - clone_repos
             clone_repos:
                 with-items:
                     - proj in <% list(mistral, mistralclient, st2mistral) %>
                     - repo in <% list($.repo_main, $.repo_client, $.repo_action) %>
                 action: st2cd.git_clone
                 input:
-                    hosts: <% $.host %>
+                    hosts: <% $.hosts.get(build) %>
                     repo: <% $.repo %>
                     branch: <% $.repo_branch %>
                     target: <% $.repo_dir %>/<% $.proj %>_<% $.repo_branch %>
                 publish:
                     clone_paths: <%
-                        dict(mistral=>$.clone_repos[0].get($.host).stdout,
-                             mistralclient=>$.clone_repos[1].get($.host).stdout,
-                             st2mistral=>$.clone_repos[2].get($.host).stdout) %>
+                        dict(mistral=>$.clone_repos[0].get($.hosts.get(build)).stdout,
+                             mistralclient=>$.clone_repos[1].get($.hosts.get(build)).stdout,
+                             st2mistral=>$.clone_repos[2].get($.hosts.get(build)).stdout) %>
                 on-success:
                     - tag_release
                 on-error:
@@ -39,7 +47,7 @@ workflows:
             tag_release:
                 action: st2cd.mistral_create_tag
                 input:
-                    hosts: <% $.host %>
+                    hosts: <% $.hosts.get(build) %>
                     version: <% $.version %>
                     repo_main: <% $.clone_paths.get(mistral) %>
                     repo_client: <% $.clone_paths.get(mistralclient) %>
@@ -52,5 +60,48 @@ workflows:
                                             $.clone_paths.get(st2mistral)) %>
                 action: st2cd.git_clean
                 input:
-                    hosts: <% $.host %>
+                    hosts: <% $.hosts.get(build) %>
                     repo: <% $.repo %>
+
+
+    get_host:
+        type: direct
+        input:
+            - host
+            - type
+        output:
+            host: <% $.host %>
+        tasks:
+            has_host:
+                action: std.noop
+                on-success:
+                    - get_host: <% $.host = null or $.host = '' or $.host = 'None' %>
+                    - succeed: <% $.host != null and $.host != '' and $.host != 'None' %>
+            get_host:
+                action: linux.dig
+                input:
+                    hostname: <% $.type %>
+                    rand: true
+                    count: 1
+                publish:
+                    host: <% $.get_host.result[0] %>
+
+
+    get_build_hosts:
+        type: direct
+        input:
+            - hosts
+        output:
+            hosts: <% $.hosts %>
+        tasks:
+            get_build_host:
+                workflow: get_host
+                input:
+                    host: <% $.hosts.get(build) %>
+                    type: st2-build-slave-ubuntu.service.consul
+                on-success:
+                    - compose_hosts
+            compose_hosts:
+                action: std.noop
+                publish:
+                    hosts: <% dict(build=>$.get_build_host.host) %>

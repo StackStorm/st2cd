@@ -5,14 +5,14 @@ enabled: true
 runner_type: mistral-v2
 entry_point: workflows/mistral_tag_release.yaml
 parameters:
-  host:
-    type: string
-    description: The name of the hosts where the build process will run.
-    required: true
   version:
     type: string
     description: The release version major.minor.patch.
     required: true
+  host:
+    type: string
+    description: The name of the hosts where the build process will run.
+    default: None
   repo_main:
     type: string
     default: git@github.com:StackStorm/mistral.git
@@ -41,6 +41,6 @@ parameters:
     immutable: true
     type: string
   workflow:
-    default: st2cd.mistral_branch_candidate.main
+    default: st2cd.mistral_tag_release.main
     immutable: true
     type: string
