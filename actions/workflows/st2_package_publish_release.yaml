@@ -8,6 +8,15 @@
       publish:
         st2_release_base_ver: "{{short_version.stdout}}"
         build_key: "st2_v{{short_version.stdout}}_build_number"
+      on-success: "get_current_build"
+    -
+      name: "get_current_build"
+      ref: "st2cd.kvstore"
+      params:
+        key: "{{build_key}}"
+        action: "get"
+      publish:
+        build_num: "{{get_current_build.result}}"
       on-success: "get_build_server"
     -
       name: "get_build_server"
@@ -45,19 +54,19 @@
       name: "run_ubuntu_prod_pkg_for_release"
       ref: "core.local"
       params:
-        cmd: "st2 run st2cd.st2_pkg_ubuntu14 repo={{st2_repo}} branch=v{{st2_release_base_ver}} dl_server={{system.apt_origin_production}} environment=production revision={{st2_revision}} build={{build_key}} -a"
+        cmd: "st2 run st2cd.st2_pkg_ubuntu14 repo={{st2_repo}} branch=v{{st2_release_base_ver}} dl_server={{system.apt_origin_production}} environment=production revision={{st2_revision}} build={{build_num}} -a"
       on-success: "run_rhel6_prod_pkg_for_release"
     -
       name: "run_rhel6_prod_pkg_for_release"
       ref: "core.local"
       params:
-        cmd: "st2 run st2cd.st2_pkg_el repo={{st2_repo}} branch=v{{st2_release_base_ver}} dl_server={{system.yum_origin_production}} environment=production revision={{st2_revision}} build={{build_key}} distro_release=6 -a"
+        cmd: "st2 run st2cd.st2_pkg_el repo={{st2_repo}} branch=v{{st2_release_base_ver}} dl_server={{system.yum_origin_production}} environment=production revision={{st2_revision}} build={{build_num}} distro_release=6 -a"
       on-success: "run_rhel7_prod_pkg_for_release"
     -
       name: "run_rhel7_prod_pkg_for_release"
       ref: "core.local"
       params:
-        cmd: "st2 run st2cd.st2_pkg_el repo={{st2_repo}} branch=v{{st2_release_base_ver}} dl_server={{system.yum_origin_production}} environment=production revision={{st2_revision}} build={{build_key}} distro_release=7 -a"
+        cmd: "st2 run st2cd.st2_pkg_el repo={{st2_repo}} branch=v{{st2_release_base_ver}} dl_server={{system.yum_origin_production}} environment=production revision={{st2_revision}} build={{build_num}} distro_release=7 -a"
       on-success: "slack_success"
     -
       name: "slack_success"
