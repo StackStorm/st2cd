@@ -5,6 +5,11 @@
   enabled: true
   entry_point: "install_tests.sh"
   parameters:
+    branch:
+      default: "master"
+      description: "st2tests branch that should be installed."
+      type: "string"
+      position: 2
     sudo:
       immutable: true
       default: true

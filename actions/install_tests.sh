@@ -13,7 +13,7 @@ else
   exit 2
 fi
 
-INSTALL=`${PYTHONPACK}/st2common/bin/st2-setup-tests $1`
+INSTALL=`${PYTHONPACK}/st2common/bin/st2-setup-tests $1 $2`
 
 EXITCODE=$?
 echo $INSTALL
