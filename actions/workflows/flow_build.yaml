@@ -60,6 +60,26 @@
         hosts: "{{build_server}}"
         cmd: "s3cmd put --no-mime-magic --guess-mime-type --recursive --force {{repodir}}/flow-{{version}}.tar.gz s3://st2flow/"
         timeout: 600
+      on-success: "scp_artifact"
+      on-failure: "scp_artifact"
+    -
+      name: "scp_artifact"
+      ref: "linux.rsync"
+      params:
+        hosts: "{{build_server}}"
+        args: "-avzr -e 'ssh -i /home/stanley/.ssh/dl_rsync -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'"
+        source: "{{repodir}}/flow-{{version}}.tar.gz"
+        dest_server: "{{dl_server}}"
+        destination: "/tmp/"
+        timeout: 600
+      on-success: "mv_artifact"
+    -
+      name: "mv_artifact"
+      ref: "core.remote_sudo"
+      params:
+        hosts: "{{dl_server}}"
+        cmd: "cp -Rf /tmp/flow-{{version}}.tar.gz /var/www/sites/releases/html/st2enterprise/apt/trusty/st2flow/ && cp -Rf /tmp/flow-{{version}}.tar.gz /var/www/sites/releases/html/st2enterprise/yum/el/7/st2flow/ && cp -Rf /tmp/flow-{{version}}.tar.gz /var/www/sites/releases/html/st2enterprise/yum/el/6/st2flow/"
+        timeout: 1800
       on-success: "clean_repo"
     -
       name: "clean_repo"
