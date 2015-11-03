@@ -9,6 +9,7 @@
       default: "master"
       description: "st2tests branch that should be installed."
       type: "string"
+      position: 2
     sudo:
       immutable: true
       default: true
