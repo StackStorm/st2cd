@@ -4,8 +4,8 @@
   description: "Runs a series of end to end tests on a StackStorm server"
   enabled: true
   entry_point: "workflows/st2_e2e_tests.yaml"
-  parameters: 
-    hostname: 
+  parameters:
+    hostname:
       type: "string"
       description: "Host to run tests on"
       required: true
@@ -15,6 +15,10 @@
     branch:
       type: "string"
       description: ""
+    st2tests_branch:
+      type: "string"
+      description: ""
+      default: "master"
     build:
       type: "string"
       description: "Build number"

@@ -20,6 +20,7 @@
       params:
         hosts: "{{hostname}}"
         pack: "fixtures"
+        branch: "{{st2tests_branch}}"
       on-success: "install_asserts"
     -
       name: "install_asserts"
@@ -27,6 +28,7 @@
       params:
         hosts: "{{hostname}}"
         pack: "asserts"
+        branch: "{{st2tests_branch}}"
       on-success: "install_tests"
     -
       name: "install_tests"
@@ -34,6 +36,7 @@
       params:
         hosts: "{{hostname}}"
         pack: "tests"
+        branch: "{{st2tests_branch}}"
       on-success: "install_webui"
     -
       name: "install_webui"
@@ -41,6 +44,7 @@
       params:
         hosts: "{{hostname}}"
         pack: "webui"
+        branch: "{{st2tests_branch}}"
       on-success: "install_examples"
     -
       name: "install_examples"
