@@ -36,6 +36,9 @@
         hosts: "{{hostname}}"
         cmd: |
             cat <<EOT >> /tmp/answers.yaml
+            st2::version: {{version}}
+            st2::revision: {{build}}
+            st2::repo_base: {{dl_server}}
             st2enterprise::token: "st2tester"
             st2::ldap: true
             st2::ldap::host: "localhost"
