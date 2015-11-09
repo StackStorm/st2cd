@@ -32,7 +32,7 @@ def _get_rule_id(base_url, rule):
     resp = requests.get(get_url)
     if resp.status_code in [200]:
         if len(resp.json()) > 0:
-	    return resp.json()[0]['id']
+            return resp.json()[0]['id']
     return None
 
 
