@@ -43,11 +43,16 @@
         on-failure:
           routes:
             - slack
-          message: "destroy_vm failure::Deleting CNAME failed"
+          message: "destroy_vm failure::Terminate instance failed."
     -
       name: "delete_cname"
       ref: "aws.r53_zone_delete_cname"
       params:
         zone: "{{dns_zone}}"
         name: "{{hostname}}.{{dns_zone}}"
+      notify:
+        on-failure:
+          routes:
+            - slack
+          message: "destroy_vm failure::Deleting CNAME failed."
   default: "get_instance_dns"
