@@ -61,6 +61,10 @@
       description: "Pass through property for downstream consumption."
       type: "boolean"
       default: false
+    install_url:
+      description: "URL for st2 install.sh"
+      type: "string"
+      default: "https://stackstorm.com/install.sh"
     skip_notify:
       default:
         - delete_existing_puppet

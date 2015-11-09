@@ -34,3 +34,5 @@
             instance_type: "m3.large"
             distro: "RHEL7"
             pkg_st2: true
+            install_url: "https://raw.githubusercontent.com/StackStorm/st2workroom/master/script/bootstrap-st2"
+
