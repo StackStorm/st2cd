@@ -5,6 +5,12 @@ import json
 import requests
 import sys
 
+INSTALL_URLS = {
+    'UBUNTU14': 'https://stackstorm.com/install.sh',
+    'RHEL6': 'https://raw.githubusercontent.com/StackStorm/st2workroom/master/script/bootstrap-st2',
+    'RHEL7': 'https://raw.githubusercontent.com/StackStorm/st2workroom/master/script/bootstrap-st2'
+}
+
 
 def create_rule(url, rule):
     # check if rule with the same name exists
@@ -95,6 +101,13 @@ def _create_distro_rule_meta(distro, branch, action_ref, version_task_index, dis
             'pattern': distro_release,
             'type': 'equals'
         }
+
+    # Set custom INSTALL URLs for distros.
+    # See discussion here - https://github.com/StackStorm/st2/pull/2177.
+    distro_type = rule_meta['action']['parameters']['distro']
+    if distro_type:
+        distro_type = distro_type.upper()
+        rule_meta['action']['parameters']['install_url'] = INSTALL_URLS[distro_type]
 
     return rule_meta
 

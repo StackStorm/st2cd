@@ -30,3 +30,4 @@
             repo: "{{trigger.parameters.repo}}"
             distro: "UBUNTU14"
             pkg_st2: true
+            install_url: "https://stackstorm.com/install.sh"
