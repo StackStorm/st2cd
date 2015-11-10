@@ -1,0 +1,7 @@
+name: pytests.concurrency
+description: Limits the concurrent executions of pytests.
+enabled: true
+resource_ref: st2cd.pytests
+policy_type: action.concurrency
+parameters:
+    threshold: 2
