@@ -1,7 +1,9 @@
-name: pytests.concurrency
-description: Limits the concurrent executions of pytests.
+name: pytests_split.concurrency
+description: Limits the concurrent executions of pytests_split.
 enabled: true
-resource_ref: st2cd.pytests
+resource_ref: st2cd.pytests_split
 policy_type: action.concurrency
 parameters:
     threshold: 2
+    attributes:
+        - build_server
