@@ -56,9 +56,24 @@
           DISABLE_HUBOT: "true"
           CI: "true"
         hosts: "{{hostname}}"
-        cmd: "curl -sSL https://stackstorm.com/install.sh -o /tmp/bootstrap.sh && chmod +x /tmp/bootstrap.sh && /tmp/bootstrap.sh -a /tmp/answers.yaml"
-        timeout: 1800
+        cmd: "curl -sSL {{install_url}}  | sudo sh -s -- -a /tmp/answers.yaml"
+        timeout: 3600
       on-success: "verify_rbac_is_enabled"
+      on-failure: "rerun_bootstrap_workroom_with_answers_file"
+    -
+      name: "rerun_bootstrap_workroom_with_answers_file"
+      ref: "core.remote_sudo"
+      params:
+        env:
+          ENV: "{{branch}}"
+          SKIP_OK_CHECK: "true"
+          DISABLE_HUBOT: "true"
+          CI: "true"
+        hosts: "{{hostname}}"
+        cmd: "curl -sSL {{install_url}}  | sudo sh -s -- -a /tmp/answers.yaml"
+        timeout: 3600
+      on-success: "verify_rbac_is_enabled"
+      on-failure: "destroy_vm"
     -
       name: "verify_rbac_is_enabled"
       ref: "core.remote_sudo"
