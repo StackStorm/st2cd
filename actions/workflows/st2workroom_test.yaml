@@ -51,7 +51,7 @@
           DISABLE_HUBOT: "true"
           CI: "true"
         hosts: "{{hostname}}"
-        cmd: "curl -sSL {{install_url}} -o /tmp/bootstrap.sh && chmod +x /tmp/bootstrap.sh && /tmp/bootstrap.sh -a /tmp/answers.yaml"
+        cmd: "curl -sSL {{install_url}}  | sudo sh -s -- -a /tmp/answers.yaml"
         timeout: 3600
       on-success: "add_ci_user"
       on-failure: "rerun_bootstrap_workroom_with_answers_file"
@@ -65,7 +65,7 @@
           DISABLE_HUBOT: "true"
           CI: "true"
         hosts: "{{hostname}}"
-        cmd: "curl -sSL {{install_url}} -o /tmp/bootstrap.sh && chmod +x /tmp/bootstrap.sh && /tmp/bootstrap.sh -a /tmp/answers.yaml"
+        cmd: "curl -sSL {{install_url}}  | sudo sh -s -- -a /tmp/answers.yaml"
         timeout: 3600
       on-success: "add_ci_user"
     -
