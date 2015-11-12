@@ -12,7 +12,6 @@ parameters:
   host:
     type: string
     description: The name of the hosts where the build process will run.
-    default: None
   repo_main:
     type: string
     default: git@github.com:StackStorm/mistral.git
@@ -32,14 +31,6 @@ parameters:
   debug:
     type: boolean
     default: false
-  context:
-    default: {}
-    immutable: true
-    type: object
-  task:
-    default: null
-    immutable: true
-    type: string
   workflow:
     default: st2cd.mistral_tag_release.main
     immutable: true
