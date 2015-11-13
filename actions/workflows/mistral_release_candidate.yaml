@@ -21,11 +21,19 @@ workflows:
             on-error:
                 - notify_on_failure
         tasks:
+            get_hosts:
+                workflow: get_build_hosts
+                input:
+                    hosts: <% dict(test=>$.test_host, build=>$.build_host) %>
+                publish:
+                    hosts: <% $.get_hosts.hosts %>
+                on-success:
+                    - test
             test:
                 action: st2ci.mistral
                 input:
-                    test_host: <% $.test_host %>
-                    build_host: <% $.build_host %>
+                    test_host: <% $.hosts.get(test) %>
+                    build_host: <% $.hosts.get(build) %>
                     mis_repo_branch: <% $.mis_repo_branch %>
                     st2_repo_branch: <% $.st2_repo_branch %>
                 publish:
@@ -59,3 +67,54 @@ workflows:
                     message: '```[MISTRAL-CD] Error releasing candidate <% $.version %>.```'
                 on-complete:
                     - fail
+
+
+    get_host:
+        type: direct
+        input:
+            - host
+            - type
+        output:
+            host: <% $.host %>
+        tasks:
+            has_host:
+                action: std.noop
+                on-success:
+                    - get_host: <% $.host = null or $.host = '' or $.host = 'None' %>
+                    - succeed: <% $.host != null and $.host != '' and $.host != 'None' %>
+            get_host:
+                action: linux.dig
+                input:
+                    hostname: <% $.type %>
+                    rand: true
+                    count: 1
+                publish:
+                    host: <% $.get_host.result[0] %>
+
+
+    get_build_hosts:
+        type: direct
+        input:
+            - hosts
+        output:
+            hosts: <% $.hosts %>
+        tasks:
+            get_test_host:
+                workflow: get_host
+                input:
+                    host: <% $.hosts.get(test) %>
+                    type: st2-build-slave-itests-ubuntu.service.consul
+                on-success:
+                    - get_build_host
+            get_build_host:
+                workflow: get_host
+                input:
+                    host: <% $.hosts.get(build) %>
+                    type: st2-build-slave-ubuntu.service.consul
+                on-success:
+                    - compose_hosts
+            compose_hosts:
+                action: std.noop
+                publish:
+                    hosts: <% dict(test=>$.get_test_host.host,
+                                   build=>$.get_build_host.host) %>
