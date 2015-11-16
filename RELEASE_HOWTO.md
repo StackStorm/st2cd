@@ -51,3 +51,10 @@ st2 run st2cd.st2workroom_test hostname=st2woroom-test-manual-1 version=1.1.1 bu
 ```bash
 st2 run st2cd.st2workroom_st2enterprise_test hostname=st2woroom-test-manual-2 version=1.1.1 build=8 revision=d07cbe6f9def8a6f2a77b1f1af64189fa6b870be -a
 ```
+
+Note: After you are done and if the VM doesn't get destroyed, you can destroy
+it using ``destroy_vm`` action. For example:
+
+```bash
+st2 run st2cd.destroy_vm hostname=st2woroom-test-manual-1
+```
