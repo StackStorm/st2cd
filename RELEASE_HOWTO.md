@@ -34,3 +34,20 @@ tarball name - ``flow-<version>.tar.gz`` (e.g. ``flow-1.1.1.tar.gz``).
 * Edit github releases to include info about the new release. For example, https://github.com/StackStorm/st2/releases/tag/v0.12.2
 
 * Inform slack community about the new release.
+
+## Running tests for the workroom and the installer
+
+To test an installer with a specific version, you can use the following
+workflows and commands.
+
+1. General tests
+
+```bash
+st2 run st2cd.st2workroom_test hostname=st2woroom-test-manual-1 version=1.1.1 build=8 revision=d07cbe6f9def8a6f2a77b1f1af64189fa6b870be -a
+```
+
+2. Enterprise bits tests
+
+```bash
+st2 run st2cd.st2workroom_st2enterprise_test hostname=st2woroom-test-manual-2 version=1.1.1 build=8 revision=d07cbe6f9def8a6f2a77b1f1af64189fa6b870be -a
+```
