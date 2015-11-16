@@ -20,6 +20,15 @@ Following documentation is written with specific examples. Patch version we are 
 
 * Merge st2 PR (patch version to parent merge) to kickoff patch release automation. DO NOT DELETE PATCH BRANCH. AUTOMATION WILL DO IT.
 
+* Build flow artifact and upload it to the downloads server:
+
+```bash
+st2 run st2cd.flow_pkg version=1.1.1 build=manual branch=master dl_server=dl-origin001
+```
+
+Note: ``version`` indicates the version of flow and will be put in the final
+tarball name - ``flow-<version>.tar.gz`` (e.g. ``flow-1.1.1.tar.gz``).
+
 * Wait for slack notifications.
 
 * Edit github releases to include info about the new release. For example, https://github.com/StackStorm/st2/releases/tag/v0.12.2
