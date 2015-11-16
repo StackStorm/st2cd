@@ -29,6 +29,9 @@ st2 run st2cd.flow_pkg version=1.1.1 build=manual branch=master dl_server=dl-ori
 Note: ``version`` indicates the version of flow and will be put in the final
 tarball name - ``flow-<version>.tar.gz`` (e.g. ``flow-1.1.1.tar.gz``).
 
+Once the packages are built and uploaded, they should be available at
+https://<enterprise token>:@downloads.stackstorm.net/st2enterprise/apt/trusty/st2flow/flow-1.1.1.tar.gz
+
 * Wait for slack notifications.
 
 * Edit github releases to include info about the new release. For example, https://github.com/StackStorm/st2/releases/tag/v0.12.2
