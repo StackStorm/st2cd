@@ -1,0 +1,9 @@
+---
+name: pytests_split.retry_on_timeout
+description: Retry pytests_split action on timeout
+enabled: true
+resource_ref: st2cd.pytests_split
+policy_type: action.retry
+parameters:
+    retry_on: timeout
+    max_retry_count: 2
