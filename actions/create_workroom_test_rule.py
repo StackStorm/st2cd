@@ -50,6 +50,8 @@ def _get_st2_rules_url(base_url):
 
 
 def _create_distro_rule_meta(distro, branch, action_ref, version_task_index, distro_release=None):
+    # last 3 chars is distro short
+    distro_short = distros[len(distros)-3:]
     rule_meta = {
         'name': 'st2_workroom_test_%s_%s' % (branch, distro.lower()),
         'pack': 'st2cd',
@@ -80,7 +82,7 @@ def _create_distro_rule_meta(distro, branch, action_ref, version_task_index, dis
             'ref': 'st2cd.st2workroom_test',
             'parameters': {
                 'hostname': 'st2-%s-%s-{{trigger.execution_id | truncate(10, False, '')}}' %
-                            (distro, branch),
+                            (distro_short, branch),
                 'build': '{{trigger.parameters.build}}',
                 'branch': branch,
                 'distro': distro.upper(),
