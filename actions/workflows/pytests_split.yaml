@@ -14,7 +14,7 @@
       params:
         cmd: "cd {{repo_target}} && make requirements"
         hosts: "{{build_server}}"
-        timeout: 300
+        timeout: 400
       notify:
         on-failure:
           routes:
@@ -27,7 +27,7 @@
       params:
         cmd: "cd {{repo_target}} && make .lint"  # .flake8 and .pylint
         hosts: "{{build_server}}"
-        timeout: 180
+        timeout: 400
       on-success: "make_tests"
     -
       name: "make_tests"
@@ -35,7 +35,7 @@
       params:
         cmd: "cd {{repo_target}} && make .pytests-coverage"  # unit and integration tests
         hosts: "{{build_server}}"
-        timeout: 400
+        timeout: 600
       notify:
         on-failure:
           routes:
