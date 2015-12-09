@@ -1,0 +1,28 @@
+---
+name: circle_ci_packages_tests
+description: Kickoff staging tests with circle ci packages.
+enabled: true
+runner_type: mistral-v2
+entry_point: workflows/circle_ci_packages_tests.yaml
+parameters:
+  commit_sha:
+    type: string
+    description: st2 commit SHA.
+    required: true
+  circle_token:
+    type: string
+    description: Circle CI auth token.
+    required: true
+    default: "{{system.circle_ci_token}}"
+  circle_project:
+    type: string
+    description: "Project name in Circle CI where packages are built."
+    required: true
+  distro:
+    type: string
+    description: "Distro for which tests need to be kickedoff."
+    required: true
+  workflow:
+    default: st2cd.mistral_release_candidate.main
+    immutable: true
+    type: string

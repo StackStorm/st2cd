@@ -1,0 +1,55 @@
+version: "2.0"
+name: st2cd.circle_ci_packages_tests
+description: Run tests with packages built in circle ci.
+
+workflows:
+  main:
+    type: direct
+    input:
+      - commit_sha
+      - circle_token
+      - circle_project
+      - distro
+    task-defaults:
+      on-error:
+          - notify_on_failure
+    tasks:
+      get_build_num_from_circle_ci:
+        action: circle_ci.get_build_number
+        input:
+          vcs_revision: "<% $.commit_sha %>"
+          project: "<% $.circle_project%>"
+        publish:
+          circle_build_num: <% str($.get_build_num_from_circle_ci.result) %>
+        on-success:
+          - wait_until_build_finishes
+      wait_until_build_finishes:
+        action: circle_ci.wait_until_build_finishes
+        input:
+          project: "<% $.circle_project %>"
+          build_number: "<% $.circle_build_num %>"
+          wait_timeout: 1200
+        on-success:
+          - get_artifacts_version_from_circle_ci
+      get_artifacts_version_from_circle_ci:
+        action: st2cd.get_artifacts_version_from_circle_ci
+        input:
+          project: "<% $.circle_project%>"
+          build_number: "<% $.circle_build_num %>"
+          distro: "<% $.distro %>"
+          circle_token: "<% $.circle_token %>"
+        on-success:
+          - kick_off_staging_tests
+      kick_off_staging_tests:
+        action: core.local
+        input:
+          cmd: "echo STAGING TESTS BRO"
+      notify_on_failure:
+        action: slack.post_message
+        input:
+            channel: "#stackstorm"
+            message: "```[CIRCLE_CI_PKG_TESTS] Error kicking off tests <% $.circle_build_num %>.```"
+        on-complete:
+            - fail
+
+
