@@ -6,10 +6,13 @@ workflows:
   main:
     type: direct
     input:
-      - commit_sha
+      - st2_repo
+      - st2_branch
+      - st2_revision  # st2 commit sha
       - circle_token
-      - circle_project
+      - circle_project  # circle ci project where st2 packages are built
       - distro
+      - environment
     task-defaults:
       on-error:
           - notify_on_failure
@@ -17,7 +20,7 @@ workflows:
       get_build_num_from_circle_ci:
         action: circle_ci.get_build_number
         input:
-          vcs_revision: "<% $.commit_sha %>"
+          vcs_revision: "<% $.st2_revision %>"
           project: "<% $.circle_project%>"
         publish:
           circle_build_num: <% str($.get_build_num_from_circle_ci.result) %>
@@ -38,12 +41,13 @@ workflows:
           build_number: "<% $.circle_build_num %>"
           distro: "<% $.distro %>"
           circle_token: "<% $.circle_token %>"
-        on-success:
-          - kick_off_staging_tests
-      kick_off_staging_tests:
-        action: core.local
-        input:
-          cmd: "echo STAGING TESTS BRO"
+        publish:
+          environment: "<% $.environment %>"
+          repo: "<% $.st2_repo %>"
+          branch: "<% $.st2_branch %>"
+          distro: "<% $.distro %>"
+          revision: "<% $.st2_revision %>"
+          pkg_version: "<% $.get_artifacts_version_from_circle_ci.result %>"
       notify_on_failure:
         action: slack.post_message
         input:
@@ -51,5 +55,3 @@ workflows:
             message: "```[CIRCLE_CI_PKG_TESTS] Error kicking off tests <% $.circle_build_num %>.```"
         on-complete:
             - fail
-
-

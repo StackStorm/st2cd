@@ -1,0 +1,23 @@
+---
+    name: "st2cd_circle_ci_pkg_poller_ubuntu14"
+    description: "Build st2 packages after tests succeed and push them to staging"
+    enabled: true
+    trigger:
+        type: "core.st2.generic.actiontrigger"
+    criteria:
+        trigger.action_name:
+            pattern: "st2cd.pytests"
+            type: "equals"
+        trigger.status:
+            pattern: "succeeded"
+            type: "equals"
+    action:
+        ref: "st2cd.circle_ci_packages_poller"
+        parameters:
+            st2_repo: "{{trigger.parameters.repo}}"
+            st2_branch: "{{trigger.parameters.branch}}"
+            st2_revision: "{{trigger.parameters.revision}}"
+            environment: "staging"
+            circle_token: "{{system.circle_ci_token}}"
+            circle_project: "StackStorm/st2-packages"
+            distro: "trusty"
