@@ -1,0 +1,35 @@
+---
+  name: "mistral_update_puppet"
+  runner_type: "run-remote-script"
+  description: "Update version of Mistral in puppet module."
+  enabled: true
+  entry_point: "mistral_update_puppet.sh"
+  parameters:
+    version:
+      type: string
+      description: The release version major.minor.patch.
+      required: true
+      position: 0
+    repo_puppet:
+      type: string
+      description: Location of cloned puppet-st2 repo on disk.
+      required: true
+      position: 1
+      default: /home/stanley/puppet-st2
+    repo_puppet_branch:
+      type: string
+      description: Branch of puppet-st2 to update.
+      required: true
+      position: 2
+      default: master
+    dir:
+      immutable: true
+      default: /home/stanley/
+    sudo:
+      immutable: true
+    cmd:
+      immutable: true
+      default: ""
+    kwarg_op:
+      immutable: true
+      default: "--"
