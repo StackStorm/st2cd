@@ -1,0 +1,30 @@
+---
+name: mistral_update_deploy_version
+description: Update version of Mistral in deploy scripts
+enabled: true
+runner_type: mistral-v2
+entry_point: workflows/mistral_update_deploy_version.yaml
+parameters:
+  version:
+    type: string
+    description: The release version major.minor.patch.
+    required: true
+  host:
+    type: string
+    description: The name of the hosts where the build process will run.
+  repo_puppet_st2:
+    type: string
+    default: git@github.com:StackStorm/puppet-st2.git
+  repo_branch:
+    type: string
+    default: master
+  repo_dir:
+    type: string
+    default: /home/stanley
+  debug:
+    type: boolean
+    default: false
+  workflow:
+    default: st2cd.mistral_update_deploy.main
+    immutable: true
+    type: string
