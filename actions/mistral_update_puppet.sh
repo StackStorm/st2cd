@@ -2,20 +2,18 @@
 set -e
 
 VERSION=$1
-REPO_PUPPET=$2
-REPO_PUPPET_BRANCH=$3
-
-GIT=`which git`
-
-MISTRAL_BRANCH=st2-${VERSION}
-echo "Updating puppet manifest for mistral to version ${MISTRAL_BRANCH}..."
-
 REGEX="^([0-9])+.([0-9])+.([0-9])+$"
 
 if ! [[ ${VERSION} =~ ${REGEX} ]]; then
     >&2 echo "ERROR: Invalid version format."
     exit 1
 fi
+
+GIT=`which git`
+REPO_PUPPET=$2
+REPO_PUPPET_BRANCH=$3
+MISTRAL_BRANCH=st2-${VERSION}
+echo "Updating puppet manifest for mistral to version ${MISTRAL_BRANCH}..."
 
 echo "Checkout branch..."
 if [[ ! -d "${REPO_PUPPET}" ]]; then
