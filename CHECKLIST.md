@@ -4,16 +4,19 @@ A checklist for pre-release, release and post-release procedures. Not necessaril
 
 The right thing to do would be copying this list into our discussions for every release and update it when the steps are done, so that everyone could see the progress and comment on it in one place.
 
-## 1. Features
-
-A list of planned features—different for every release, of course–should follow. Cross the features out only after they're reviewed and merged into master.
-
-## 2. Pre-release procedure
+## 1. Organizational procedure
 
 - [ ] Create a release discussion or announce to everyone in any other way: make it clear what features will make it into the release.
 - [ ] Agree on the release timeline.
 - [ ] Agree on the community announcement/outreach plan (@epowell101 has to validate).
 - [ ] Assign release owners.
+
+## 2. Features
+
+A list of planned features—different for every release, of course–should follow. Cross the features out only after they're reviewed and merged into master.
+
+## 3. Pre-release procedure
+
 - [ ] Test every feature manually in Ubuntu 14.
 - [ ] Test every feature manually in CentOS/RHEL 6.
 - [ ] Test every feature manually in CentOS/RHEL 7.
@@ -25,7 +28,7 @@ A list of planned features—different for every release, of course–should fol
 - [ ] Make sure that change logs are up to date.
 - [ ] Make sure that documentation at `docs.stackstorm.com` is up to date; if there's a specific migration/upgrade procedure, describe it in the ["Upgrade Notes" section](https://docs.stackstorm.com/upgrade_notes.html).
 
-## 3. Release machinery
+## 4. Release machinery
 
 Valid for minor releases. For patches see [RELEASE_HOWTO.md](https://github.com/StackStorm/st2cd/blob/master/RELEASE_HOWTO.md).
 
@@ -46,7 +49,7 @@ st2 key set st2_master_build_number 1
 - [ ] Run `st2cd.st2_package_publish_release` to push the packages to the download server and finalize the release.
 - [ ] Make sure your new version is now on [the download server](http://downloads.stackstorm.net/releases/st2/).
 
-## 4. Getting the release out
+## 5. Getting the release out
 
 - [ ] Get some rest, grab a cup of coffee, meditate, listen to delightful music, hug someone. Calm down. The next step is going to be very exciting.
 - [ ] Change the version in [st2workroom](https://github.com/StackStorm/st2workroom/blob/ef992a96b721a6c5bf225991749ef52d86ccec1a/hieradata/role/st2.yaml#L8-L11). __This is the point where people start getting your release by default. That's it. It's done.__
@@ -60,7 +63,7 @@ st2 key set st2_master_build_number 1
 - [ ] If something failed, fix and repeat from the beginning (I know, I know).
 - [ ] If something failed and can't be fixed, write it down, make it a priority for the next patch release, get a KB article out.
 
-## 5. Post-release procedure
+## 6. Post-release procedure
 
 - [ ] Announce to the community using `@here` or `@channel` (`@channel` might wake someone up, but some people—wink-wink, DZ–still don't shy away from using it).
 - [ ] Get a blog post / multiple blog posts out according to the plan.
