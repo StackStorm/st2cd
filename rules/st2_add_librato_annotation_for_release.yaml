@@ -1,9 +1,9 @@
 ---
     name: "st2_add_librato_annotation_for_release"
     description: "Creates librato annotation when a release is created."
-    enabled: true
+    enabled: false
     trigger:
-        type: "core.st2.generic.actiontrigger"
+        type: "GitHubWebhook.github_event"
     criteria:
         trigger.body.ref:
             pattern: "^refs/heads/v(\\d+\\.)(\\d+)$"
