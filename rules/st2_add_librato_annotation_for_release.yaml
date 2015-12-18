@@ -3,7 +3,7 @@
     description: "Creates librato annotation when a release is created."
     enabled: true
     trigger:
-        type: "core.st2.generic.actiontrigger"
+        type: "GitHubWebhook.github_event"
     criteria:
         trigger.body.ref:
             pattern: "^refs/heads/v(\\d+\\.)(\\d+)$"
