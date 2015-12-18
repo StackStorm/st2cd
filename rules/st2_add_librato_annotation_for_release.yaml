@@ -1,7 +1,7 @@
 ---
     name: "st2_add_librato_annotation_for_release"
     description: "Creates librato annotation when a release is created."
-    enabled: true
+    enabled: false
     trigger:
         type: "GitHubWebhook.github_event"
     criteria:
