@@ -1,0 +1,30 @@
+---
+  name: "workroom_puppet_st2_ci_setup"
+  runner_type: "action-chain"
+  description: "Tests st2express deployment script that is used in st2workroom"
+  enabled: true
+  entry_point: "workflows/workroom_puppet_st2_ci_setup.yaml"
+  parameters:
+    build_host:
+      type: "string"
+      description: "Host where this workflow would run"
+    workroom_repo:
+      type: "string"
+      description: "Url of the workroom repo to clone"
+      default: "https://github.com/StackStorm/st2workroom.git"
+    workroom_clone_branch:
+      type: "string"
+      description: "The branch of st2workroom to use."
+      default: "master"
+    workroom_target_branch:
+      type: "string"
+      description: "Branch to push st2workroom modified code to."
+      default: "master"
+    puppet_st2_branch:
+      type: "string"
+      description: "The branch of st2workroom to bootstrap"
+      default: "master"
+    puppet_st2_repo:
+      type: "string"
+      description: "Url of the puppet_st2 repo to clone"
+      default: "https://github.com/StackStorm/puppet-st2.git"
