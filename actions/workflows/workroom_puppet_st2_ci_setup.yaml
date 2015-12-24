@@ -1,32 +1,12 @@
 ---
   chain:
     -
-      name: "get_build_server"
-      ref: "linux.dig"
-      params:
-        hostname: "st2-build-slave-ubuntu.service.consul"
-        rand: true
-        count: 1
-      publish:
-        build_server: "{{get_build_server.result[0]}}"
-      on-success: "clone_workroom_repo"
-    -
-      name: "clone_workroom_repo"
-      ref: "st2cd.git_clone"
-      params:
-        hosts: "{{build_server}}"
-        repo: "{{repo}}"
-        branch: "{{branch}}"
-        target: "{{repo_target}}"
-      publish:
-        workroom_repodir: "{{clone_repo[build_server].stdout}}"
-      on-success: "set_puppet_st2_ref_in_workroom_puppetfile"
-    -
       name: "set_puppet_st2_ref_in_workroom_puppetfile"
-      ref: "set_puppet_st2_ref_workroom"
+      ref: "st2cd.set_puppet_st2_ref_workroom"
       params:
         hots: "{{build_server}}"
         workroom_dir: "{{workroom_repodir}}"
+        workroom_target_branch: "{{workroom_target_branch}}"
         puppet_st2_branch: "{{puppet_st2_branch}}"
       on-success: "commit_and_push_workroom_branch"
     -
@@ -36,4 +16,4 @@
         hosts: "{{build_server}}"
         cmd: "cd {{workroom_repodir}} && git add -a && git commit -m 'Set puppet-st2 ref to {{puppet_st2_branch}} in Puppetfile.' && git push origin {{workroom_target_branch}}"
         timeout: 400
-  default: "get_build_server"
+  default: "set_puppet_st2_ref_in_workroom_puppetfile"
