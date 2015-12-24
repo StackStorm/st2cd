@@ -9,10 +9,14 @@
       type: string
       required: true
       position: 0
+    workroom_target_branch:
+      type: string
+      required: true
+      position: 1
     puppet_st2_branch:
       type: string
       default: "master"
-      position: 1
+      position: 2
     sudo:
       immutable: true
       default: false

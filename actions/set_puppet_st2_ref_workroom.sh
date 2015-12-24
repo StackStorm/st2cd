@@ -1,23 +1,36 @@
 #!/bin/bash
 
 WORKROOM_DIR=${1}
-PUPPET_ST2_BRANCH_TO_TEST=${2}
+WORKROOM_TARGET_BRANCH=${2}
+PUPPET_ST2_BRANCH_TO_TEST=${3}
 
 if [ -z "$WORKROOM_DIR" ]; then
     echo "Workroom dir not present"
     exit 1
 fi
 
-PUPPETFILE = ${WORKROOM_DIR}/Puppetfile
-if [ -z "$PUPPETFILE" ]; then
+PUPPETFILE = 'Puppetfile'
+PUPPETFILE_PATH = $WORKROOM_DIR/$PUPPETFILE
+
+if [ -z "$PUPPETFILE_PATH" ]; then
     echo "$PUPPERFILE not found."
     exit 2
 fi
 
+cd "$WORKROOM_DIR"
+# If branch already exists, let's abort for now.
+git branch -a | grep remotes/origin/$WORKROOM_TARGET_BRANCH
+if [[ $? == 0 ]]; then
+    echo "Branch $WORKROOM_TARGET_BRANCH already exists. Aborting."
+    exit 3
+fi
+
+git checkout -b $WORKROOM_TARGET_BRANCH
+
 sed -i "/mod 'stackstorm-st2'/d" $PUPPETFILE
 if [[ $? != 0 ]]; then
     echo "Failed deleting stackstorm-st2 from Puppetfile."
-    exit 3
+    exit 4
 fi
 
 read -r -d '' PUPPET_ST2_REF << EOM
@@ -29,5 +42,5 @@ EOM
 echo $PUPPET_ST2_REF >> $Puppetfile
 if [[ $? != 0 ]]; then
     echo "Failed setting puppet-st2 ref to $PUPPET_ST2_REF in $PUPPETFILE"
-    exit 4
+    exit 5
 fi
