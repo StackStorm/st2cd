@@ -19,7 +19,7 @@
     workroom_target_branch:
       type: "string"
       description: "Branch to push st2workroom modified code to."
-      default: "master"
+      default: "master_test"
     puppet_st2_branch:
       type: "string"
       description: "The branch of st2workroom to bootstrap"
