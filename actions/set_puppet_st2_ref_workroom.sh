@@ -9,11 +9,11 @@ if [ -z "$WORKROOM_DIR" ]; then
     exit 1
 fi
 
-PUPPETFILE = 'Puppetfile'
-PUPPETFILE_PATH = $WORKROOM_DIR/$PUPPETFILE
+PUPPETFILE='Puppetfile'
+PUPPETFILE_PATH=$WORKROOM_DIR/$PUPPETFILE
 
-if [ -z "$PUPPETFILE_PATH" ]; then
-    echo "$PUPPERFILE not found."
+if [ ! -f "$PUPPETFILE_PATH" ]; then
+    echo "File $PUPPETFILE_PATH not found."
     exit 2
 fi
 
@@ -39,8 +39,8 @@ mod 'stackstorm-st2',
   :ref => "$PUPPET_ST2_BRANCH_TO_TEST"
 EOM
 
-echo $PUPPET_ST2_REF >> $Puppetfile
+echo $PUPPET_ST2_REF >> $PUPPETFILE_PATH
 if [[ $? != 0 ]]; then
-    echo "Failed setting puppet-st2 ref to $PUPPET_ST2_REF in $PUPPETFILE"
+    echo "Failed setting puppet-st2 ref to $PUPPET_ST2_REF in $PUPPETFILE_PATH"
     exit 5
 fi

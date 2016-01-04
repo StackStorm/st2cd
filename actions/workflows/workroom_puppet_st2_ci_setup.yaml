@@ -4,8 +4,8 @@
       name: "set_puppet_st2_ref_in_workroom_puppetfile"
       ref: "st2cd.set_puppet_st2_ref_workroom"
       params:
-        hots: "{{build_server}}"
-        workroom_dir: "{{workroom_repodir}}"
+        hosts: "{{build_server}}"
+        workroom_dir: "{{workroom_repo_dir}}"
         workroom_target_branch: "{{workroom_target_branch}}"
         puppet_st2_branch: "{{puppet_st2_branch}}"
       on-success: "commit_and_push_workroom_branch"
@@ -14,6 +14,6 @@
       ref: "core.remote"
       params:
         hosts: "{{build_server}}"
-        cmd: "cd {{workroom_repodir}} && git add -a && git commit -m 'Set puppet-st2 ref to {{puppet_st2_branch}} in Puppetfile.' && git push origin {{workroom_target_branch}}"
+        cmd: "cd {{workroom_repo_dir}} && git add . && git commit -m 'Set puppet-st2 ref to {{puppet_st2_branch}} in Puppetfile.' && git push origin {{workroom_target_branch}}"
         timeout: 400
   default: "set_puppet_st2_ref_in_workroom_puppetfile"

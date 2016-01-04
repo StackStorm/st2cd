@@ -5,6 +5,10 @@
   enabled: true
   entry_point: "workflows/workroom_puppet_st2_ci.yaml"
   parameters:
+    workroom_target_branch:
+      type: "string"
+      description: "The branch of st2workroom to use."
+      default: "puppet_st2_ci_{{distro}}"
     workroom_clone_branch:
       type: "string"
       description: "The branch of st2workroom to use."
@@ -17,6 +21,10 @@
       type: "string"
       description: "Url of the puppet_st2 repo to clone"
       default: "https://github.com/StackStorm/st2workroom.git"
+    workroom_repo_target:
+      type: "string"
+      description: "Directory prefix for the dest clone dir."
+      default: "st2workroom_{{workroom_clone_branch}}"
     puppet_st2_repo:
       type: "string"
       description: "Url of the puppet_st2 repo to clone"
@@ -45,7 +53,3 @@
       type: "string"
       description: "Path to local private key that corresponds to {{key_name}}"
       default: "/home/stanley/.ssh/stanley_rsa"
-    hostname:
-      type: "string"
-      required: true
-
