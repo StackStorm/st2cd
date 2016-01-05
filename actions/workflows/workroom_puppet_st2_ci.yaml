@@ -35,7 +35,7 @@
       name: "run_workroom_tests"
       ref: "st2cd.st2workroom_test"
       params:
-        hostname: "st2w-ci-{{workroom_target_branch}}-{{revision}}"
+        hostname: "st2w-ci-{{revision}}"
         build: "{{system.st2_master_build_number}}"
         version: "{{system.st2_unstable_version}}"
         environment: "sandbox"
@@ -44,6 +44,8 @@
         repo: "https://github.com/StackStorm/st2workroom.git"
         distro: "{{distro}}"
         install_url: "https://raw.githubusercontent.com/StackStorm/st2workroom/master/script/bootstrap-st2"
+      on-success: "delete_workroom_branch"
+      on-failure: "delete_workroom_branch"
     -
       name: "delete_workroom_branch"
       ref: "core.remote"

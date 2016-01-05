@@ -24,7 +24,7 @@
     workroom_repo:
       type: "string"
       description: "Url of the puppet_st2 repo to clone"
-      default: "https://github.com/StackStorm/st2workroom.git"
+      default: "git@github.com:StackStorm/st2workroom.git"
     workroom_repo_target:
       type: "string"
       description: "Directory prefix for the dest clone dir."
