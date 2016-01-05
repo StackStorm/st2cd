@@ -33,11 +33,17 @@
       on-success: "run_workroom_tests"
     -
       name: "run_workroom_tests"
-      ref: "core.local"
+      ref: "st2cd.st2workroom_test"
       params:
-        cmd: "echo I work the workroom for {{distro}}" # Placeholder
-      on-success: "delete_workroom_branch"
-      on-failure: "delete_workroom_branch"
+        hostname: "st2w-ci-{{workroom_target_branch}}-{{revision}}"
+        build: "{{system.st2_master_build_number}}"
+        version: "{{system.st2_unstable_version}}"
+        environment: "sandbox"
+        branch: "{{workroom_target_branch}}"
+        revision: "{{revision}}"
+        repo: "https://github.com/StackStorm/st2workroom.git"
+        distro: "{{distro}}"
+        install_url: "https://raw.githubusercontent.com/StackStorm/st2workroom/master/script/bootstrap-st2"
     -
       name: "delete_workroom_branch"
       ref: "core.remote"

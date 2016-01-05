@@ -5,10 +5,14 @@
   enabled: true
   entry_point: "workflows/workroom_puppet_st2_ci.yaml"
   parameters:
+    revision:
+      type: "string"
+      description: "SHA that resulted in this workflow run."
+      required: true
     workroom_target_branch:
       type: "string"
       description: "The branch of st2workroom to use."
-      default: "puppet_st2_ci_{{distro}}"
+      default: "puppet_st2_ci_{{distro}}_{{revision}}"
     workroom_clone_branch:
       type: "string"
       description: "The branch of st2workroom to use."
