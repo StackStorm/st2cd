@@ -1,0 +1,78 @@
+---
+  chain:
+    -
+      name: "get_latest_unstable_st2_version"
+      ref: "st2cd.get_latest_st2_version"
+      params:
+        flavor: "unstable"
+      publish:
+        latest_unstable_version: "{{get_latest_unstable_st2_version.stdout}}"
+      on-success: "get_latest_unstable_st2_revision"
+    -
+      name: "get_latest_unstable_st2_revision"
+      ref: "st2cd.get_latest_st2_revision"
+      params:
+        flavor: "unstable"
+      publish:
+        latest_unstable_revision: "{{get_latest_unstable_st2_revision.stdout}}"
+      on-success: "get_build_server"
+    -
+      name: "get_build_server"
+      ref: "linux.dig"
+      params:
+        hostname: "st2-build-slave-ubuntu.service.consul"
+        rand: true
+        count: 1
+      publish:
+        build_server: "{{get_build_server.result[0]}}"
+      on-success: "clone_workroom_repo"
+    -
+      name: "clone_workroom_repo"
+      ref: "st2cd.git_clone"
+      params:
+        hosts: "{{build_server}}"
+        repo: "{{workroom_repo}}"
+        branch: "{{workroom_clone_branch}}"
+        target: "{{workroom_repo_target}}"
+      publish:
+        workroom_repodir: "/tmp/{{clone_workroom_repo[build_server].stdout}}"
+      on-success: "setup_workroom_branch"
+    -
+      name: "setup_workroom_branch"
+      ref: "st2cd.workroom_puppet_st2_ci_setup"
+      params:
+        build_server: "{{build_server}}"
+        puppet_st2_branch: "{{puppet_st2_branch_to_test}}"
+        workroom_target_branch: "{{workroom_target_branch}}"
+        workroom_repo_dir: "{{workroom_repodir}}"
+      on-success: "run_workroom_tests"
+    -
+      name: "run_workroom_tests"
+      ref: "st2cd.st2workroom_test"
+      params:
+        hostname: "st2w-ci-{{ revision | truncate(10, False, '') }}"
+        build: "{{latest_unstable_revision}}"
+        version: "{{latest_unstable_version}}"
+        environment: "sandbox"
+        branch: "{{workroom_target_branch}}"
+        revision: "{{revision}}"
+        repo: "https://github.com/StackStorm/st2workroom.git"
+        distro: "{{distro}}"
+        install_url: "https://raw.githubusercontent.com/StackStorm/st2workroom/master/script/bootstrap-st2"
+      on-success: "delete_workroom_branch"
+      on-failure: "delete_workroom_branch"
+    -
+      name: "delete_workroom_branch"
+      ref: "core.remote"
+      params:
+        hosts: "{{build_server}}"
+        cmd: "cd {{workroom_repodir}} && git checkout master && git push origin --delete {{workroom_target_branch}}"
+      on-success: "delete_workroom_dir"
+      on-failure: "delete_workroom_dir"
+    -
+      name: "delete_workroom_dir"
+      ref: "core.remote"
+      params:
+        hosts: "{{build_server}}"
+        cmd: "rm -rf {{workroom_repodir}}"
+  default: "get_latest_unstable_st2_version"

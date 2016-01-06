@@ -1,0 +1,15 @@
+---
+description: Get latest st2 revision.
+enabled: true
+entry_point: 'get_latest_st2_revision.sh'
+name: get_latest_st2_revision
+parameters:
+  flavor:
+    type: "string"
+    description: "Stable or unstable?"
+    default: "stable"
+    required: True
+    position: 0
+  sudo:
+    immutable: true
+runner_type: "local-shell-script"

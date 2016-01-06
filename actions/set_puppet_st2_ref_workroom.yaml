@@ -1,0 +1,28 @@
+---
+  name: "set_puppet_st2_ref_workroom"
+  runner_type: "remote-shell-script"
+  description: "Set puppet-st2 ref to given value in Workroom puppetfile."
+  enabled: true
+  entry_point: "set_puppet_st2_ref_workroom.sh"
+  parameters:
+    workroom_dir:
+      type: string
+      required: true
+      position: 0
+    workroom_target_branch:
+      type: string
+      required: true
+      position: 1
+    puppet_st2_branch:
+      type: string
+      default: "master"
+      position: 2
+    sudo:
+      immutable: true
+      default: false
+    cmd:
+      immutable: true
+      default: ""
+    kwarg_op:
+      immutable: true
+      default: "--"
