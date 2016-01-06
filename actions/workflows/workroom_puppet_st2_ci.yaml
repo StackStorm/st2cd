@@ -1,6 +1,22 @@
 ---
   chain:
     -
+      name: "get_latest_unstable_st2_version"
+      ref: "st2cd.get_latest_st2_version"
+      params:
+        flavor: "unstable"
+      publish:
+        latest_unstable_version: "{{get_latest_unstable_st2_version.stdout}}"
+      on-success: "get_latest_unstable_st2_revision"
+    -
+      name: "get_latest_unstable_st2_revision"
+      ref: "st2cd.get_latest_st2_revision"
+      params:
+        flavor: "unstable"
+      publish:
+        latest_unstable_revision: "{{get_latest_unstable_st2_revision.stdout}}"
+      on-success: "get_build_server"
+    -
       name: "get_build_server"
       ref: "linux.dig"
       params:
@@ -29,15 +45,14 @@
         puppet_st2_branch: "{{puppet_st2_branch_to_test}}"
         workroom_target_branch: "{{workroom_target_branch}}"
         workroom_repo_dir: "{{workroom_repodir}}"
-      publish:
       on-success: "run_workroom_tests"
     -
       name: "run_workroom_tests"
       ref: "st2cd.st2workroom_test"
       params:
         hostname: "st2w-ci-{{ revision | truncate(10, False, '') }}"
-        build: "{{system.st2_master_build_number}}"
-        version: "{{system.st2_unstable_version}}"
+        build: "{{latest_unstable_revision}}"
+        version: "{{latest_unstable_version}}"
         environment: "sandbox"
         branch: "{{workroom_target_branch}}"
         revision: "{{revision}}"
@@ -60,4 +75,4 @@
       params:
         hosts: "{{build_server}}"
         cmd: "rm -rf {{workroom_repodir}}"
-  default: "get_build_server"
+  default: "get_latest_unstable_st2_version"
