@@ -50,7 +50,7 @@
       name: "run_workroom_tests"
       ref: "st2cd.st2workroom_test"
       params:
-        hostname: "st2w-ci-{{ revision | truncate(10, False, '') }}"
+        hostname: "st2w-ci-{{distro}}-{{ revision | truncate(10, False, '') }}"
         build: "{{latest_unstable_revision}}"
         version: "{{latest_unstable_version}}"
         environment: "sandbox"
