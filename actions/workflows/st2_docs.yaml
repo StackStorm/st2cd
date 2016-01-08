@@ -17,10 +17,10 @@
       publish:
         build_server: "{{get_build_server.result[0]}}"
       on-success: "clone_repo"
-    - 
+    -
       name: "clone_repo"
       ref: "st2cd.git_clone"
-      params: 
+      params:
         hosts: "{{build_server}}"
         repo: "{{repo}}"
         target: "{{repo_target}}"
@@ -30,28 +30,12 @@
       on-success: "version"
     -
       name: "version"
-      ref: "st2cd.st2_version"
+      ref: "core.remote"
       params:
         hosts: "{{build_server}}"
-        repo: "{{repodir}}"
+        cmd: "cd /tmp/{{repodir}} && cat version.txt"
       publish:
         version: "{{version[build_server].stdout | replace('\n', '')}}"
-      on-success: "short_version"
-    -
-      name: "short_version"
-      ref: "core.local"
-      params:
-        cmd: "echo -e '{{version}}' | cut -d '.' -f1-2"
-      publish:
-        short_version: "{{short_version.stdout}}"
-      on-success: "version_hack"
-    - 
-      name: "version_hack"
-      ref: "st2cd.version_hack"
-      params: 
-        hosts: "{{build_server}}"
-        repo: "{{repodir}}"
-        build: "{{get_current_build.result}}"
       on-success: "update_url"
     -
       name: "update_url"
@@ -60,25 +44,25 @@
         hosts: "{{build_server}}"
         cmd: "cd /tmp/{{repodir}} && {% if environment == 'production' %}echo 'Production URL is correct in code' {% else %}sed -e 's~docs\\.stackstorm\\.com~{{docs_url}}~g' docs/source/conf.py {% endif %}"
       on-success: "make_docs"
-    - 
+    -
       name: "make_docs"
       ref: "st2cd.make_docs"
-      params: 
+      params:
         hosts: "{{build_server}}"
         repo: "{{repodir}}"
         timeout: 600
       on-success: "s3cmd_docs"
-    - 
+    -
       name: "s3cmd_docs"
       ref: "st2cd.s3_docs"
-      params: 
+      params:
         hosts: "{{build_server}}"
         repo: "/tmp/{{repodir}}/docs/build/html"
-        location: "{% if branch == 'master' %}/latest/{% elif short_version|string() == system.st2_stable_version|string() %}/{% endif %}"
+        location: "{% if branch == 'master' %}/latest/{% elif version|string() == system.st2_stable_version|string() %}/{% endif %}"
         bucket: "{% if environment == 'production' %}docs.stackstorm.com{% else %}{{docs_url}}{% endif %}"
-        version: "/{% if branch == 'master' %}{{version}}{% else %}{{short_version}}{% endif %}/"
+        version: "{{version}}"
       on-success: "clean_repo"
-    - 
+    -
       name: "clean_repo"
       ref: "st2cd.git_clean"
       params:
