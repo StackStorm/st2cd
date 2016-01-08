@@ -1,5 +1,5 @@
 ---
-  name: "docs"
+  name: "st2_docs"
   runner_type: "action-chain"
   description: "Build st2docs"
   enabled: true
