@@ -1,6 +1,6 @@
 ---
     name: "st2_docs_prod"
-    description: "Build st2 packages after tests succeed and push them to staging"
+    description: "Build Docs after tests succeed and push them to docs.stackstorm.com"
     enabled: true
     trigger:
         type: "core.st2.generic.actiontrigger"
@@ -22,7 +22,5 @@
         parameters:
             repo: "{{trigger.parameters.repo}}"
             branch: "{{trigger.parameters.branch}}"
-            revision: "{{trigger.parameters.revision}}"
             environment: "production"
-            build: "{{trigger.parameters.build}}"
             docs_url: "{{system.s3_bucket_docs_production}}"

@@ -1,13 +1,6 @@
 ---
   chain:
     -
-      name: "get_current_build"
-      ref: "st2cd.kvstore"
-      params:
-        key: "st2_{{branch}}_build_number"
-        action: "get"
-      on-success: "get_build_server"
-    -
       name: "get_build_server"
       ref: "linux.dig"
       params:
@@ -44,14 +37,6 @@
         cmd: "echo -e '{{version}}' | cut -d '.' -f1-2"
       publish:
         short_version: "{{short_version.stdout}}"
-      on-success: "version_hack"
-    - 
-      name: "version_hack"
-      ref: "st2cd.version_hack"
-      params: 
-        hosts: "{{build_server}}"
-        repo: "{{repodir}}"
-        build: "{{get_current_build.result}}"
       on-success: "update_url"
     -
       name: "update_url"
@@ -84,5 +69,3 @@
       params:
         hosts: "{{build_server}}"
         repo: "{{repodir}}"
-
-  default: "get_current_build"

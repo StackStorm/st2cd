@@ -1,6 +1,6 @@
 ---
     name: "st2_docs_staging"
-    description: "Build st2 packages after tests succeed and push them to staging"
+    description: "Build Docs after tests succeed and push them to staging"
     enabled: true
     trigger:
         type: "core.st2.generic.actiontrigger"
@@ -17,6 +17,4 @@
             repo: "{{trigger.parameters.repo}}"
             branch: "{{trigger.parameters.branch}}"
             environment: "staging"
-            revision: "{{trigger.parameters.revision}}"
-            build: "{{trigger.result.tasks[1].result.result.value}}"
             docs_url: "{{system.s3_bucket_docs_staging}}"
