@@ -9,6 +9,10 @@
       type: "string"
       description: "SHA that resulted in this workflow run."
       required: true
+    hostname: 
+      type: "string"
+      description: "Host name for VM to be created to run the tests"
+      required: true
     workroom_target_branch:
       type: "string"
       description: "The branch of st2workroom to use."

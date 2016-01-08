@@ -16,4 +16,6 @@
         ref: "st2cd.workroom_puppet_st2_ci"
         parameters:
             revision: "{{trigger.body.head_commit.id}}"
+            hostname: "st2wp-u14-{{trigger.body.head_commit.id | truncate(8, False, '')}}"
             distro: "UBUNTU14"
+            
