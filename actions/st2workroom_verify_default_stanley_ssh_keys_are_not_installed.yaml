@@ -1,0 +1,8 @@
+
+----
+  name: "st2workroom_verify_default_stanley_ssh_keys_are_not_installed"
+  runner_type: "remote-shell-script"
+  description: "Script which verifies that no SSH key (private and public) is installed by default for stanley user"
+  enabled: true
+  entry_point: "scripts/stanley_ssh_key_checks.sh"
+  parameters: {}

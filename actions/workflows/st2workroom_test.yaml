@@ -76,27 +76,13 @@
         distro: "{{distro}}"
         user: "{{st2_username}}"
         pass: "{{st2_password}}"
-      on-success: "verify_no_default_private_ssh_key_is_installed_for_stanley_1"
+      on-success: "verify_no_default_keys_are_installed_for_stanley_user"
     -
-      name: "verify_no_default_private_ssh_key_is_installed_for_stanley_1"
-      ref: "core.remote_sudo"
+      name: "verify_no_default_keys_are_installed_for_stanley_user"
+      ref: "st2cd.st2workroom_verify_default_stanley_ssh_keys_are_not_installed"
       params:
         hosts: "{{hostname}}"
-        cmd: 'test -f /home/stanley/.ssh/st2_stanley_key && (echo "Private SSH key file exists for stanley user" ; exit 1)'
-      on-success: "verify_no_default_private_ssh_key_is_installed_for_stanley_2"
-    -
-      name: "verify_no_default_private_ssh_key_is_installed_for_stanley_2"
-      ref: "core.remote_sudo"
-      params:
-        hosts: "{{hostname}}"
-        cmd: 'files=$(find /home/stanley/.ssh/ -type f ! -name authorized_keys | wc -l) ; if [ $files -gt 0 ]; then echo "Found SSH key files"; exit 1; fi'
-      on-success: "verify_no_default_authorized_key_is_installed_for_instaley"
-    -
-      name: "verify_no_default_authorized_key_is_installed_for_instaley"
-      ref: "core.remote_sudo"
-      params:
-        hosts: "{{hostname}}"
-        cmd: 'lines=$(cat /home/stanley/.ssh/authorized_keys | grep st2_stanley_key | wc -l) ; if [ $lines -gt 0 ]; then echo "Found default stanley in authorized_keys"; exit 1; fi'
+        sudo: true
       on-success: "run_tests"
     # TODO: Also add a test case for scenario where  st2::stanley::ssh_private_key, etc is provided
     -
