@@ -4,16 +4,16 @@
   description: "Run puppet bootstrap script"
   enabled: true
   entry_point: ""
-  parameters: 
-    sudo: 
+  parameters:
+    sudo:
       immutable: true
       default: true
-    cmd: 
+    cmd:
       immutable: true
-      default: "bash {{dir}}{{file}}"
+      default: "bash {{dir}}/{{file}}"
     file:
       type: "string"
       default: "bootstrap-puppet"
-    kwarg_op: 
+    kwarg_op:
       immutable: true
       default: "--"
