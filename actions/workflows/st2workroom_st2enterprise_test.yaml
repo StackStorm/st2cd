@@ -72,8 +72,15 @@
         hosts: "{{hostname}}"
         cmd: "curl -sSL https://stackstorm.com/install.sh  | sudo sh -s -- -a /tmp/answers.yaml"
         timeout: 3600
-      on-success: "verify_rbac_is_enabled"
+      on-success: "verify_no_default_keys_are_installed_for_stanley_user"
       on-failure: "destroy_vm"
+    -
+      name: "verify_no_default_keys_are_installed_for_stanley_user"
+      ref: "st2cd.st2workroom_verify_default_stanley_ssh_keys_are_not_installed"
+      params:
+        hosts: "{{hostname}}"
+        sudo: true
+      on-success: "verify_no_default_keys_are_installed_for_stanley_user"
     -
       name: "verify_rbac_is_enabled"
       ref: "core.remote_sudo"
