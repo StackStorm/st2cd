@@ -50,6 +50,7 @@
           SKIP_OK_CHECK: "true"
           DISABLE_HUBOT: "true"
           CI: "true"
+          DEBUG: "1"
         hosts: "{{hostname}}"
         cmd: "curl -sSL {{install_url}}  | sudo sh -s -- -a /tmp/answers.yaml"
         timeout: 3600
@@ -64,6 +65,7 @@
           SKIP_OK_CHECK: "true"
           DISABLE_HUBOT: "true"
           CI: "true"
+          DEBUG: "1"
         hosts: "{{hostname}}"
         cmd: "curl -sSL {{install_url}}  | sudo sh -s -- -a /tmp/answers.yaml"
         timeout: 3600
@@ -77,6 +79,7 @@
         user: "{{st2_username}}"
         pass: "{{st2_password}}"
       on-success: "verify_no_default_keys_are_installed_for_stanley_user"
+    # TODO: Also add a test case for scenario where  st2::stanley::ssh_private_key, etc is provided
     -
       name: "verify_no_default_keys_are_installed_for_stanley_user"
       ref: "st2cd.st2workroom_verify_default_stanley_ssh_keys_are_not_installed"
@@ -84,7 +87,6 @@
         hosts: "{{hostname}}"
         sudo: true
       on-success: "run_tests"
-    # TODO: Also add a test case for scenario where  st2::stanley::ssh_private_key, etc is provided
     -
       name: "run_tests"
       ref: "st2cd.e2e_tests"
