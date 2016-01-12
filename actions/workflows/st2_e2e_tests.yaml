@@ -79,21 +79,25 @@
         action: "core.http"
         params: "url=http://www.marshmallowkittens.org"
         hosts: "{{hostname}}"
-      on-success: "core_remote_single_host"
-    -
-      name: "core_remote_single_host"
-      ref: "st2cd.action_run"
-      params:
-        env:
-          ST2_BASE_URL: "{{protocol}}://{{hostname}}"
-          ST2_AUTH_URL: "{{protocol}}://{{hostname}}:9100"
-          ST2_API_URL: "{{protocol}}://{{hostname}}:9101"
-        name: "core_remote_single_host"
-        token: "{{st2_token}}"
-        action: "core.remote"
-        params: "hosts={{hostname}} hostname"
-        hosts: "{{hostname}}"
       on-success: "test_quickstart"
+      #on-success: "core_remote_single_host"
+    # TODO: This fails right now since it expectes default key to be installed
+    # for stanley but this is not the case anymore.
+    # Re-enable it after we explicitly install the key.
+    #-
+    #  name: "core_remote_single_host"
+    #  ref: "st2cd.action_run"
+    #  params:
+    #    env:
+    #      ST2_BASE_URL: "{{protocol}}://{{hostname}}"
+    #      ST2_AUTH_URL: "{{protocol}}://{{hostname}}:9100"
+    #      ST2_API_URL: "{{protocol}}://{{hostname}}:9101"
+    #    name: "core_remote_single_host"
+    #    token: "{{st2_token}}"
+    #    action: "core.remote"
+    #    params: "hosts={{hostname}} hostname"
+    #    hosts: "{{hostname}}"
+    #  on-success: "test_quickstart"
     -
       name: "test_quickstart"
       ref: "st2cd.action_run"
