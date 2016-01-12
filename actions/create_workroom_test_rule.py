@@ -5,11 +5,7 @@ import json
 import requests
 import sys
 
-INSTALL_URLS = {
-    'UBUNTU14': 'https://stackstorm.com/install.sh',
-    'RHEL6': 'https://raw.githubusercontent.com/StackStorm/st2workroom/master/script/bootstrap-st2',
-    'RHEL7': 'https://raw.githubusercontent.com/StackStorm/st2workroom/master/script/bootstrap-st2'
-}
+INSTALL_URL = 'https://install.stackstorm.com/'
 
 
 def create_rule(url, rule):
@@ -51,7 +47,7 @@ def _get_st2_rules_url(base_url):
 
 def _create_distro_rule_meta(distro, branch, action_ref, version_task_index, distro_release=None):
     # last 3 chars is distro short
-    distro_short = distros[len(distros)-3:]
+    distro_short = distro[len(distro)-3:]
     rule_meta = {
         'name': 'st2_workroom_test_%s_%s' % (branch, distro.lower()),
         'pack': 'st2cd',
@@ -109,7 +105,7 @@ def _create_distro_rule_meta(distro, branch, action_ref, version_task_index, dis
     distro_type = rule_meta['action']['parameters']['distro']
     if distro_type:
         distro_type = distro_type.upper()
-        rule_meta['action']['parameters']['install_url'] = INSTALL_URLS[distro_type]
+        rule_meta['action']['parameters']['install_url'] = INSTALL_URL
 
     return rule_meta
 
