@@ -24,4 +24,4 @@
             revision: "{{trigger.body.head_commit.id}}"
             repo: "https://github.com/StackStorm/st2workroom.git"
             distro: "UBUNTU14"
-            install_url: "https://stackstorm.com/install.sh"
+            install_url: "https://install.stackstorm.com/"

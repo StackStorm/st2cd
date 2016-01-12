@@ -56,7 +56,7 @@
           DISABLE_HUBOT: "true"
           CI: "true"
         hosts: "{{hostname}}"
-        cmd: "curl -sSL https://stackstorm.com/install.sh  | sudo sh -s -- -a /tmp/answers.yaml"
+        cmd: "curl -sSL https://install.stackstorm.com/  | sudo sh -s -- -a /tmp/answers.yaml"
         timeout: 3600
       on-success: "verify_rbac_is_enabled"
       on-failure: "rerun_bootstrap_workroom_with_answers_file"
@@ -70,7 +70,7 @@
           DISABLE_HUBOT: "true"
           CI: "true"
         hosts: "{{hostname}}"
-        cmd: "curl -sSL https://stackstorm.com/install.sh  | sudo sh -s -- -a /tmp/answers.yaml"
+        cmd: "curl -sSL https://install.stackstorm.com/  | sudo sh -s -- -a /tmp/answers.yaml"
         timeout: 3600
       on-success: "verify_rbac_is_enabled"
       on-failure: "destroy_vm"
