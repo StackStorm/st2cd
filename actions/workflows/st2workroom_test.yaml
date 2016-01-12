@@ -54,7 +54,7 @@
         hosts: "{{hostname}}"
         cmd: "curl -sSL {{install_url}}  | sudo sh -s -- -a /tmp/answers.yaml"
         timeout: 3600
-      on-success: "add_ci_user"
+      on-success: "install_default_public_ssh_key_for_stanley"
       on-failure: "rerun_bootstrap_workroom_with_answers_file"
     -
       name: "rerun_bootstrap_workroom_with_answers_file"
