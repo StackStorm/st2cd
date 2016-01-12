@@ -58,7 +58,7 @@
         hosts: "{{hostname}}"
         cmd: "curl -sSL https://stackstorm.com/install.sh  | sudo sh -s -- -a /tmp/answers.yaml"
         timeout: 3600
-      on-success: "verify_rbac_is_enabled"
+      on-success: "verify_no_default_keys_are_installed_for_stanley_user"
       on-failure: "rerun_bootstrap_workroom_with_answers_file"
     -
       name: "rerun_bootstrap_workroom_with_answers_file"
