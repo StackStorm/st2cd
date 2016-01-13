@@ -64,7 +64,7 @@
     install_url:
       description: "URL for st2 install.sh"
       type: "string"
-      default: "https://stackstorm.com/install.sh"
+      default: "https://install.stackstorm.com/"
     skip_notify:
       default:
         - delete_existing_puppet

@@ -24,4 +24,4 @@
             revision: "{{trigger.body.head_commit.id}}"
             repo: "https://github.com/StackStorm/st2workroom.git"
             distro: "RHEL6"
-            install_url: "https://raw.githubusercontent.com/StackStorm/st2workroom/master/script/bootstrap-st2"
+            install_url: "https://install.stackstorm.com/"
