@@ -80,7 +80,7 @@
       params:
         hosts: "{{hostname}}"
         sudo: true
-      on-success: "verify_no_default_keys_are_installed_for_stanley_user"
+      on-success: "verify_rbac_is_enabled"
     -
       name: "verify_rbac_is_enabled"
       ref: "core.remote_sudo"
