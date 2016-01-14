@@ -54,7 +54,7 @@
         hosts: "{{hostname}}"
         cmd: "curl -sSL {{install_url}}  | sudo sh -s -- -a /tmp/answers.yaml"
         timeout: 3600
-      on-success: "install_default_public_ssh_key_for_stanley"
+      on-success: "verify_no_default_ssh_keys_are_installed_for_stanley_user"
       on-failure: "rerun_bootstrap_workroom_with_answers_file"
     -
       name: "rerun_bootstrap_workroom_with_answers_file"
@@ -69,6 +69,14 @@
         hosts: "{{hostname}}"
         cmd: "curl -sSL {{install_url}}  | sudo sh -s -- -a /tmp/answers.yaml"
         timeout: 3600
+      on-success: "verify_no_default_ssh_keys_are_installed_for_stanley_user"
+    # TODO: Also add a test case for scenario where  st2::stanley::ssh_private_key, etc is provided
+    -
+      name: "verify_no_default_ssh_keys_are_installed_for_stanley_user"
+      ref: "st2cd.st2workroom_verify_default_stanley_ssh_keys_are_not_installed"
+      params:
+        hosts: "{{hostname}}"
+        sudo: true
       on-success: "install_default_public_ssh_key_for_stanley"
     # Note: We install a default SSH key for stanley so e2e tests below can use this key to test
     # remote actions
@@ -96,15 +104,6 @@
         user: "{{st2_username}}"
         pass: "{{st2_password}}"
       on-success: "run_tests"
-    #  on-success: "verify_no_default_keys_are_installed_for_stanley_user"
-    # TODO: Also add a test case for scenario where  st2::stanley::ssh_private_key, etc is provided
-    #-
-    #  name: "verify_no_default_keys_are_installed_for_stanley_user"
-    #  ref: "st2cd.st2workroom_verify_default_stanley_ssh_keys_are_not_installed"
-    #  params:
-    #    hosts: "{{hostname}}"
-    #    sudo: true
-    #  on-success: "run_tests"
     -
       name: "run_tests"
       ref: "st2cd.e2e_tests"
