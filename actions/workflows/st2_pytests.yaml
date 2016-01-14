@@ -57,7 +57,7 @@
         on-success:
           routes:
             - slack
-          message: "Coverage report at: http://st2coverage.stackstorm.net/{{branch}}/index.html"
+          message: "Coverage report at: http://st2coverage.stackstorm.net/{{action_parameters.branch}}/index.html"
       on-success: "clean_repo"
     -
       name: "clean_repo"
