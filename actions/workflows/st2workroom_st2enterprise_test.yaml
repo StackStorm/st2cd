@@ -34,12 +34,19 @@
       ref: "core.remote_sudo"
       params:
         hosts: "{{hostname}}"
+        # Note:
+        # We also specify hubot and default admin user related variables so we
+        # can test that the default RBAC admin role assignments are installed
+        # correctly
         cmd: |
             cat <<EOT >> /tmp/answers.yaml
             st2::version: {{version}}
             st2::revision: {{build}}
             st2::repo_base: {{dl_server}}
             st2enterprise::token: "st2tester"
+            st2::stanley::username: "stanley"
+            hubot::env_export: {"ST2_AUTH_USERNAME": "chatops_bot"}
+            users: {"admin": {"password": "test", "admin": True}}
             st2::ldap: true
             st2::ldap::host: "localhost"
             st2::ldap::base_dn: "dc=stackstorm,dc=com"
@@ -88,6 +95,19 @@
         hosts: "{{hostname}}"
         cmd: "grep -zlP '\\[rbac\\]\\senable\\s?=\\s?True' /etc/st2/st2.conf"
         timeout: 10
+      on-success: "verify_default_rbac_admin_role_assignments_are_present"
+      on-failure: "destroy_vm"
+    -
+      # Verify that a default role for the following users exist:
+      # - root_cli user
+      # - stanley (system) user
+      # - admin user
+      # - hubot user
+      name: "verify_default_rbac_admin_role_assignments_are_present"
+      ref: "st2cd.st2workroom_st2enterprise_verify_default_rbac_admin_role_assignments_are_present"
+      params:
+        hosts: "{{hostname}}"
+        sudo: true
       on-success: "verify_flow_is_installed"
       on-failure: "destroy_vm"
     -

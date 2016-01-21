@@ -1,0 +1,8 @@
+
+---
+  name: "st2workroom_st2enterprise_verify_default_rbac_admin_role_assignments_are_present"
+  runner_type: "remote-shell-script"
+  description: "Script which verifies that default RBAC admin role assignments exist for all the necessary users"
+  enabled: true
+  entry_point: "scripts/verify_default_rbac_admin_role_assignments_are_present.sh"
+  parameters: {}
