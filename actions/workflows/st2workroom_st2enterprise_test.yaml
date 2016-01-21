@@ -52,7 +52,6 @@
             st2::ldap::base_dn: "dc=stackstorm,dc=com"
             EOT
       on-success: "bootstrap_workroom_with_answers_file"
-      on-failure: "destroy_vm"
     -
       name: "bootstrap_workroom_with_answers_file"
       ref: "core.remote_sudo"
@@ -80,7 +79,6 @@
         cmd: "curl -sSL https://install.stackstorm.com/  | sudo sh -s -- -a /tmp/answers.yaml"
         timeout: 3600
       on-success: "verify_no_default_keys_are_installed_for_stanley_user"
-      on-failure: "destroy_vm"
     -
       name: "verify_no_default_keys_are_installed_for_stanley_user"
       ref: "st2cd.st2workroom_verify_default_stanley_ssh_keys_are_not_installed"
@@ -96,7 +94,6 @@
         cmd: "grep -zlP '\\[rbac\\]\\senable\\s?=\\s?True' /etc/st2/st2.conf"
         timeout: 10
       on-success: "verify_default_rbac_admin_role_assignments_are_present"
-      on-failure: "destroy_vm"
     -
       # Verify that a default role for the following users exist:
       # - root_cli user
@@ -109,7 +106,6 @@
         hosts: "{{hostname}}"
         sudo: true
       on-success: "verify_flow_is_installed"
-      on-failure: "destroy_vm"
     -
       name: "verify_flow_is_installed"
       ref: "core.remote_sudo"
@@ -118,7 +114,6 @@
         cmd: '(test -d /opt/stackstorm/static/webui/flow && test -f /opt/stackstorm/static/webui/flow/index.html) || (echo "Flow directory doesnt exist" ; exit 1)'
         timeout: 10
       on-success: "verify_flow_is_available"
-      on-failure: "destroy_vm"
     -
       name: "verify_flow_is_available"
       ref: "core.remote_sudo"
@@ -127,7 +122,6 @@
         cmd: 'sleep 20 && curl -sSL -k --fail https://127.0.0.1/flow'
         timeout: 30
       on-success: "verify_ldap_auth_backend_is_installed"
-      on-failure: "destroy_vm"
     -
       name: "verify_ldap_auth_backend_is_installed"
       ref: "core.remote_sudo"
@@ -136,7 +130,6 @@
         cmd: 'python -c "import st2auth_enterprise_ldap_backend"'
         timeout: 10
       on-success: "verify_ldap_auth_backend_is_enabled"
-      on-failure: "destroy_vm"
     -
       name: "verify_ldap_auth_backend_is_enabled"
       ref: "core.remote_sudo"
@@ -145,7 +138,7 @@
         cmd: "grep -zlP 'backend\\s?=\\s?ldap' /etc/st2/st2.conf"
         timeout: 10
       on-success: "verify_ldap_auth_backend_is_configured"
-      on-failure: "destroy_vm"
+    # TODO: Also run tests when we configure actual LDAP backend so tests can authenticate
     -
       name: "verify_ldap_auth_backend_is_configured"
       ref: "core.remote_sudo"
@@ -154,8 +147,6 @@
         cmd: "grep backend_kwargs /etc/st2/st2.conf | awk -F \"backend_kwargs[[:space:]]*=[[:space:]]*\" '{ print $2 }' | tr -d \" \" | python -c 'import json, sys; data = json.load(sys.stdin); print data[\"'host'\"];print data[\"'users_ou'\"]';"
         timeout: 10
       on-success: "destroy_vm"
-      on-failure: "destroy_vm"
-    # TODO: Also run tests when we configure actual LDAP backend so tests can authenticate
     -
       name: "destroy_vm"
       ref: "st2cd.destroy_vm"

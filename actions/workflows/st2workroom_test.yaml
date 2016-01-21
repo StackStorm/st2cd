@@ -40,7 +40,6 @@
             st2::repo_base: {{dl_server}}
             EOT
       on-success: "bootstrap_workroom_with_answers_file"
-      on-failure: "destroy_vm"
     -
       name: "bootstrap_workroom_with_answers_file"
       ref: "core.remote_sudo"
