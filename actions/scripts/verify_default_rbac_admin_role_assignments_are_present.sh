@@ -2,11 +2,6 @@
 
 RBAC_ASSIGNMENTS_DIR="/opt/stackstorm/rbac/assignments"
 
-ROOT_CLI_ASSIGNMENT_FILE_PATH="${RBAC_ASSIGNMENTS_DIR}/root_cli.yaml"
-STANLEY_ASSIGNMENT_FILE_PATH="${RBAC_ASSIGNMENTS_DIR}/stanley.yaml"
-ADMIN_ASSIGNMENT_FILE_PATH="${RBAC_ASSIGNMENTS_DIR}/admin.yaml"
-HUBOT_ASSIGNMENT_FILE_PATH="${RBAC_ASSIGNMENTS_DIR}/chatops_bot.yaml"
-
 function admin_role_assignment_exists() {
     username=$1
     assignment_file_path="${RBAC_ASSIGNMENTS_DIR}/${username}.yaml"
