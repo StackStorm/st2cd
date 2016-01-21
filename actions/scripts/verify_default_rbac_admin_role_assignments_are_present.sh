@@ -2,8 +2,9 @@
 
 RBAC_ASSIGNMENTS_DIR="/opt/stackstorm/rbac/assignments"
 
-function admin_role_assignment_exists() {
+function role_assignment_exists() {
     username=$1
+    role=$2
     assignment_file_path="${RBAC_ASSIGNMENTS_DIR}/${username}.yaml"
 
     # Verify assignment file exists
@@ -13,19 +14,19 @@ function admin_role_assignment_exists() {
     fi
 
     # Verify assignment file contains "admin" role assignment
-    cat ${assignment_file_path} | grep '\- "admin"'
+    cat ${assignment_file_path} | grep -q "\- \"${role}\""
     exit_code=$?
 
     if [ ${exit_code} -ne 0 ]; then
-        echo "RBAC role assignment file '${assignment_file_path}' for user '${username}' is missing 'admin' role assignment"
+        echo "RBAC role assignment file '${assignment_file_path}' for user '${username}' is missing '${role}' role assignment"
         exit 1
     fi
 }
 
-admin_role_assignment_exists "root_cli"
-admin_role_assignment_exists "stanley"
-admin_role_assignment_exists "admin"
-admin_role_assignment_exists "chatops_bot"
+role_assignment_exists "root_cli" "admin"
+role_assignment_exists "stanley" "admin"
+role_assignment_exists "chatops_bot" "admin"
+role_assignment_exists "admin" "system_admin"
 
 echo "All role assignmet files exist"
 exit 0
