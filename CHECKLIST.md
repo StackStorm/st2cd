@@ -48,6 +48,7 @@ st2 key set st2_master_build_number 1
 ```
 - [ ] Make sure packaging is completed for st2web, st2flow, Mistral, and st2 itself (x3: Ubuntu 14, RHEL6, RHEL7).
 - [ ] Make sure `pytests` are passing and no sudden upstream issues happened (hi, oslo.utils!).
+- [ ] Create a temporary version tag say v1.3.0 if releasing v1.3.0 so that st2workroom_test passes. Also, remove tag before finalize.
 - [ ] Run `st2cd.st2_package_publish_release` to push the packages to the download server and finalize the release.
 - [ ] Make sure your new version is now on [the download server](http://downloads.stackstorm.net/releases/st2/).
 
