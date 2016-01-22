@@ -38,6 +38,7 @@ Valid for minor releases. For patches see [RELEASE_HOWTO.md](https://github.com/
 - [ ] Change the dev version in [st2web/package.json](https://github.com/StackStorm/st2web/blob/master/package.json#L4): e.g. if `1.2.0` is released then `1.3dev` should be in the file.
 - [ ] Change the dev version in [st2client](https://github.com/StackStorm/st2/blob/master/st2client/st2client/__init__.py) and [st2common](https://github.com/StackStorm/st2/blob/master/st2common/st2common/__init__.py): same rules as in the previous step apply.
 - [ ] Change the dev version in [st2docs/version.txt](https://github.com/StackStorm/st2docs/blob/master/version.txt#L1): e.g. if `1.3.0` is released then `1.4dev` should be in the file.
+- [ ] Add new version in [st2docs/docs/source/conf.py] (https://github.com/StackStorm/st2docs/blob/master/docs/source/conf.py#L79) e.g. if `1.3.0` is release then `1.3` should be added to the list.
 - [ ] Set the version values in the KV store of the build box:
 ```
 st2 key set st2_stage_v1.2_UBUNTU14 ubuntu-staging202
