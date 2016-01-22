@@ -51,6 +51,7 @@ st2 key set st2_master_build_number 1
 - [ ] Create a temporary version tag say v1.3.0 if releasing v1.3.0 so that st2workroom_test passes. Also, remove tag before finalize.
 - [ ] Run `st2cd.package-publish-release` to push the packages to the download server and finalize the release.
 - [ ] Start flow packages manually for released and new dev builds. `st2 run st2cd.flow_pkg branch=master dl_server=dl-origin001.uswest2.stackstorm.net version=1.3.0` and `st2 run st2cd.flow_pkg branch=master dl_server=dl-origin001.uswest2.stackstorm.net version=1.4dev` if released version was `1.3.0`.
+- [ ] This may also be a good time to run entreprise ldap packaging. `st2 run st2cd.st2_auth_ldap_pkg_enterprise` - note that the command simply overwrites old build but this is likely a problem for future us :)
 - [ ] Make sure your new version is now on [the download server](http://downloads.stackstorm.net/releases/st2/).
 
 ## 5. Getting the release out
