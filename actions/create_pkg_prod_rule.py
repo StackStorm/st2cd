@@ -43,7 +43,9 @@ def _get_st2_rules_url(base_url):
         return base_url + '/rules'
 
 
-def _create_distro_rule_meta(distro, branch, dl_server, distro_release=None):
+def _create_distro_rule_meta(distro, branch, dl_server, action_ref=None, distro_release=None):
+    if not action_ref:
+        action_ref = 'st2cd.st2_pkg_%s' % distro.lower()
     rule_meta = {
         'name': 'st2_pkg_prod_%s_%s' % (branch, distro.lower()),
         'pack': 'st2cd',
@@ -75,7 +77,7 @@ def _create_distro_rule_meta(distro, branch, dl_server, distro_release=None):
             }
         },
         'action': {
-            'ref': 'st2cd.st2_pkg_%s' % distro.lower(),
+            'ref': action_ref,
             'parameters': {
                 'repo': '{{trigger.parameters.repo}}',
                 'branch': branch,
@@ -125,6 +127,7 @@ def main(args):
     try:
         rule_meta = _create_distro_rule_meta(distro='rhel7', branch=args.branch,
                                              dl_server='{{system.yum_origin_production}}',
+                                             action_ref='st2cd.st2_pkg_el',
                                              distro_release='7')
         create_rule(_get_st2_rules_url(args.st2_base_url), rule_meta)
         sys.stdout.write('Successfully created rule %s\n' % rule_meta['name'])
@@ -136,6 +139,7 @@ def main(args):
     try:
         rule_meta = _create_distro_rule_meta(distro='rhel6', branch=args.branch,
                                              dl_server='{{system.yum_origin_production}}',
+                                             action_ref='st2cd.st2_pkg_el',
                                              distro_release='6')
         create_rule(_get_st2_rules_url(args.st2_base_url), rule_meta)
         sys.stdout.write('Successfully created rule %s\n' % rule_meta['name'])
