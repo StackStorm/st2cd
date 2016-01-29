@@ -60,7 +60,7 @@
         repo: "/tmp/{{repodir}}/docs/build/html"
         location: "{% if branch == 'master' %}/latest/{% elif version|string() == system.st2_stable_version|string() %}/{% endif %}"
         bucket: "{% if environment == 'production' %}docs.stackstorm.com{% else %}{{docs_url}}{% endif %}"
-        version: "{{version}}"
+        version: "/{{version}}/"
       on-success: "clean_repo"
     -
       name: "clean_repo"
