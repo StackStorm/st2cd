@@ -109,18 +109,18 @@ def main(installer_url, hostname, admin_username, system_username,
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Submit data to installer')
 
-    parser.add_argument('--installer-url', default=None, required=True,
+    parser.add_argument('--installer_url', default=None, required=True,
                         help='Installer URL')
 
     parser.add_argument('--hostname', default='localhost',
                         help='Server hostname / IP')
 
-    parser.add_argument('--admin-username', default='admin',
+    parser.add_argument('--admin_username', default='admin',
                         help='Admin username')
-    parser.add_argument('--system-username', default='stanley',
+    parser.add_argument('--system_username', default='stanley',
                         help='System account username')
 
-    parser.add_argument('--enterprise-key', default=None,
+    parser.add_argument('--enterprise_key', default=None,
                         help='Enterprise license key')
     args = parser.parse_args()
 
