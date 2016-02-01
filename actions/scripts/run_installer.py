@@ -55,7 +55,7 @@ def run_installer(installer_url, hostname, admin_username, system_username,
     url = '%s/data_save' % (installer_url)
 
     print('Sending params %s to %s' % (params, url))
-    response = requests.get(url=url, params=params)
+    response = requests.get(url=url, params=params, verify=False)
     print('Response status: %s' % (response.status_code))
     print('Response body: %s' % (response.text))
 
@@ -90,7 +90,7 @@ def run_installer(installer_url, hostname, admin_username, system_username,
 
     url = installer_url
     print('Sending data %s to %s' % (data, url))
-    response = requests.post(url=installer_url, data=data)
+    response = requests.post(url=installer_url, data=data, verify=False)
     print('Response status: %s' % (response.status_code))
     print('Response body: %s' % (response.text))
 
