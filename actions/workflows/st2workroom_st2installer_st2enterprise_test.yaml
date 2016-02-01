@@ -89,6 +89,7 @@
         enterprise_key: "st2tester"
         timeout: 240
       on-success: "verify_rbac_is_enabled"
+    # TODO: Add check which verfies that public + private SSH key has been installed
     -
       name: "verify_rbac_is_enabled"
       ref: "core.remote_sudo"
