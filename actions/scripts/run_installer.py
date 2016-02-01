@@ -6,6 +6,7 @@ aka puppet run
 """
 
 import time
+import httplib
 import argparse
 
 import requests
@@ -58,7 +59,10 @@ def run_installer(installer_url, hostname, admin_username, system_username,
     print('Sending params %s to %s' % (params, url))
     response = requests.get(url=url, params=params, verify=False)
     print('Response status: %s' % (response.status_code))
-    print('Response body: %s' % (response.text))
+
+    if response.status_code not in [httplib.OK, httplib.NO_CONTENT]:
+        print('Response body: %s' % (response.text))
+        raise Exception('GET to /data_save failed')
 
     # 2. Hit "root" endpoint with all the necessary data
     data = {}
@@ -98,7 +102,10 @@ def run_installer(installer_url, hostname, admin_username, system_username,
     response = requests.post(url=installer_url, params=params, data=data,
                              verify=False, allow_redirects=True)
     print('Response status: %s' % (response.status_code))
-    print('Response body: %s' % (response.text))
+
+    if response.status_code != httplib.OK:
+        print('Response body: %s' % (response.text))
+        raise Exception('POST to /setup/ failed')
 
     # Note: We manually poll "/puppet" endpoint here since that is what
     # the client does and puppet is run lazily so this endpoint actually
