@@ -7,23 +7,23 @@
   parameters:
     installer_url:
       type: "string"
-      description: "Installer URL without the trailing slash".
+      description: "Installer URL without the trailing slash."
       required: true
     hostname:
       type: "string"
-      description: "System hostname / IP address".
+      description: "System hostname / IP address."
       required: true
     admin_username:
       type: "string"
-      description: "Admin username".
+      description: "Admin username."
       default: "admin"
       required: false
     system_username:
       type: "string"
-      description: "System account username".
+      description: "System account username."
       default: "stanley"
       required: false
     enterprise_key:
       type: "string"
-      description: "Enterprise license key".
+      description: "Enterprise license key."
       required: false
