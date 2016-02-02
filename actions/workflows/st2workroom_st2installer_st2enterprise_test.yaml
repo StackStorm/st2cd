@@ -88,8 +88,19 @@
         system_username: "stanley"
         enterprise_key: "st2tester"
         timeout: 240
+      on-success: "verify_stanley_public_and_private_key_is_installed"
+    -
+      name: "verify_stanley_public_and_private_key_is_installed"
+      ref: "st2cd.st2workroom_verify_ssh_keys_are_installed"
+      params:
+        hosts: "{{hostname}}"
+        username: "stanley"
+        # Note: Those keys are hard-coded in the installer script
+        public_key: "AAAAB3NzaC1yc2EAAAADAQABAAABAQC3BMuwhULmkx+Br0M4HK9r7m5ndsCuZom0HwCu19QKyrtOYLpzItTcI9B9YY+ZHLGI0FDk+0LhN0HZsjk2kDQtRF6qGE5P5x5cBSPhxJ5eBXPcChZaDgkHLTG+xmyre3ze6RUTIKK/YsRaw5rUCOcNkm2GZNuQuQI5TK1v63sFH5cilw/AAwJpJXB0ztIeQ8iFR85CZvnTDRWxUO8djWbYPxjkuK7EV8vID7fFkj1vNqlG0wpOR0EjtPJYlR36N0eHCYXakvtAPasqXEda6sJo3qlEyF8MlHtwciakSpUt64MfVszp2dDyt0ld2rE0JMHonrmDzJ0TT+O9YHPU4ITl"
+        # Note: We just use partial key value because providing multi line strings is a bit of a mess
+        private_key: "VdYcsnhqLXCtW/gXukLAW2Vu2p8W45nT5qepgeJKfmGgwDf3v9qw2u4n2SaAU34m"
+        timeout: 10
       on-success: "verify_rbac_is_enabled"
-    # TODO: Add check which verfies that public + private SSH key has been installed
     -
       name: "verify_rbac_is_enabled"
       ref: "core.remote_sudo"
