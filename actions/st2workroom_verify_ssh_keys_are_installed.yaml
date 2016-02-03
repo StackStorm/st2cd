@@ -1,0 +1,22 @@
+---
+  name: "st2workroom_verify_ssh_keys_are_installed"
+  runner_type: "remote-shell-script"
+  description: "Script which verifies that the provided public and private keys are installed for the provided user"
+  enabled: true
+  entry_point: "scripts/verify_ssh_key_is_installed.sh"
+  parameters:
+    username:
+      type: "string"
+      description: "Username of the account to check."
+      required: true
+    public_key:
+      type: "string"
+      description: "Public key content."
+      required: true
+    private_key:
+      type: "string"
+      description: "Private key content."
+      required: True
+    kwarg_op:
+      immutable: true
+      default: ""

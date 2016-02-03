@@ -1,0 +1,29 @@
+---
+  name: "st2workroom_run_installer"
+  runner_type: "remote-shell-script"
+  description: "Script which runs installer with the provided data"
+  enabled: true
+  entry_point: "scripts/run_installer.py"
+  parameters:
+    installer_url:
+      type: "string"
+      description: "Installer URL without the trailing slash."
+      required: true
+    hostname:
+      type: "string"
+      description: "System hostname / IP address."
+      required: true
+    admin_username:
+      type: "string"
+      description: "Admin username."
+      default: "admin"
+      required: false
+    system_username:
+      type: "string"
+      description: "System account username."
+      default: "stanley"
+      required: false
+    enterprise_key:
+      type: "string"
+      description: "Enterprise license key."
+      required: false
