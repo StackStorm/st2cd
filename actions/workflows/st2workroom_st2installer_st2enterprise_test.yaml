@@ -77,6 +77,7 @@
         sudo: true
       on-success: "sleep"
      # Sleep a bit before running the installer
+     # Note: This is needed so puppet run finishes and installer proceeds normally.
     -
       name: "sleep"
       ref: "core.local"
