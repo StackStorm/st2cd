@@ -9,14 +9,17 @@
       type: "string"
       description: "Username of the account to check."
       required: true
-    public_key:
+      position: 0
+    user_public_key:
       type: "string"
       description: "Public key content."
       required: true
-    private_key:
+      position: 1
+    user_private_key:
       type: "string"
       description: "Private key content."
       required: True
+      position: 2
     kwarg_op:
       immutable: true
       default: ""
