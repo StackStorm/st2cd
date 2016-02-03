@@ -1,5 +1,5 @@
 ---
-  name: "st2workroom_run_installer"
+  name: "st2workroom_run_st2installer"
   runner_type: "remote-shell-script"
   description: "Script which runs installer with the provided data"
   enabled: true
