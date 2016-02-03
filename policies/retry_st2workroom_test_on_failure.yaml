@@ -1,0 +1,11 @@
+---
+name: st2workroom_test.retry_on_failure
+# Note: We retry this run on failure to try to avoid false positives
+# which are caused by intermediate networking issues and similar.
+description: Retry "st2workroom_test" tests on failure for up to 1 times.
+enabled: true
+resource_ref: st2cd.st2workroom_test
+policy_type: action.retry
+parameters:
+    retry_on: failure
+    max_retry_count: 1
