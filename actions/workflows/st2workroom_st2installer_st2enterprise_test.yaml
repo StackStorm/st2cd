@@ -75,6 +75,13 @@
       params:
         hosts: "{{hostname}}"
         sudo: true
+      on-success: "sleep"
+     # Sleep a bit before running the installer
+     -
+      name: "sleep"
+      ref: "core.local"
+      params:
+        cmd: "sleep 20"
       on-success: "run_installer"
     -
       name: "run_installer"
@@ -84,7 +91,7 @@
         sudo: true
         installer_url: "https://{{ hostname }}/setup/"
         hostname: "{{ hostname }}"
-        admin_username: "admin_username"
+        admin_username: "admin"
         system_username: "stanley"
         enterprise_key: "st2tester"
         timeout: 240
