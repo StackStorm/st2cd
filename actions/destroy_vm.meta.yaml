@@ -20,3 +20,5 @@ parameters:
             - get_instances
             - destroy_instance
             - delete_cname
+            - notify_success
+            - notify_failure

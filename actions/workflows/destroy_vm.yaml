@@ -6,6 +6,11 @@ st2cd.destroy_vm:
     input:
         - hostname
         - dns_zone
+
+    task-defaults:
+        on-error:
+            - notify_failure
+
     tasks:
         get_instance_dns:
             action: linux.dig
@@ -27,6 +32,7 @@ st2cd.destroy_vm:
                 - destroy_instance: <% len($.instances) = 1 %>
                 - fail: <% len($.instances) > 1 %>
                 - noop: <% len($.instances) < 1 %>
+
         destroy_instance:
             action: aws.ec2_terminate_instances
             input:
@@ -38,3 +44,19 @@ st2cd.destroy_vm:
             input:
                 zone: <% $.dns_zone %>
                 name: <% $.hostname %>.<% $.dns_zone %> 
+            on-success:
+                - notify_success
+
+        notify_success:
+            action: slack.post_message
+            input:
+                channel: "#opstown"
+                message: "[SUCCESS] <% $.hostname %> was destroyed"
+
+        notify_failure:
+            action: slack.post_message
+            input:
+                channel: "#opstown"
+                message: "[FAILED] <% $.hostname %> was not destroyed"
+            on-complete:
+                - fail
