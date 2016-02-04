@@ -1,58 +1,40 @@
----
-  chain:
-    -
-      name: "get_instance_dns"
-      ref: "linux.dig"
-      params:
-        hostname: "{{hostname}}.{{dns_zone}}"
-        count: 1
-      on-success: "get_instances"
-      notify:
-        on-failure:
-          routes:
-            - slack
-          message: "destroy_vm failure::get_instance_dns failure."
-    -
-      name: "get_instances"
-      ref: "aws.ec2_get_only_instances"
-      params: {}
-      on-success: "id"
-      notify:
-        on-failure:
-          routes:
-            - slack
-          message: "destroy_vm failure::AWS call to get instances list failed."
-    -
-      name: "id"
-      ref: "core.local"
-      params:
-        cmd: "echo '{% for i in get_instances.result -%}{% if (i.private_dns_name + '.') == get_instance_dns.result[0] -%}{{i.id}}{%- endif %}{%- endfor %}'"
-      on-success: "destroy_vm"
-      notify:
-        on-failure:
-          routes:
-            - slack
-          message: "destroy_vm failure::Did not finding matching instance."
-    -
-      name: "destroy_vm"
-      ref: "aws.ec2_terminate_instances"
-      params:
-        instance_ids: "{{id.stdout}}"
-      on-success: "delete_cname"
-      notify:
-        on-failure:
-          routes:
-            - slack
-          message: "destroy_vm failure::Terminate instance failed."
-    -
-      name: "delete_cname"
-      ref: "aws.r53_zone_delete_cname"
-      params:
-        zone: "{{dns_zone}}"
-        name: "{{hostname}}.{{dns_zone}}"
-      notify:
-        on-failure:
-          routes:
-            - slack
-          message: "destroy_vm failure::Deleting CNAME failed."
-  default: "get_instance_dns"
+version: '2.0'
+
+st2cd.destroy_vm:
+    description: Destroy VM and associated resources
+    type: direct
+    input:
+        - hostname
+        - dns_zone
+    tasks:
+        get_instance_dns:
+            action: linux.dig
+            input:
+                hostname: <% $.hostname %>.<% $.dns_zone %>
+                count: 1
+            on-success:
+                - get_instances
+        get_instances:
+            action: aws.ec2_get_only_instances
+            publish:
+                instances: <%
+                        task(get_instances).result.result.where(
+                            $.private_dns_name + '.' = task(get_instance_dns).result.result[0] or
+                            $.private_ip_address = task(get_instance_dns).result.result[0]
+                        ).select($.id)
+                    %>
+            on-success:
+                - destroy_instance: <% len($.instances) = 1 %>
+                - fail: <% len($.instances) > 1 %>
+                - noop: <% len($.instances) < 1 %>
+        destroy_instance:
+            action: aws.ec2_terminate_instances
+            input:
+                instance_ids: <% $.instances[0] %>
+            on-success:
+                - delete_cname
+        delete_cname:
+            action: aws.r53_zone_delete_cname
+            input:
+                zone: <% $.dns_zone %>
+                name: <% $.hostname %>.<% $.dns_zone %> 
