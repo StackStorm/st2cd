@@ -1,58 +1,116 @@
----
-  chain:
-    -
-      name: "get_instance_dns"
-      ref: "linux.dig"
-      params:
-        hostname: "{{hostname}}.{{dns_zone}}"
-        count: 1
-      on-success: "get_instances"
-      notify:
-        on-failure:
-          routes:
-            - slack
-          message: "destroy_vm failure::get_instance_dns failure."
-    -
-      name: "get_instances"
-      ref: "aws.ec2_get_only_instances"
-      params: {}
-      on-success: "id"
-      notify:
-        on-failure:
-          routes:
-            - slack
-          message: "destroy_vm failure::AWS call to get instances list failed."
-    -
-      name: "id"
-      ref: "core.local"
-      params:
-        cmd: "echo '{% for i in get_instances.result -%}{% if (i.private_dns_name + '.') == get_instance_dns.result[0] -%}{{i.id}}{%- endif %}{%- endfor %}'"
-      on-success: "destroy_vm"
-      notify:
-        on-failure:
-          routes:
-            - slack
-          message: "destroy_vm failure::Did not finding matching instance."
-    -
-      name: "destroy_vm"
-      ref: "aws.ec2_terminate_instances"
-      params:
-        instance_ids: "{{id.stdout}}"
-      on-success: "delete_cname"
-      notify:
-        on-failure:
-          routes:
-            - slack
-          message: "destroy_vm failure::Terminate instance failed."
-    -
-      name: "delete_cname"
-      ref: "aws.r53_zone_delete_cname"
-      params:
-        zone: "{{dns_zone}}"
-        name: "{{hostname}}.{{dns_zone}}"
-      notify:
-        on-failure:
-          routes:
-            - slack
-          message: "destroy_vm failure::Deleting CNAME failed."
-  default: "get_instance_dns"
+version: '2.0'
+
+st2cd.destroy_vm:
+    description: Destroy VM and associated resources
+    type: direct
+    input:
+        - hostname
+        - dns_zone
+    tasks:
+        get_instance_dns:
+            action: linux.dig
+            input:
+                hostname: <% $.hostname %>.<% $.dns_zone %>
+                count: 1
+            on-success:
+                - get_instances
+        get_instances:
+            action: aws.ec2_get_only_instances
+            publish:
+                instances: <%
+                        task(get_instances).result.result.where(
+                            $.private_dns_name + '.' = task(get_instance_dns).result.result[0] or
+                            $.private_ip_address = task(get_instance_dns).result.result[0]
+                        ).select($.id)
+                    %>
+            on-success:
+                - get_volumes: <% len($.instances) = 1 %>
+                - notify_multiple_instances_failure: <% len($.instances) > 1 %>
+                - noop: <% len($.instances) < 1 %>
+
+
+        get_volumes:
+            action: aws.ec2_get_instance_attribute
+            input:
+                attribute: blockDeviceMapping
+                instance_id: <% $.instances[0] %>
+            publish:
+                volumes: <%
+                        task(get_volumes).result.result.first().get(
+                            blockDeviceMapping, {}).values().select($.volume_id)
+                    %>
+            on-error:
+                - notify_destroy_instance_failure
+            on-success:
+                - destroy_instance
+        destroy_instance:
+            action: aws.ec2_terminate_instances
+            input:
+                instance_ids: <% $.instances[0] %>
+            # Give the instance time to terminate and volume(s) to be detached.
+            wait-after: 10
+            on-error:
+                - notify_destroy_instance_failure
+            on-success:
+                - delete_cname
+        delete_cname:
+            action: aws.r53_zone_delete_cname
+            input:
+                zone: <% $.dns_zone %>
+                name: <% $.hostname %>.<% $.dns_zone %> 
+            on-error:
+                - notify_delete_cname_failure
+            on-success:
+                - delete_volumes
+        delete_volumes:
+            with-items: volume in <% $.volumes %>
+            action: aws.ec2_delete_volume
+            input:
+                volume_id: <% $.volume %>
+            # The instance may still be terminating and volumes are attached.
+            retry:
+                count: 3
+                delay: 10
+            on-error:
+                - notify_delete_volumes_failure
+            on-success:
+                - notify_success
+
+
+        notify_success:
+            action: slack.post_message
+            input:
+                channel: "#opstown"
+                message: "[SUCCEEDED] <% $.hostname %> was destroyed"
+
+        notify_multiple_instances_failure:
+            action: slack.post_message
+            input:
+                channel: "#opstown"
+                message: "[FAILED] More than one instance for <% $.hostname %> were identified"
+            on-complete:
+                - fail
+
+        notify_destroy_instance_failure:
+            action: slack.post_message
+            input:
+                channel: "#opstown"
+                message: "[FAILED] <% $.hostname %> was not destroyed"
+            on-complete:
+                - fail
+
+        notify_delete_cname_failure:
+            action: slack.post_message
+            input:
+                channel: "#opstown"
+                message: "[FAILED] <% $.hostname %> was destroyed but CNAME was not deleted"
+            on-complete:
+                - fail
+
+        notify_delete_volumes_failure:
+            action: slack.post_message
+            input:
+                channel: "#opstown"
+                message: "[FAILED] <% $.hostname %> was destroyed but volumes were not deleted"
+            on-complete:
+                - fail

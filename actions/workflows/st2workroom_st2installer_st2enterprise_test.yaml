@@ -5,6 +5,12 @@
     st2_password: "cibuild"
   chain:
     -
+      name: "destroy_vm_if_exists"
+      ref: "st2cd.destroy_vm"
+      params:
+        hostname: "{{hostname}}"
+      on-success: "create_vm_role"
+    -
       name: "create_vm_role"
       ref: "st2cd.create_vm_role"
       params:
@@ -150,4 +156,4 @@
       ref: "st2cd.destroy_vm"
       params:
         hostname: "{{hostname}}"
-  default: "create_vm_role"
+  default: "destroy_vm_if_exists"
