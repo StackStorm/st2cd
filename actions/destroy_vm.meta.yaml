@@ -18,7 +18,12 @@ parameters:
         default:
             - get_instance_dns
             - get_instances
+            - get_volumes
             - destroy_instance
             - delete_cname
+            - delete_volumes
             - notify_success
-            - notify_failure
+            - notify_multiple_instances_failure
+            - notify_destroy_instance_failure
+            - notify_delete_cname_failure
+            - notify_delete_volumes_failure
