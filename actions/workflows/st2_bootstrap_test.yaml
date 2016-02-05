@@ -29,16 +29,18 @@ workflows:
           role: <% $.role %>
 
         on-success:
-          - run_bootstrap_script
+          - get_bootstrap_script
       run_bootstrap_script:
-        # [105, 128]
-        action: st2cd.st2_bootstrap_script
+        # [105, 230]
+        action: core.remote_sudo
         input:
           hosts: <% $.hostname %>
+          cmd: bash /tmp/st2_bootstrap.sh
+          timeout: 600
         on-success:
           - add_ci_user
       add_ci_user:
-        # [105, 230]
+        # [105, 332]
         action: st2cd.add_ci_user
         input:
           hosts: <% $.hostname %>
@@ -48,12 +50,21 @@ workflows:
         on-success:
           - end_to_end_tests
       end_to_end_tests:
-        # [105, 332]
+        # [105, 434]
         action: st2cd.e2e_tests
         input:
           hostname: <% $.hostname %>
           st2_username: <% $.st2_username %>
           st2_password: <% $.st2_password %>
+
+      get_bootstrap_script:
+        # [105, 128]
+        action: core.remote_sudo
+        input:
+          hosts: <% $.hostname %>
+          cmd: curl -Ss -k -o /tmp/st2_bootstrap.sh https://path/to/bootstrap
+        on-success:
+          - run_bootstrap_script
 
 
 
