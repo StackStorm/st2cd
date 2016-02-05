@@ -81,7 +81,7 @@ st2cd.destroy_vm:
             action: slack.post_message
             input:
                 channel: "#opstown"
-                message: "[SUCCESS] <% $.hostname %> was destroyed"
+                message: "[SUCCEEDED] <% $.hostname %> was destroyed"
 
         notify_multiple_instances_failure:
             action: slack.post_message
