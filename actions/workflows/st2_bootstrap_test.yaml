@@ -1,8 +1,7 @@
 ---
 version: '2.0'
 
-workflows:
-  main:
+st2cd.st2_bootstrap_test:
     type: direct
     input:
       - distro
@@ -62,7 +61,7 @@ workflows:
         action: core.remote_sudo
         input:
           hosts: <% $.hostname %>
-          cmd: curl -Ss -k -o /tmp/st2_bootstrap.sh https://path/to/bootstrap
+          cmd: curl -Ss -k -o /tmp/st2_bootstrap.sh https://raw.githubusercontent.com/StackStorm/st2-packages/bootstrap_script/scripts/st2_bootstrap_deb.sh
         on-success:
           - run_bootstrap_script
 
