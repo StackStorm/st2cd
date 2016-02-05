@@ -6,11 +6,6 @@ st2cd.destroy_vm:
     input:
         - hostname
         - dns_zone
-
-    task-defaults:
-        on-error:
-            - notify_failure
-
     tasks:
         get_instance_dns:
             action: linux.dig
@@ -29,14 +24,33 @@ st2cd.destroy_vm:
                         ).select($.id)
                     %>
             on-success:
-                - destroy_instance: <% len($.instances) = 1 %>
-                - fail: <% len($.instances) > 1 %>
+                - get_volumes: <% len($.instances) = 1 %>
+                - notify_multiple_instances_failure: <% len($.instances) > 1 %>
                 - noop: <% len($.instances) < 1 %>
 
+
+        get_volumes:
+            action: aws.ec2_get_instance_attribute
+            input:
+                attribute: blockDeviceMapping
+                instance_id: <% $.instances[0] %>
+            publish:
+                volumes: <%
+                        task(get_volumes).result.result.first().get(
+                            blockDeviceMapping, {}).values().select($.volume_id)
+                    %>
+            on-error:
+                - notify_destroy_instance_failure
+            on-success:
+                - destroy_instance
         destroy_instance:
             action: aws.ec2_terminate_instances
             input:
                 instance_ids: <% $.instances[0] %>
+            # Give the instance time to terminate and volume(s) to be detached.
+            wait-after: 10
+            on-error:
+                - notify_destroy_instance_failure
             on-success:
                 - delete_cname
         delete_cname:
@@ -44,8 +58,24 @@ st2cd.destroy_vm:
             input:
                 zone: <% $.dns_zone %>
                 name: <% $.hostname %>.<% $.dns_zone %> 
+            on-error:
+                - notify_delete_cname_failure
+            on-success:
+                - delete_volumes
+        delete_volumes:
+            with-items: volume in <% $.volumes %>
+            action: aws.ec2_delete_volume
+            input:
+                volume_id: <% $.volume %>
+            # The instance may still be terminating and volumes are attached.
+            retry:
+                count: 3
+                delay: 10
+            on-error:
+                - notify_delete_volumes_failure
             on-success:
                 - notify_success
+
 
         notify_success:
             action: slack.post_message
@@ -53,10 +83,34 @@ st2cd.destroy_vm:
                 channel: "#opstown"
                 message: "[SUCCESS] <% $.hostname %> was destroyed"
 
-        notify_failure:
+        notify_multiple_instances_failure:
+            action: slack.post_message
+            input:
+                channel: "#opstown"
+                message: "[FAILED] More than one instance for <% $.hostname %> were identified"
+            on-complete:
+                - fail
+
+        notify_destroy_instance_failure:
             action: slack.post_message
             input:
                 channel: "#opstown"
                 message: "[FAILED] <% $.hostname %> was not destroyed"
+            on-complete:
+                - fail
+
+        notify_delete_cname_failure:
+            action: slack.post_message
+            input:
+                channel: "#opstown"
+                message: "[FAILED] <% $.hostname %> was destroyed but CNAME was not deleted"
+            on-complete:
+                - fail
+
+        notify_delete_volumes_failure:
+            action: slack.post_message
+            input:
+                channel: "#opstown"
+                message: "[FAILED] <% $.hostname %> was destroyed but volumes were not deleted"
             on-complete:
                 - fail
