@@ -1,0 +1,64 @@
+---
+version: '2.0'
+
+workflows:
+  main:
+    type: direct
+    input:
+      - distro
+      - environment
+      - hostname
+      - instance_type 
+      - key_name
+      - keyfile
+      - role
+      - version
+      - st2_username: cibuild
+      - st2_password: cibuild
+    tasks:
+      create_vm:
+        # [105, 26]
+        action: st2cd.create_vm_role
+        input:
+          hostname: <% $.hostname %>
+          instance_type: <% $.instance_type %>
+          environment: <% $.environment %>
+          key_name: <% $.key_name %>
+          keyfile: <% $.keyfile %>
+          distro: <% $.distro %>
+          role: <% $.role %>
+
+        on-success:
+          - run_bootstrap_script
+      run_bootstrap_script:
+        # [105, 128]
+        action: st2cd.st2_bootstrap_script
+        input:
+          hosts: <% $.hostname %>
+        on-success:
+          - add_ci_user
+      add_ci_user:
+        # [105, 230]
+        action: st2cd.add_ci_user
+        input:
+          hosts: <% $.hostname %>
+          distro: <% $.distro %>
+          user: <% $.st2_username %>
+          pass: <% $.st2_password %>
+        on-success:
+          - end_to_end_tests
+      end_to_end_tests:
+        # [105, 332]
+        action: st2cd.e2e_tests
+        input:
+          hostname: <% $.hostname %>
+          st2_username: <% $.st2_username %>
+          st2_password: <% $.st2_password %>
+
+
+
+
+
+
+
+
