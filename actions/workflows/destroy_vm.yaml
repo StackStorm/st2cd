@@ -49,7 +49,7 @@ st2cd.destroy_vm:
             input:
                 instance_ids: <% $.instances[0] %>
             # Give the instance time to terminate and volume(s) to be detached.
-            wait-after: 10
+            wait-after: 60
             on-error:
                 - notify_destroy_instance_failure
             on-success:
@@ -70,8 +70,8 @@ st2cd.destroy_vm:
                 volume_id: <% $.volume %>
             # The instance may still be terminating and volumes are attached.
             retry:
-                count: 3
-                delay: 10
+                count: 10
+                delay: 60
             on-error:
                 - notify_delete_volumes_failure
             on-success:
