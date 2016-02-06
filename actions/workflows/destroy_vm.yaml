@@ -38,7 +38,8 @@ st2cd.destroy_vm:
             publish:
                 volumes: <%
                         task(get_volumes).result.result.first().get(
-                            blockDeviceMapping, {}).values().select($.volume_id)
+                            blockDeviceMapping, {}).values().where(
+                                not $.get(delete_on_termination, True)).select($.volume_id)
                     %>
             on-error:
                 - notify_destroy_instance_failure
