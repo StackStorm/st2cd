@@ -13,7 +13,8 @@ st2cd.destroy_vm:
                 hostname: <% $.hostname %>.<% $.dns_zone %>
                 count: 1
             on-success:
-                - get_instances
+                - get_instances: <% len(task(get_instance_dns).result.result) > 0 %>
+                - noop: <% len(task(get_instance_dns).result.result) <= 0 %>
         get_instances:
             action: aws.ec2_get_only_instances
             publish:
