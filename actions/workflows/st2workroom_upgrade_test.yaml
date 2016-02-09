@@ -166,6 +166,7 @@
         timeout: 3600
       on-success: "post_upgrade_restart_st2"
    # Restart all the services post upgrade
+   # Note: We do this to make sure that all the services still start post upgrade
    -
       name: "post_upgrade_restart_st2"
       ref: "core.remote_sudo"
@@ -174,10 +175,12 @@
         cmd: "st2ctl restart && sleep 20"
         timeout: 60
       on-success: "run_post_upgrade_checks"
-    # TODO: TBW
     -
       name: "run_post_upgrade_checks"
-      ref: "core.noop"
+      ref: "st2cd.st2workroom_upgrade_checks"
+      params:
+        upgrade_version: "{{upgrade_version}}"
+        upgrade_build: "{{upgrade_build}}"
       on-success: "post_upgrade_run_tests"
     # Run end to end tests, make sure everything still works
     -
