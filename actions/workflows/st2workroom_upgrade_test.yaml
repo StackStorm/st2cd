@@ -162,10 +162,34 @@
           CI: "true"
           DEBUG: "1"
         hosts: "{{hostname}}"
-        cmd: "curl -sSL {{install_url}}  | sudo sh -s -- -a /tmp/answers_upgrade.yaml"
+        cmd: "upgrade-system -a /tmp/answers_upgrade.yaml"
         timeout: 3600
+      on-success: "post_upgrade_restart_st2"
+   # Restart all the services post upgrade
+   -
+      name: "post_upgrade_restart_st2"
+      ref: "core.remote_sudo"
+      params:
+        hosts: "{{hostname}}"
+        cmd: "st2ctl restart && sleep 20"
+        timeout: 60
+      on-success: "run_post_upgrade_checks"
+    # TODO: TBW
+    -
+      name: "run_post_upgrade_checks"
+      ref: "core.noop"
+      on-success: "post_upgrade_run_tests"
+    # Run end to end tests, make sure everything still works
+    -
+      name: "post_upgrade_run_tests"
+      ref: "st2cd.e2e_tests"
+      params:
+        hostname: "{{hostname}}"
+        build: "{{build}}"
+        st2_username: "{{st2_username}}"
+        st2_password: "{{st2_password}}"
+        protocol: "https"
       on-success: "destroy_vm"
-    # TODO: Run post upgrade checks
     -
       name: "destroy_vm"
       ref: "st2cd.destroy_vm"
