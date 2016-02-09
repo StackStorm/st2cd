@@ -1,0 +1,18 @@
+name: ec2_filter_volumes
+description: Filter outdated volumes
+runner_type: python-script
+entry_point: ec2_filter_volumes.py
+enabled: true
+parameters:
+    volumes:
+        type: array
+        description: List of volumes
+        required: true
+    status:
+        type: string
+        description: Status of the volume
+        default: available
+    age:
+        type: integer
+        description: Number of seconds
+        default: 14400
