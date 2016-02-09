@@ -52,7 +52,6 @@ PACKAGE_UPGRADE_VERSION_REVISION="${UPGRADE_VERSION}-${UPGRADE_REVISION}"
 # 1. Verify that st2* packages have been upgraded
 echo "Checking package versions..."
 
-
 for package in "${PACKAGES[@]}"; do
     verify_debian_package_version_is_installed ${package} ${PACKAGE_UPGRADE_VERSION_REVISION}
 done
