@@ -8,4 +8,4 @@ resource_ref: st2cd.st2workroom_test
 policy_type: action.retry
 parameters:
     retry_on: failure
-    max_retry_count: 1
+    max_retry_count: 2
