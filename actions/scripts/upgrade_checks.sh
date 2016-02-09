@@ -12,12 +12,18 @@ if [ $# -ne 2 ]; then
     exit 1
 fi
 
-PACKAGES=(st2actionrunner st2api st2auth st2client st2common st2debug st2reactor)
+PACKAGES=(st2actions st2api st2auth st2common st2debug st2reactor python-st2client)
 
 function verify_debian_package_version_is_installed() {
     # Function which verifies that the specified version of Debian package is installed
     package=$1
     version=$2
+
+    if [ ${package} = "python-st2client" ]; then
+        # st2client package has -1 version suffix at the end and uses . as build separator
+        version=$(echo ${version} | tr "-" ".")
+        version="${version}-1"
+    fi
 
     # 1. Verify package is installed
     output=$(dpkg -s ${package} 2>&1)
@@ -40,13 +46,15 @@ function verify_debian_package_version_is_installed() {
     echo "Package ${package} is at the correct version"
 }
 
+ST2CLIENT_UPGRADE_VERSION_REVISION="${UPGRADE_VERSION}.${UPGRADE_REVISION}"
+PACKAGE_UPGRADE_VERSION_REVISION="${UPGRADE_VERSION}-${UPGRADE_REVISION}"
+
 # 1. Verify that st2* packages have been upgraded
 echo "Checking package versions..."
 
-UPGRADE_VERSION_REVISION="${UPGRADE_VERSION}-${UPGRADE_REVISION}"
 
 for package in "${PACKAGES[@]}"; do
-    verify_debian_package_version_is_installed ${package} ${UPGRADE_VERSION_REVISION}
+    verify_debian_package_version_is_installed ${package} ${PACKAGE_UPGRADE_VERSION_REVISION}
 done
 
 echo ""
@@ -54,10 +62,8 @@ echo ""
 # 2. Verify st2client has been upgraded
 echo "Checking st2client version..."
 
-UPGRADE_VERSION_REVISION="${UPGRADE_VERSION}.${UPGRADE_REVISION}"
-
 # 2.1 Verify st2client is installed and available in path
-OUTPUT=$(st2 2>&1)
+OUTPUT=$(st2 --version 2>&1)
 EXIT_CODE=$?
 
 if [ ${EXIT_CODE} -ne 0 ]; then
@@ -68,10 +74,13 @@ fi
 
 INSTALLED_ST2CLIENT_VERSION_REVISION=$(st2 --version 2>&1 | awk -F \' '{print $2}')
 
-if [ ${INSTALLED_ST2CLIENT_VERSION_REVISION} != ${UPGRADE_VERSION_REVISION} ]; then
+if [ ${INSTALLED_ST2CLIENT_VERSION_REVISION} != ${ST2CLIENT_UPGRADE_VERSION_REVISION} ]; then
     echo "Expected version ${UPGRADE_VERSION_REVISION} of st2client, but got ${INSTALLED_ST2CLIENT_VERSION_REVISION}"
     exit 4
+else
+    echo "st2client is at the correct version"
 fi
 
-echo "All the upgrade checks have successfuly completed!"
+echo ""
+echo "All the upgrade checks have successfuly completed. Party on!"
 exit 0
