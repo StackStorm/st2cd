@@ -12,8 +12,8 @@ st2cd.st2_bootstrap_test:
       - keyfile
       - role
       - version
-      - st2_username: cibuild
-      - st2_password: cibuild
+      - st2_username: test
+      - st2_password: Ch@ngeMe
     tasks:
       create_vm:
         # [105, 26]
@@ -37,20 +37,10 @@ st2cd.st2_bootstrap_test:
           cmd: bash /tmp/st2_bootstrap.sh
           timeout: 600
         on-success:
-          - add_ci_user
-      add_ci_user:
-        # [105, 332]
-        action: st2cd.add_ci_user
-        input:
-          hosts: <% $.hostname %>
-          distro: <% $.distro %>
-          user: <% $.st2_username %>
-          pass: <% $.st2_password %>
-        on-success:
           - end_to_end_tests
       end_to_end_tests:
         # [105, 434]
-        action: st2cd.e2e_tests
+        action: st2cd.e2e_bootstrap_tests
         input:
           hostname: <% $.hostname %>
           st2_username: <% $.st2_username %>
