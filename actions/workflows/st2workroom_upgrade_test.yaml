@@ -86,7 +86,7 @@
           CI: "true"
           DEBUG: "1"
         hosts: "{{hostname}}"
-        cmd: "curl -sSL {{install_url}}  | sudo sh -s -- -a /tmp/answers.yaml"
+        cmd: "curl -sSL {{install_url}}  | sudo sh -s -- -a /tmp/answers_initial.yaml"
         timeout: 3600
       on-success: "verify_no_default_ssh_keys_are_installed_for_stanley_user"
     -
@@ -131,7 +131,7 @@
         st2_username: "{{st2_username}}"
         st2_password: "{{st2_password}}"
         protocol: "https"
-      on-success: "destroy_vm"
+      on-success: "upgrade_stackstorm"
       on-failure: "restart_st2"
     -
       name: "restart_st2"
