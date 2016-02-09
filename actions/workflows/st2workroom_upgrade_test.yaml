@@ -151,11 +151,12 @@
         st2_password: "{{st2_password}}"
         protocol: "https"
       on-success: "prep_upgrade"
-    # Upgrade prep includes deleting st2server_bootstrapped and moving over answers_upgrade.yaml into the right place.
     -
+      # Upgrade prep includes deleting st2server_bootstrapped and moving over answers_upgrade.yaml into the right place.
       name: "prep_upgrade"
       ref: "core.remote_sudo"
-      hosts: "{{hostname}}"
+      params:
+        hosts: "{{hostname}}"
         cmd: "rm -f /etc/facter/facts.d/st2server_bootstrapped.txt && cp /tmp/answers_upgrade.yaml /opt/puppet/hieradata/answers.yaml"
         timeout: 300
       on-success: "upgrade_stackstorm"
@@ -173,9 +174,9 @@
         cmd: "update-system"
         timeout: 3600
       on-success: "post_upgrade_restart_st2"
-   # Restart all the services post upgrade
-   # Note: We do this to make sure that all the services still start post upgrade
-   -
+    -
+      # Restart all the services post upgrade
+      # Note: We do this to make sure that all the services still start post upgrade
       name: "post_upgrade_restart_st2"
       ref: "core.remote_sudo"
       params:
@@ -190,8 +191,8 @@
         upgrade_version: "{{upgrade_version}}"
         upgrade_build: "{{upgrade_build}}"
       on-success: "post_upgrade_run_tests"
-    # Run end to end tests, make sure everything still works
     -
+      # Run end to end tests, make sure everything still works
       name: "post_upgrade_run_tests"
       ref: "st2cd.e2e_tests"
       params:
