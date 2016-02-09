@@ -1,9 +1,9 @@
 ---
-  name: "st2workroom_test"
+  name: "st2workroom_upgrade_test"
   runner_type: "action-chain"
   description: "Tests workroom uprade from one version to another"
   enabled: true
-  entry_point: "workflows/st2workroom_test.yaml"
+  entry_point: "workflows/st2workroom_upgrade_test.yaml"
   parameters:
     repo:
       type: "string"
