@@ -39,13 +39,15 @@ st2cd.st2_bootstrap_test:
         on-success:
           - end_to_end_tests
       end_to_end_tests:
-        # [105, 434]
+        # [105, 332]
         action: st2cd.e2e_bootstrap_tests
         input:
           hostname: <% $.hostname %>
           st2_username: <% $.st2_username %>
           st2_password: <% $.st2_password %>
 
+        on-success:
+          - destroy_vm
       get_bootstrap_script:
         # [105, 128]
         action: core.remote_sudo
@@ -54,6 +56,11 @@ st2cd.st2_bootstrap_test:
           cmd: curl -Ss -k -o /tmp/st2_bootstrap.sh https://raw.githubusercontent.com/StackStorm/st2-packages/bootstrap_script/scripts/st2_bootstrap_deb.sh
         on-success:
           - run_bootstrap_script
+      destroy_vm:
+        # [105, 434]
+        action: st2cd.destroy_vm
+        input:
+          hostname: <% $.hostname %>
 
 
 
