@@ -13,6 +13,7 @@ if [ $# -ne 2 ]; then
 fi
 
 PACKAGES=(st2actions st2api st2auth st2common st2debug st2reactor python-st2client)
+SERVICE_NAMES=(st2actionrunner st2notifier st2resultstracker st2sensorcontainer st2rulesengine st2api)
 
 function verify_debian_package_version_is_installed() {
     # Function which verifies that the specified version of Debian package is installed
@@ -45,6 +46,20 @@ function verify_debian_package_version_is_installed() {
 
     echo "Package ${package} is at the correct version"
 }
+
+function verify_service_is_running() {
+    service_name=$1
+
+    ps_lines=$(ps aux | grep ${service_name} | grep -v grep | wc -l)
+
+    if [ ${ps_lines} -lt 1 ]; then
+        echo "Service ${service_name} is not running!"
+        exit 3
+    fi
+
+    echo "Service ${service_name} is running"
+}
+
 
 ST2CLIENT_UPGRADE_VERSION_REVISION="${UPGRADE_VERSION}.${UPGRADE_REVISION}"
 PACKAGE_UPGRADE_VERSION_REVISION="${UPGRADE_VERSION}-${UPGRADE_REVISION}"
@@ -79,6 +94,14 @@ if [ ${INSTALLED_ST2CLIENT_VERSION_REVISION} != ${ST2CLIENT_UPGRADE_VERSION_REVI
 else
     echo "st2client is at the correct version"
 fi
+
+# 3.  Verify that all the services are running
+echo "Verifying all the services / processes are running..."
+
+for service in "${SERVICE_NAMES[@]}"; do
+    verify_service_is_running ${service}
+done
+
 
 echo ""
 echo "All the upgrade checks have successfuly completed. Party on!"
