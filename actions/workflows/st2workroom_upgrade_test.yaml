@@ -133,7 +133,7 @@
       params:
         hosts: "{{hostname}}"
         cmd: "st2ctl restart && sleep 15"
-        timeout: 50
+        timeout: 40
       on-success: "rerun_tests"
     -
       name: "rerun_tests"
@@ -178,7 +178,7 @@
       params:
         hosts: "{{hostname}}"
         cmd: "sleep 15 ; pkill -9 -f st2actionrunner ; st2ctl restart ; sleep 15"
-        timeout: 60
+        timeout: 40
       on-success: "run_post_upgrade_checks"
     -
       name: "run_post_upgrade_checks"
