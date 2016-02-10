@@ -13,6 +13,10 @@
       type: "string"
       description: "The branch of st2workroom to bootstrap"
       default: "master"
+    build:
+      type: "string"
+      description: "The build no to keep passing along"
+      required: true
     revision:
       type: "string"
       description: ""
