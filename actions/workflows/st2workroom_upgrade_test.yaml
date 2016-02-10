@@ -132,8 +132,8 @@
       ref: "core.remote_sudo"
       params:
         hosts: "{{hostname}}"
-        cmd: "sleep 20 && st2ctl restart && sleep 20"
-        timeout: 180
+        cmd: "st2ctl restart && sleep 20"
+        timeout: 60
       on-success: "rerun_tests"
     -
       name: "rerun_tests"
@@ -175,8 +175,8 @@
       ref: "core.remote_sudo"
       params:
         hosts: "{{hostname}}"
-        cmd: "st2ctl restart && sleep 20"
-        timeout: 60
+        cmd: "sleep 20 && st2ctl restart && sleep 20"
+        timeout: 80
       on-success: "run_post_upgrade_checks"
     -
       name: "run_post_upgrade_checks"
