@@ -191,7 +191,7 @@
       name: "post_upgrade_run_tests"
       ref: "st2cd.e2e_tests"
       params:
-        hosts: "{{hostname}}"
+        hostname: "{{hostname}}"
         build: "{{build}}"
         st2_username: "{{st2_username}}"
         st2_password: "{{st2_password}}"
