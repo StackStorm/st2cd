@@ -182,6 +182,7 @@
       name: "run_post_upgrade_checks"
       ref: "st2cd.st2workroom_upgrade_checks"
       params:
+        hosts: "{{hostname}}"
         upgrade_version: "{{upgrade_version}}"
         upgrade_build: "{{upgrade_build}}"
       on-success: "post_upgrade_run_tests"
