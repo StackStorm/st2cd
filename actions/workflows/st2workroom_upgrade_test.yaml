@@ -170,14 +170,14 @@
       on-success: "post_upgrade_restart_st2"
     -
       # Restart all the services post upgrade
-      # Note: We do this to make sure that all the services still start post upgrade
-      # Note: We use kill -9 to make sure all the action runner processes are actually
+      # Note 1: We do this to make sure that all the services still start post upgrade
+      # Note 2: We use kill -9 to make sure all the action runner processes are actually
       # killed
       name: "post_upgrade_restart_st2"
       ref: "core.remote_sudo"
       params:
         hosts: "{{hostname}}"
-        cmd: "sleep 10 && pkill -9 st2actionrunner ; st2ctl restart && sleep 10"
+        cmd: "sleep 10 && (ps aux | grep -ie st2actionrunner | awk '{print $2}' | xargs kill -9) ; st2ctl restart && sleep 10"
         timeout: 60
       on-success: "run_post_upgrade_checks"
     -
