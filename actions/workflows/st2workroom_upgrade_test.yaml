@@ -125,7 +125,7 @@
         st2_username: "{{st2_username}}"
         st2_password: "{{st2_password}}"
         protocol: "https"
-      on-success: "upgrade_stackstorm"
+      on-success: "prep_upgrade"
       on-failure: "restart_st2"
     -
       name: "restart_st2"
@@ -190,7 +190,7 @@
       name: "post_upgrade_run_tests"
       ref: "st2cd.e2e_tests"
       params:
-        hostname: "{{hostname}}"
+        hosts: "{{hostname}}"
         build: "{{build}}"
         st2_username: "{{st2_username}}"
         st2_password: "{{st2_password}}"
