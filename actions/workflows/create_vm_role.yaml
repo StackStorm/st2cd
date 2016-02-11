@@ -89,6 +89,6 @@
       name: "puppet_bootstrap"
       ref: "st2cd.puppet_bootstrap"
       params:
-        hostname: "{{ec2_instance_private_ip}}"
+        hosts: "{{ec2_instance_private_ip}}"
         role: "{{role}}"
   default: "get_subnet_id"
