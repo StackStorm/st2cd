@@ -50,13 +50,6 @@
       ref: "st2cd.mistral_tag_release"
       params:
         version: "{{tagged_version}}"
-      on-success: "update_mistral_puppet"
-      on-failure: "clean_repo_failure"
-    -
-      name: "update_mistral_puppet"
-      ref: "st2cd.mistral_update_deploy_version"
-      params:
-        version: "{{tagged_version}}"
       on-success: "get_next_version"
       on-failure: "clean_repo_failure"
     -
