@@ -32,6 +32,11 @@
       type: "string"
     version:
       type: "string"
+      default: ""
+    version_arg:
+      type: "string"
+      immutable: true
+      default: "{% if version != '' %}--version={{version}}{% endif %}
     release: 
       type: "string"
       enum: 
