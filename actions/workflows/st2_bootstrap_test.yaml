@@ -12,6 +12,7 @@ st2cd.st2_bootstrap_test:
       - keyfile
       - role
       - version
+      - release
       - st2_username: test
       - st2_password: Ch@ngeMe
     tasks:
@@ -34,7 +35,7 @@ st2cd.st2_bootstrap_test:
         action: core.remote_sudo
         input:
           hosts: <% $.hostname %>
-          cmd: bash /tmp/st2_bootstrap.sh
+          cmd: bash /tmp/st2_bootstrap.sh --<% $.release %>
           timeout: 600
         on-success:
           - end_to_end_tests
