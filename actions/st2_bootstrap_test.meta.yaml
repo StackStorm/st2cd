@@ -30,7 +30,9 @@
     role: 
       default: "default"
       type: "string"
-    version: 
+    version:
+      type: "string"
+    release: 
       type: "string"
       enum: 
         - "stable"
