@@ -4,35 +4,42 @@
   description: "New bootstrap script test"
   name: "st2_bootstrap_test"
   pack: "st2cd"
-  parameters: 
-    distro: 
+  parameters:
+    distro:
       default: "UBUNTU14"
       type: "string"
-    environment: 
+    environment:
       type: "string"
-      enum: 
+      enum:
         - "sandbox"
         - "staging"
         - "production"
       default: "sandbox"
-    hostname: 
+    hostname:
       required: true
       type: "string"
-    instance_type: 
+    instance_type:
       default: "m3.large"
       type: "string"
-    key_name: 
+    key_name:
       default: "st2_deploy"
       type: "string"
-    keyfile: 
+    keyfile:
       default: "/home/stanley/.ssh/stanley_rsa"
       type: "string"
-    role: 
+    role:
       default: "default"
       type: "string"
-    version: 
+    version:
       type: "string"
-      enum: 
+      default: ""
+    version_arg:
+      type: "string"
+      immutable: true
+      default: "{% if version != '' %}--version={{version}}{% endif %}"
+    release:
+      type: "string"
+      enum:
         - "stable"
         - "unstable"
       default: "stable"
