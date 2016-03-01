@@ -32,6 +32,7 @@
         target: "{{root_dir}}"
         force: true
         recursive: true
+        verbose: false
         sudo: true
       on-success: "write_answers_file"
     -
