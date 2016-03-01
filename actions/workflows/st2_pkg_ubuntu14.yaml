@@ -68,7 +68,7 @@
       params:
         hosts: "{{build_server}}"
         builddir: "/home/stanley/debbuild"
-        packages: "st2common st2reactor st2actions st2api st2auth st2debug"
+        packages: "st2common st2reactor st2actions st2api st2stream st2auth st2debug"
       on-success: "create_build_dir"
     -
       name: "create_build_dir"
