@@ -1,13 +1,6 @@
 ---
   chain:
     -
-      name: "get_current_build"
-      ref: "st2cd.kvstore"
-      params:
-        key: "st2_{{branch}}_build_number"
-        action: "get"
-      on-success: "get_build_server"
-    -
       name: "get_build_server"
       ref: "linux.dig"
       params:
@@ -68,5 +61,3 @@
       params:
         hosts: "{{build_server}}"
         repo: "{{repodir}}"
-
-  default: "get_current_build"
