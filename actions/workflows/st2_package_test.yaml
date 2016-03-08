@@ -1,0 +1,71 @@
+---
+version: '2.0'
+
+st2cd.st2_package_test:
+    type: direct
+    input:
+        - hostname
+        - dns_zone
+        - instance_type
+        - environment
+        - key_name
+        - keyfile
+        - distro
+        - role
+        - release
+        - version
+        - debug
+        - st2_username: test
+        - st2_password: Ch@ngeMe
+
+    task-defaults:
+        on-error:
+            - destroy_vm: <% not $.debug %>
+            - fail
+
+    tasks:
+        create_vm:
+            action: st2cd.create_vm_role
+            input:
+                hostname: <% $.hostname %>
+                instance_type: <% $.instance_type %>
+                environment: <% $.environment %>
+                key_name: <% $.key_name %>
+                keyfile: <% $.keyfile %>
+                dns_zone: <% $.dns_zone %>
+                distro: pkg_<% $.distro %>
+                role: <% $.role %>
+            publish:
+                vm_info: <% task(create_vm).result.tasks[2].result.result[0] %>
+                vm_fqdn: <% $.hostname %>.<% $.dns_zone %>
+            on-success:
+                - get_bootstrap_script
+        get_bootstrap_script:
+            action: core.remote_sudo
+            input:
+                hosts: <% $.vm_fqdn %>
+                cmd: >
+                    curl -Ss -k -o /tmp/st2_bootstrap.sh
+                    https://raw.githubusercontent.com/StackStorm/st2-packages/master/scripts/st2bootstrap-deb.sh
+            on-success:
+                - run_bootstrap_script
+        run_bootstrap_script:
+            action: core.remote_sudo
+            input:
+                hosts: <% $.vm_fqdn %>
+                cmd: bash /tmp/st2_bootstrap.sh --<% $.release %>
+                timeout: 600
+            on-success:
+                - run_e2e_tests
+        run_e2e_tests:
+            action: st2cd.st2_e2e_tests
+            input:
+                host: <% $.vm_fqdn %>
+                st2_username: <% $.st2_username %>
+                st2_password: <% $.st2_password %>
+            on-success:
+                - destroy_vm: <% not $.debug %>
+        destroy_vm:
+            action: st2cd.destroy_vm
+            input:
+                hostname: <% $.hostname %>

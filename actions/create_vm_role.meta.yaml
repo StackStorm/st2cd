@@ -48,6 +48,11 @@
         - "F20"
         - "F21"
         - "UBUNTU14"
+        - "pkg_UBUNTU14"
+        - "pkg_RHEL6"
+        - "pkg_RHEL7"
+        - "pkg_CENTOS6"
+        - "pkg_CENTOS7"
     notification_channel:
       type: "string"
       description: "used by rule with actiontrigger"

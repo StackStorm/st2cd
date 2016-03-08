@@ -1,0 +1,16 @@
+---
+name: setup_e2e_tests
+description: Install and setup st2 end to end test requirements
+enabled: true
+runner_type: remote-shell-script
+entry_point: setup_e2e_tests.sh
+parameters:
+  sudo:
+    immutable: true
+    default: false
+  cmd:
+    immutable: true
+    default: ""
+  kwarg_op:
+    immutable: true
+    default: "--"

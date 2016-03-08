@@ -1,0 +1,48 @@
+---
+name: st2_package_test
+pack: st2cd
+description: End to end test for st2 package
+enabled: true
+runner_type: mistral-v2
+entry_point: workflows/st2_package_test.yaml
+parameters:
+    hostname:
+        type: string
+        required: true
+    dns_zone:
+        type: string
+        description: Route53 DNS Zone to add host to
+        default: uswest2.stackstorm.net
+    instance_type:
+        type: string
+        default: m3.large
+    environment:
+        type: string
+        enum:
+            - sandbox
+            - staging
+            - production
+        default: sandbox
+    key_name:
+        type: string
+        default: st2_deploy
+    keyfile:
+        type: string
+        default: /home/vagrant/.ssh/stanley_rsa
+    distro:
+        type: string
+        required: true
+    role:
+        type: string
+        default: default
+    release:
+        type: string
+        enum:
+            - stable
+            - unstable
+        default: stable
+    version:
+        type: string
+    debug:
+        type: boolean
+        default: false
