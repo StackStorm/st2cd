@@ -1,0 +1,12 @@
+---
+name: "promote_package"
+pack: "st2cd"
+action_ref: "st2cd.promote_package"
+formats:
+  - display: "promote [package] [version]-[revision] to [stable|unstable|enterprise|enterprise-unstable]"
+    representation:
+    - "promote {{package}} {{version}}-{{revision}} to {{repo}}"
+  - display: "promote [package] [version]-[revision] for [wheezy|jessie|trusty|el6|el7] to [stable|unstable|enterprise|enterprise-unstable]"
+    representation:
+    - "promote {{package}} {{version}}-{{revision}} for {{os}} to {{repo}}"
+description: "Promote a package to production repo"

@@ -1,0 +1,98 @@
+version: '2.0'
+name: st2cd.promote_package
+description: Promote a package to production.
+
+workflows:
+
+    main:
+        type: direct
+
+        input:
+            - package
+            - version
+            - revision
+            - os
+            - repo
+
+        tasks:
+
+            init:
+                action: core.local
+                input:
+                    cmd: "mkdir -p /tmp/st2-up/{ubuntu/trusty,debian/wheezy,debian/jessie,el/6,el/7}"
+                publish:
+                    - trusty_path: ubuntu/trusty
+                    - wheezy_path: debian/wheezy
+                    - jessie_path: debian/jessie
+                    - el6_path:    el/6
+                    - el7_path:    el/7
+                    - rpm: <% $.package %>_<% $.version %>-<% $.revision %>.x86_64.rpm
+                    - deb: <% $.package %>_<% $.version %>-<% $.revision %>_amd64.deb
+                    - source: <% $.repo = 'enterprise' && 'enterprise-staging' || $.repo = 'enterprise-unstable' && 'enterprise-staging-unstable' || $.repo = 'stable' && 'staging-stable' || $.repo = 'unstable' && 'staging-unstable' %>
+                on-success:
+                    - download_trusty: <% $.os = "trusty" or not $.os %>
+                    - download_wheezy: <% $.os = "wheezy" or not $.os %>
+                    - download_jessie: <% $.os = "jessie" or not $.os %>
+                    - download_el6: <% $.os = "el6" or not $.os %>
+                    - download_el7: <% $.os = "el7" or not $.os %>
+
+            download_trusty:
+                action: core.local
+                input:
+                    cmd: "wget -p /tmp/st2-up/<% $.trusty_path %> https://packagecloud.io/stackstorm/<% $.source %>/<% $.trusty_path %>/<% $.deb %>"
+                on-success: upload_trusty
+            upload_trusty:
+                action: core.local
+                input:
+                    cmd: "package_cloud push StackStorm/<% $.repo %>/<% $.trusty_path %> /tmp/st2-up/<% $.trusty_path %>/<% $.deb %>"
+                on-success: cleanup
+
+            download_wheezy:
+                action: core.local
+                input:
+                    cmd: "wget -p /tmp/st2-up/<% $.wheezy_path %> https://packagecloud.io/stackstorm/<% $.source %>/<% $.wheezy_path %>/<% $.deb %>"
+                on-success: upload_wheezy
+            upload_wheezy:
+                action: core.local
+                input:
+                    cmd: "package_cloud push StackStorm/<% $.repo %>/<% $.wheezy_path %> /tmp/st2-up/<% $.wheezy_path %>/<% $.deb %>"
+                on-success: cleanup
+
+            download_jessie:
+                action: core.local
+                input:
+                    cmd: "wget -p /tmp/st2-up/<% $.jessie_path %> https://packagecloud.io/stackstorm/<% $.source %>/<% $.jessie_path %>/<% $.deb %>"
+                on-success: upload_jessie
+            upload_jessie:
+                action: core.local
+                input:
+                    cmd: "package_cloud push StackStorm/<% $.repo %>/<% $.jessie_path %> /tmp/st2-up/<% $.jessie_path %>/<% $.deb %>"
+                on-success: cleanup
+
+            download_el6:
+                action: core.local
+                input:
+                    cmd: "wget -p /tmp/st2-up/<% $.el6_path %> https://packagecloud.io/stackstorm/<% $.source %>/<% $.el6_path %>/<% $.rpm %>"
+                on-success: upload_el6
+            upload_el6:
+                action: core.local
+                input:
+                    cmd: "package_cloud push StackStorm/<% $.repo %>/<% $.el6_path %> /tmp/st2-up/<% $.el6_path %>/<% $.rpm %>"
+                on-success: cleanup
+
+            download_el7:
+                action: core.local
+                input:
+                    cmd: "wget -p /tmp/st2-up/<% $.el7_path %> https://packagecloud.io/stackstorm/<% $.source %>/<% $.el7_path %>/<% $.rpm %>"
+                on-success: upload_el7
+            upload_el7:
+                action: core.local
+                input:
+                    cmd: "package_cloud push StackStorm/<% $.repo %>/<% $.el7_path %> /tmp/st2-up/<% $.el7_path %>/<% $.rpm %>"
+                on-success: cleanup
+
+            cleanup:
+                join: all
+                action: core.local
+                input:
+                    cmd: "rm -rf /tmp/st2-up"
