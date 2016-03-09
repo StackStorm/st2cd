@@ -1,7 +1,3 @@
-# TODO: handle 404
-# TODO: handle uninitialized package_cloud
-# TODO: handle success on every os (messages)
-
 ---
 version: '2.0'
 
