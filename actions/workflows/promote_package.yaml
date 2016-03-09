@@ -17,7 +17,7 @@ st2cd.promote_package:
         input:
           cmd: "mkdir -p /tmp/st2-up/{ubuntu/trusty,debian/wheezy,debian/jessie,el/6,el/7}"
         publish:
-          rpm: "<% $.package %>_<% $.version %>-<% $.revision %>.x86_64.rpm"
+          rpm: "<% $.package %>-<% $.version %>-<% $.revision %>.x86_64.rpm"
           deb: "<% $.package %>_<% $.version %>-<% $.revision %>_amd64.deb"
           source: "<% $.repo = 'enterprise' and 'enterprise-staging' or $.repo = 'enterprise-unstable' and 'enterprise-staging-unstable' or $.repo = 'stable' and 'staging-stable' or $.repo = 'unstable' and 'staging-unstable' %>"
           token: ""
@@ -25,6 +25,8 @@ st2cd.promote_package:
           - download_trusty: "<% $.os in list('all', 'deb', 'trusty') %>"
           - download_wheezy: "<% $.os in list('all', 'deb', 'wheezy') %>"
           - download_jessie: "<% $.os in list('all', 'deb', 'jessie') %>"
+          - download_el6: "<% $.os in list('all', 'rpm', 'el6') %>"
+          - download_el7: "<% $.os in list('all', 'rpm', 'el7') %>"
 
       download_trusty:
         action: core.local
@@ -62,6 +64,32 @@ st2cd.promote_package:
         action: core.local
         input:
           cmd: "LANG=en_US.utf8 PACKAGECLOUD_TOKEN=<% $.token %> package_cloud push StackStorm/<% $.repo %>/debian/jessie /tmp/st2-up/debian/jessie/<% $.deb %>"
+#        on-success: cleanup
+#        on-error: cleanup
+
+      download_el6:
+        action: core.local
+        input:
+          cmd: "wget -O /tmp/st2-up/el/6/<% $.rpm %> https://packagecloud.io/StackStorm/<% $.source %>/el/6/x86_64/<% $.rpm %>"
+        on-success: upload_el6
+#        on-error: cleanup
+      upload_el6:
+        action: core.local
+        input:
+          cmd: "LANG=en_US.utf8 PACKAGECLOUD_TOKEN=<% $.token %> package_cloud push StackStorm/<% $.repo %>/el/6 /tmp/st2-up/el/6/<% $.rpm %>"
+#        on-success: cleanup
+#        on-error: cleanup
+
+      download_el7:
+        action: core.local
+        input:
+          cmd: "wget -O /tmp/st2-up/el/7/<% $.rpm %> https://packagecloud.io/StackStorm/<% $.source %>/el/7/x86_64/<% $.rpm %>"
+        on-success: upload_el7
+#        on-error: cleanup
+      upload_el7:
+        action: core.local
+        input:
+          cmd: "LANG=en_US.utf8 PACKAGECLOUD_TOKEN=<% $.token %> package_cloud push StackStorm/<% $.repo %>/el/7 /tmp/st2-up/el/7/<% $.rpm %>"
 #        on-success: cleanup
 #        on-error: cleanup
 
