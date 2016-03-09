@@ -36,60 +36,60 @@ st2cd.promote_package:
       download_trusty:
         action: core.local
         input:
-            cmd: "wget -p /tmp/st2-up/ubuntu/trusty/ https://packagecloud.io/StackStorm/<% $.source %>/ubuntu/pool/trusty/main/<% $.package[0] %>/<% $.package %>/<% $.deb %>"
+          cmd: "wget -p /tmp/st2-up/ubuntu/trusty/ https://packagecloud.io/StackStorm/<% $.source %>/ubuntu/pool/trusty/main/<% $.package[0] %>/<% $.package %>/<% $.deb %>"
         on-success: upload_trusty
       upload_trusty:
         action: core.local
         input:
-            cmd: "package_cloud push StackStorm/<% $.repo %>/ubuntu/trusty /tmp/st2-up/ubuntu/trusty/<% $.deb %>"
+          cmd: "package_cloud push StackStorm/<% $.repo %>/ubuntu/trusty /tmp/st2-up/ubuntu/trusty/<% $.deb %>"
         on-success: cleanup
 
       download_wheezy:
         action: core.local
         input:
-            cmd: "wget -p /tmp/st2-up/debian/wheezy/ https://packagecloud.io/StackStorm/<% $.source %>/debian/pool/wheezy/main/<% $.package[0] %>/<% $.package %>/<% $.deb %>"
+          cmd: "wget -p /tmp/st2-up/debian/wheezy/ https://packagecloud.io/StackStorm/<% $.source %>/debian/pool/wheezy/main/<% $.package[0] %>/<% $.package %>/<% $.deb %>"
         on-success: upload_wheezy
       upload_wheezy:
         action: core.local
         input:
-            cmd: "package_cloud push StackStorm/<% $.repo %>/debian/wheezy /tmp/st2-up/debian/wheezy/<% $.deb %>"
+          cmd: "package_cloud push StackStorm/<% $.repo %>/debian/wheezy /tmp/st2-up/debian/wheezy/<% $.deb %>"
         on-success: cleanup
 
-        download_jessie:
-            action: core.local
-            input:
-                cmd: "wget -p /tmp/st2-up/debian/jessie/ https://packagecloud.io/StackStorm/<% $.source %>/debian/pool/jessie/main/<% $.package[0] %>/<% $.package %>/<% $.deb %>"
-            on-success: upload_jessie
-        upload_jessie:
-            action: core.local
-            input:
-                cmd: "package_cloud push StackStorm/<% $.repo %>/debian/jessie /tmp/st2-up/debian/jessie/<% $.deb %>"
-            on-success: cleanup
+      download_jessie:
+        action: core.local
+        input:
+          cmd: "wget -p /tmp/st2-up/debian/jessie/ https://packagecloud.io/StackStorm/<% $.source %>/debian/pool/jessie/main/<% $.package[0] %>/<% $.package %>/<% $.deb %>"
+        on-success: upload_jessie
+      upload_jessie:
+        action: core.local
+        input:
+          cmd: "package_cloud push StackStorm/<% $.repo %>/debian/jessie /tmp/st2-up/debian/jessie/<% $.deb %>"
+        on-success: cleanup
 
-        download_el6:
-            action: core.local
-            input:
-                cmd: "wget -p /tmp/st2-up/el/6 https://packagecloud.io/StackStorm/<% $.source %>/el/6/<% $.package %>/<% $.rpm %>"
-            on-success: upload_el6
-        upload_el6:
-            action: core.local
-            input:
-                cmd: "package_cloud push StackStorm/<% $.repo %>/el/6 /tmp/st2-up/el/6/<% $.rpm %>"
-            on-success: cleanup
+      download_el6:
+        action: core.local
+        input:
+          cmd: "wget -p /tmp/st2-up/el/6 https://packagecloud.io/StackStorm/<% $.source %>/el/6/<% $.package %>/<% $.rpm %>"
+        on-success: upload_el6
+      upload_el6:
+        action: core.local
+        input:
+          cmd: "package_cloud push StackStorm/<% $.repo %>/el/6 /tmp/st2-up/el/6/<% $.rpm %>"
+        on-success: cleanup
 
-        download_el7:
-            action: core.local
-            input:
-                cmd: "wget -p /tmp/st2-up/el/7 https://packagecloud.io/StackStorm/<% $.source %>/el/7/<% $.package %>/<% $.rpm %>"
-            on-success: upload_el6
-        upload_el7:
-            action: core.local
-            input:
-                cmd: "package_cloud push StackStorm/<% $.repo %>/el/7 /tmp/st2-up/el/7/<% $.rpm %>"
-            on-success: cleanup
+      download_el7:
+        action: core.local
+        input:
+          cmd: "wget -p /tmp/st2-up/el/7 https://packagecloud.io/StackStorm/<% $.source %>/el/7/<% $.package %>/<% $.rpm %>"
+        on-success: upload_el6
+      upload_el7:
+        action: core.local
+        input:
+          cmd: "package_cloud push StackStorm/<% $.repo %>/el/7 /tmp/st2-up/el/7/<% $.rpm %>"
+        on-success: cleanup
 
-        cleanup:
-            join: all
-            action: core.local
-            input:
-                cmd: "rm -rf /tmp/st2-up"
+      cleanup:
+        join: all
+        action: core.local
+        input:
+          cmd: "rm -rf /tmp/st2-up"
