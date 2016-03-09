@@ -46,7 +46,7 @@ st2cd.st2_package_test:
                 hosts: <% $.vm_fqdn %>
                 cmd: >
                     curl -Ss -k -o /tmp/st2_bootstrap.sh
-                    https://raw.githubusercontent.com/StackStorm/st2-packages/master/scripts/st2bootstrap-deb.sh
+                    https://raw.githubusercontent.com/StackStorm/st2-packages/master/scripts/st2_bootstrap.sh
             on-success:
                 - run_bootstrap_script
         run_bootstrap_script:
