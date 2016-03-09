@@ -11,7 +11,7 @@ formats:
     - "promote {{package}} {{version}}-{{revision}} to {{repo}}"
 description: "Promote a package to production repo"
 ack:
-  format: "Ack! Uploading your packages right now. {% if execution.parameters.os is equalto 'all' %}This might take a while, I'm uploading them for every OS.{% endif %}"
+  format: "Ack! Uploading your packages right now. {% if execution.parameters.os == 'all' %}This might take a while, I'm uploading them for every OS.{% endif %}"
 result:
   format: |
     I'm done promoting the packages. Here's how it went:{~}

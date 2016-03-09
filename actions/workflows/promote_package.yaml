@@ -31,42 +31,42 @@ st2cd.promote_package:
         input:
           cmd: "wget -O /tmp/st2-up/ubuntu/trusty/<% $.deb %> https://packagecloud.io/StackStorm/<% $.source %>/ubuntu/pool/trusty/main/<% $.package.substring(0,1) %>/<% $.package %>/<% $.deb %>"
         on-success: upload_trusty
-        on-error: cleanup
+#        on-error: cleanup
       upload_trusty:
         action: core.local
         input:
           cmd: "LANG=en_US.utf8 PACKAGECLOUD_TOKEN=<% $.token %> package_cloud push StackStorm/<% $.repo %>/ubuntu/trusty /tmp/st2-up/ubuntu/trusty/<% $.deb %>"
-        on-success: cleanup
-        on-error: cleanup
+#        on-success: cleanup
+#        on-error: cleanup
 
       download_wheezy:
         action: core.local
         input:
           cmd: "wget -O /tmp/st2-up/debian/wheezy/<% $.deb %> https://packagecloud.io/StackStorm/<% $.source %>/debian/pool/wheezy/main/<% $.package.substring(0,1) %>/<% $.package %>/<% $.deb %>"
         on-success: upload_wheezy
-        on-error: cleanup
+#        on-error: cleanup
       upload_wheezy:
         action: core.local
         input:
           cmd: "LANG=en_US.utf8 PACKAGECLOUD_TOKEN=<% $.token %> package_cloud push StackStorm/<% $.repo %>/debian/wheezy /tmp/st2-up/debian/wheezy/<% $.deb %>"
-        on-success: cleanup
-        on-error: cleanup
+#        on-success: cleanup
+#        on-error: cleanup
 
       download_jessie:
         action: core.local
         input:
           cmd: "wget -O /tmp/st2-up/debian/jessie/<% $.deb %> https://packagecloud.io/StackStorm/<% $.source %>/debian/pool/jessie/main/<% $.package.substring(0,1) %>/<% $.package %>/<% $.deb %>"
         on-success: upload_jessie
-        on-error: cleanup
+#        on-error: cleanup
       upload_jessie:
         action: core.local
         input:
           cmd: "LANG=en_US.utf8 PACKAGECLOUD_TOKEN=<% $.token %> package_cloud push StackStorm/<% $.repo %>/debian/jessie /tmp/st2-up/debian/jessie/<% $.deb %>"
-        on-success: cleanup
-        on-error: cleanup
+#        on-success: cleanup
+#        on-error: cleanup
 
-      cleanup:
-        join: all
-        action: core.local
-        input:
-          cmd: "rm -rf /tmp/st2-up"
+#      cleanup:
+#        join: all
+#        action: core.local
+#        input:
+#          cmd: "rm -rf /tmp/st2-up"
