@@ -1,3 +1,4 @@
+---
 version: '2.0'
 
 st2cd.promote_package:
@@ -16,20 +17,20 @@ st2cd.promote_package:
             input:
                 cmd: "mkdir -p /tmp/st2-up/{ubuntu/trusty,debian/wheezy,debian/jessie,el/6,el/7}"
             publish:
-                - trusty_path: ubuntu/trusty
-                - wheezy_path: debian/wheezy
-                - jessie_path: debian/jessie
-                - el6_path:    el/6
-                - el7_path:    el/7
-                - rpm: <% $.package %>_<% $.version %>-<% $.revision %>.x86_64.rpm
-                - deb: <% $.package %>_<% $.version %>-<% $.revision %>_amd64.deb
-                - source: <% $.repo = 'enterprise' && 'enterprise-staging' || $.repo = 'enterprise-unstable' && 'enterprise-staging-unstable' || $.repo = 'stable' && 'staging-stable' || $.repo = 'unstable' && 'staging-unstable' %>
+                trusty_path: ubuntu/trusty
+                wheezy_path: debian/wheezy
+                jessie_path: debian/jessie
+                el6_path:    el/6
+                el7_path:    el/7
+                rpm: <% $.package %>_<% $.version %>-<% $.revision %>.x86_64.rpm
+                deb: <% $.package %>_<% $.version %>-<% $.revision %>_amd64.deb
+                source: <% $.repo = 'enterprise' and 'enterprise-staging' or $.repo = 'enterprise-unstable' and 'enterprise-staging-unstable' or $.repo = 'stable' and 'staging-stable' or $.repo = 'unstable' and 'staging-unstable' %>
             on-success:
-                - download_trusty: <% $.os = "trusty" or not $.os %>
-                - download_wheezy: <% $.os = "wheezy" or not $.os %>
-                - download_jessie: <% $.os = "jessie" or not $.os %>
-                - download_el6: <% $.os = "el6" or not $.os %>
-                - download_el7: <% $.os = "el7" or not $.os %>
+                - download_trusty: "<% $.os in list(None, 'trusty') %>"
+                - download_wheezy: "<% $.os in list(None, 'wheezy') %>"
+                - download_jessie: "<% $.os in list(None, 'jessie') %>"
+                - download_el6: "<% $.os in list(None, 'el6') %>"
+                - download_el7: "<% $.os in list(None, 'el7') %>"
 
         download_trusty:
             action: core.local
