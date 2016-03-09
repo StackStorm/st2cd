@@ -25,11 +25,17 @@ st2cd.destroy_vm:
                         ).select($.id)
                     %>
             on-success:
-                - get_volumes: <% len($.instances) = 1 %>
+                - deregister_monitor: <% len($.instances) = 1 %>
                 - notify_multiple_instances_failure: <% len($.instances) > 1 %>
                 - noop: <% len($.instances) < 1 %>
 
 
+        deregister_monitor:
+            action: sensu.client_delete client=<% $.hostname %>.<% $.dns_zone %>
+            on-error:
+                - notify_deregister_monitor_failure
+            on-success:
+                - get_volumes
         get_volumes:
             action: aws.ec2_get_instance_attribute
             input:
@@ -90,6 +96,14 @@ st2cd.destroy_vm:
             input:
                 channel: "#opstown"
                 message: "[FAILED] More than one instance for <% $.hostname %> were identified"
+            on-complete:
+                - fail
+
+        notify_deregister_monitor_failure:
+            action: slack.post_message
+            input:
+                channel: "#opstown"
+                message: "[FAILED] Unable to deregister monitoring for <% $.hostname %>"
             on-complete:
                 - fail
 
