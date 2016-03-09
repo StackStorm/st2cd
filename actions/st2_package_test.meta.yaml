@@ -43,6 +43,11 @@ parameters:
         default: stable
     version:
         type: string
+    bootstrap_branch:
+        type: string
+        default: master
+    bootstrap_script:
+        type: string
     debug:
         type: boolean
         default: false
