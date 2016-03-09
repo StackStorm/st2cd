@@ -19,13 +19,17 @@ parameters:
     required: true
   os:
     description: OS to promote (will promote all if not specified)
-    required: false
+    required: true
+    default: all
     enum:
     - wheezy
     - jessie
     - trusty
     - el6
     - el7
+    - deb
+    - rpm
+    - all
   repo:
     description: "Repo to upload to: stable/unstable, community/enterprise"
     required: true
