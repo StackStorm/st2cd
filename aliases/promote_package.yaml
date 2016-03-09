@@ -10,3 +10,23 @@ formats:
     representation:
     - "promote {{package}} {{version}}-{{revision}} to {{repo}}"
 description: "Promote a package to production repo"
+ack:
+  format: Ack! Uploading your packages right now. {% if !os %}This might take a while, I'm uploading a version for every OS.{% endif %}
+result:
+  format: |
+    I'm done promoting the packages. Here's how it went:{~}
+    {% if 'download_wheezy' in tasks|map(attribute='name') %}
+      Wheezy: {% if tasks|selectattr("name", "upload_wheezy").length %}{% if tasks|selectattr("name", "upload_wheezy")[0].result.succeeded %}success{% else %}upload failed{% endif %}{% else %}download failed{% endif %}.
+    {% endif %}
+    {% if 'download_jessie' in tasks|map(attribute='name') %}
+      Jessie: {% if tasks|selectattr("name", "upload_jessie").length %}{% if tasks|selectattr("name", "upload_jessie")[0].result.succeeded %}success{% else %}upload failed{% endif %}{% else %}download failed{% endif %}.
+    {% endif %}
+    {% if 'download_trusty' in tasks|map(attribute='name') %}
+      Trusty: {% if tasks|selectattr("name", "upload_trusty").length %}{% if tasks|selectattr("name", "upload_trusty")[0].result.succeeded %}success{% else %}upload failed{% endif %}{% else %}download failed{% endif %}.
+    {% endif %}
+    {% if 'download_el6' in tasks|map(attribute='name') %}
+      EL6: {% if tasks|selectattr("name", "upload_el6").length %}{% if tasks|selectattr("name", "upload_el6")[0].result.succeeded %}success{% else %}upload failed{% endif %}{% else %}download failed{% endif %}.
+    {% endif %}
+    {% if 'download_el7' in tasks|map(attribute='name') %}
+      EL7: {% if tasks|selectattr("name", "upload_el7").length %}{% if tasks|selectattr("name", "upload_el7")[0].result.succeeded %}success{% else %}upload failed{% endif %}{% else %}download failed{% endif %}.
+    {% endif %}
