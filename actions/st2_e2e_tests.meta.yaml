@@ -1,5 +1,5 @@
 ---
-name: st2_e2e_tests
+name: e2e_tests
 pack: st2cd
 description: Run the set of st2 end to end tests
 enabled: true
@@ -18,11 +18,9 @@ parameters:
     st2_username:
         type: string
         description: Username to authenticate to the st2 server
-        default: test
     st2_password:
         type: string
         description: Password to authenticate to the st2 server
-        default: Ch@ngeMe
     workflow:
         default: st2cd.st2_e2e_tests.main
         immutable: true
