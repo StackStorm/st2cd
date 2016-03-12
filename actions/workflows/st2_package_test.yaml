@@ -62,10 +62,7 @@ st2cd.st2_package_test:
             action: core.remote_sudo
             input:
                 hosts: <% $.vm_fqdn %>
-                cmd: >
-                    bash /tmp/st2_bootstrap.sh
-                        --<% $.release %>
-                        --version=<% coalesce($.version, '') %>
+                cmd: bash /tmp/st2_bootstrap.sh --<% $.release %> --version=<% coalesce($.version, '') %>
                 timeout: 600
             on-success:
                 - run_e2e_tests
