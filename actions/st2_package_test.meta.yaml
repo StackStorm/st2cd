@@ -32,6 +32,12 @@ parameters:
     distro:
         type: string
         required: true
+        enum:
+            - CENTOS6
+            - CENTOS7
+            - RHEL6
+            - RHEL7
+            - UBUNTU14
     role:
         type: string
         default: default
