@@ -1,5 +1,5 @@
 ---
-name: e2e_tests
+name: st2_e2e_tests
 pack: st2cd
 description: Run the set of st2 end to end tests
 enabled: true
