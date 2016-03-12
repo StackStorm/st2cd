@@ -28,7 +28,7 @@ parameters:
         default: st2_deploy
     keyfile:
         type: string
-        default: /home/vagrant/.ssh/stanley_rsa
+        default: /home/stanley/.ssh/stanley_rsa
     distro:
         type: string
         required: true
