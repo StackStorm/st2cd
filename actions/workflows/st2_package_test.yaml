@@ -17,7 +17,7 @@ st2cd.st2_package_test:
         - bootstrap_branch
         - bootstrap_script
         - debug
-        - st2_username: test
+        - st2_username: st2admin
         - st2_password: Ch@ngeMe
 
     task-defaults:
