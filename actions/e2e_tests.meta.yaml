@@ -3,7 +3,7 @@
   runner_type: "action-chain"
   description: "Runs a series of end to end tests on a StackStorm server"
   enabled: true
-  entry_point: "workflows/st2_e2e_bootstrap_tests.yaml"
+  entry_point: "workflows/e2e_tests.yaml"
   parameters:
     hostname:
       type: "string"
