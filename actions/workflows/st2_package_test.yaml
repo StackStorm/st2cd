@@ -22,11 +22,17 @@ st2cd.st2_package_test:
 
     task-defaults:
         on-error:
-            - destroy_vm: <% not $.debug %>
-            - fail
+            - destroy_vm_on_failure: <% not $.debug %>
+            - notify_failure: <% $.debug %>
 
     tasks:
-        init:
+        get_server_name:
+            action: core.local cmd="hostname"
+            publish:
+                webui_base_url: http://<% task(get_server_name).result.stdout %>:8080
+            on-success:
+                - init_vars
+        init_vars:
             action: std.noop
             publish:
                 bootstrap_script_url: <% coalesce(
@@ -74,7 +80,34 @@ st2cd.st2_package_test:
                 st2_password: <% $.st2_password %>
             on-success:
                 - destroy_vm: <% not $.debug %>
+                - notify_success: <% $.debug %>
+
+
         destroy_vm:
             action: st2cd.destroy_vm
             input:
                 hostname: <% $.hostname %>
+            on-complete:
+                - notify_success
+        notify_success:
+            action: slack.chat.postMessage
+            input:
+                channel: "#thunderdome"
+                text: ""
+                attachments: '[{"title": "[st2cd.st2_package_test: SUCCEEDED]", "title_link": "<% $.webui_base_url %>/#/history/<% env().st2_execution_id %>/general", "text": "HOSTNAME: <% $.hostname %>\nDISTRO: <% $.distro %>\nRELEASE: <% $.release %>\nVERSION: <% coalesce($.version, ''master'') %>\nBOOTSTRAP: <% $.bootstrap_script_url %>", "color": "#008000"}]'
+
+
+        destroy_vm_on_failure:
+            action: st2cd.destroy_vm
+            input:
+                hostname: <% $.hostname %>
+            on-complete:
+                - notify_failure
+        notify_failure:
+            action: slack.chat.postMessage
+            input:
+                channel: "#thunderdome"
+                text: ""
+                attachments: '[{"title": "[st2cd.st2_package_test: FAILED]", "title_link": "<% $.webui_base_url %>/#/history/<% env().st2_execution_id %>/general", "text": "HOSTNAME: <% $.hostname %>\nDISTRO: <% $.distro %>\nRELEASE: <% $.release %>\nVERSION: <% coalesce($.version, ''master'') %>\nBOOTSTRAP: <% $.bootstrap_script_url %>", "color": "#FF0000"}]'
+            on-complete:
+                - fail
