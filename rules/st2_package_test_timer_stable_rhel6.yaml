@@ -2,7 +2,7 @@
 name: st2_package_test_timer_stable_rhel6
 pack: "st2cd"
 description: Run st2_package_test on timer for stable packages
-enabled: false
+enabled: true
 
 trigger:
   parameters:
