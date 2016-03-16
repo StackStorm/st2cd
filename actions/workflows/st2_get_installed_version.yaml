@@ -29,6 +29,7 @@ st2cd.st2_get_installed_version:
 
         get_version_centos:
             with-items: package in <% $.packages %>
+            concurrency: 1
             action: core.remote_sudo
             input:
                 hosts: <% $.host %>
@@ -38,6 +39,7 @@ st2cd.st2_get_installed_version:
 
         get_version_redhat:
             with-items: package in <% $.packages %>
+            concurrency: 1
             action: core.remote_sudo
             input:
                 hosts: <% $.host %>
@@ -47,6 +49,7 @@ st2cd.st2_get_installed_version:
 
         get_version_ubuntu:
             with-items: package in <% $.packages %>
+            concurrency: 1
             action: core.remote_sudo
             input:
                 hosts: <% $.host %>
