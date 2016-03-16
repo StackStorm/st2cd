@@ -42,6 +42,7 @@ st2cd.st2_package_test:
             publish:
                 webui_base_url: http://<% task(get_webui_server).result.stdout %>:8080
             on-success:
+                - notify_start
                 - create_vm
         create_vm:
             action: st2cd.create_vm_role
@@ -91,6 +92,14 @@ st2cd.st2_package_test:
             on-success:
                 - destroy_vm: <% not $.debug %>
                 - notify_success: <% $.debug %>
+
+
+        notify_start:
+            action: slack.chat.postMessage
+            input:
+                channel: "#thunderdome"
+                text: ""
+                attachments: '[{"title": "[st2cd.st2_package_test: STARTED]", "title_link": "<% $.webui_base_url %>/#/history/<% env().st2_execution_id %>/general", "text": "HOSTNAME: <% $.vm_fqdn %>\nBOOTSTRAP: <% $.bootstrap_script_url %>\nDISTRO: <% $.distro %>\nRELEASE: <% $.release %>\nVERSION: <% coalesce($.version, ''latest'') %>", "color": "#808080"}]'
 
 
         destroy_vm:
