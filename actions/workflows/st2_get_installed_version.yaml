@@ -1,0 +1,51 @@
+---
+version: '2.0'
+
+st2cd.st2_get_installed_version:
+    type: direct
+    input:
+        - host
+    output:
+        distro: <% $.distro %>
+        version: <% $.version %>
+
+    tasks:
+        init:
+            action: std.noop
+            publish:
+                distro: indeterminate
+                version: indeterminate
+            on-success:
+                - get_distro
+        get_distro:
+            action: st2cd.get_distro hosts=<% $.host %>
+            publish:
+                distro: <% task(get_distro).result.get($.host).stdout %>
+            on-success:
+                - get_version_centos: <% $.distro.toLower() = centos %>
+                - get_version_redhat: <% $.distro.toLower() = redhat %>
+                - get_version_ubuntu: <% $.distro.toLower() = ubuntu %>
+
+        get_version_centos:
+            action: core.remote_sudo
+            input:
+                hosts: <% $.host %>
+                cmd: "echo `yum info installed st2 | grep Version | awk '{print $3}'`-`yum info installed st2 | grep Release | awk '{print $3}'`"
+            publish:
+                version: <% task(get_version_centos).result.get($.host).stdout %>
+
+        get_version_redhat:
+            action: core.remote_sudo
+            input:
+                hosts: <% $.host %>
+                cmd: "echo `yum info installed st2 | grep Version | awk '{print $3}'`-`yum info installed st2 | grep Release | awk '{print $3}'`"
+            publish:
+                version: <% task(get_version_redhat).result.get($.host).stdout %>
+
+        get_version_ubuntu:
+            action: core.remote_sudo
+            input:
+                hosts: <% $.host %>
+                cmd: "apt-cache policy st2 | grep Installed: | grep -oE '[^ ]+$'"
+            publish:
+                version: <% task(get_version_ubuntu).result.get($.host).stdout %>
