@@ -123,9 +123,10 @@ st2cd.st2_package_test:
             on-complete:
                 - notify_failure
         notify_failure:
+            with-items: channel in <% list("#thunderdome", "#stackstorm") %>
             action: slack.chat.postMessage
             input:
-                channel: "#thunderdome"
+                channel: <% $.channel %>
                 text: ""
                 attachments: '[{"title": "[st2cd.st2_package_test: FAILED]", "title_link": "<% $.webui_base_url %>/#/history/<% env().st2_execution_id %>/general", "text": "HOSTNAME: <% $.vm_fqdn %>\nBOOTSTRAP: <% $.bootstrap_script_url %>\nDISTRO: <% $.distro %>\nRELEASE: <% $.release %>\nVERSION: <% coalesce($.version, ''latest'') %>\nVERSION INSTALLED: <% $.installed_version %>", "color": "#FF0000"}]'
             on-complete:
