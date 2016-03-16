@@ -1,0 +1,11 @@
+---
+name: st2_get_installed_version
+pack: st2cd
+description: Get the installed version of st2 package
+enabled: true
+runner_type: mistral-v2
+entry_point: workflows/st2_get_installed_version.yaml
+parameters:
+    host:
+        type: string
+        required: true

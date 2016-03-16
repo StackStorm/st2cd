@@ -1,0 +1,17 @@
+---
+  name: get_distro
+  runner_type: run-remote-script
+  description: Determine the name of the OS distro
+  enabled: true
+  entry_point: get_distro.sh
+  parameters:
+    sudo:
+      immutable: true
+    cmd:
+      immutable: true
+      default: ""
+    kwarg_op:
+      immutable: true
+      default: "--"
+    timeout:
+      default: 600
