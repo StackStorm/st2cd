@@ -9,3 +9,10 @@ parameters:
     host:
         type: string
         required: true
+    packages:
+        type: array
+        required: true
+        default:
+            - st2
+            - st2mistral
+            - st2web

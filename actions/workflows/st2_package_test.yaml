@@ -20,6 +20,9 @@ st2cd.st2_package_test:
         - st2_username: st2admin
         - st2_password: Ch@ngeMe
 
+    output:
+        versions: <% $.installed.versions %>
+
     task-defaults:
         on-error:
             - destroy_vm_on_failure: <% not $.debug %>
@@ -30,7 +33,8 @@ st2cd.st2_package_test:
             action: std.noop
             publish:
                 vm_fqdn: <% $.hostname %>.<% $.dns_zone %>
-                installed_version: not installed
+                installed:
+                    version_str: not installed
                 bootstrap_script_url: <% coalesce(
                     $.bootstrap_script,
                     "https://raw.githubusercontent.com/StackStorm/st2-packages/" +
@@ -79,8 +83,12 @@ st2cd.st2_package_test:
             input:
                 host: <% $.vm_fqdn %>
             publish:
-                installed_distro: <% task(get_installed_version).result.distro %>
-                installed_version: <% task(get_installed_version).result.version %>
+                installed:
+                    distro: <% task(get_installed_version).result.distro %>
+                    versions: <% task(get_installed_version).result.versions %>
+                    version_str: <%
+                        task(get_installed_version).result.versions.items().select(
+                            $[0] + "=" + $[1]).join("\n\t") %>
             on-success:
                 - run_e2e_tests
         run_e2e_tests:
@@ -113,7 +121,7 @@ st2cd.st2_package_test:
             input:
                 channel: "#thunderdome"
                 text: ""
-                attachments: '[{"title": "[st2cd.st2_package_test: SUCCEEDED]", "title_link": "<% $.webui_base_url %>/#/history/<% env().st2_execution_id %>/general", "text": "HOSTNAME: <% $.vm_fqdn %>\nBOOTSTRAP: <% $.bootstrap_script_url %>\nDISTRO: <% $.distro %>\nRELEASE: <% $.release %>\nVERSION: <% coalesce($.version, ''latest'') %>\nVERSION INSTALLED: <% $.installed_version %>", "color": "#008000"}]'
+                attachments: '[{"title": "[st2cd.st2_package_test: SUCCEEDED]", "title_link": "<% $.webui_base_url %>/#/history/<% env().st2_execution_id %>/general", "text": "HOSTNAME: <% $.vm_fqdn %>\nBOOTSTRAP: <% $.bootstrap_script_url %>\nDISTRO: <% $.distro %>\nRELEASE: <% $.release %>\nVERSION: <% coalesce($.version, ''latest'') %>\nVERSION INSTALLED:\n\t<% $.installed.version_str %>", "color": "#008000"}]'
 
 
         destroy_vm_on_failure:
@@ -128,6 +136,6 @@ st2cd.st2_package_test:
             input:
                 channel: <% $.channel %>
                 text: ""
-                attachments: '[{"title": "[st2cd.st2_package_test: FAILED]", "title_link": "<% $.webui_base_url %>/#/history/<% env().st2_execution_id %>/general", "text": "HOSTNAME: <% $.vm_fqdn %>\nBOOTSTRAP: <% $.bootstrap_script_url %>\nDISTRO: <% $.distro %>\nRELEASE: <% $.release %>\nVERSION: <% coalesce($.version, ''latest'') %>\nVERSION INSTALLED: <% $.installed_version %>", "color": "#FF0000"}]'
+                attachments: '[{"title": "[st2cd.st2_package_test: FAILED]", "title_link": "<% $.webui_base_url %>/#/history/<% env().st2_execution_id %>/general", "text": "HOSTNAME: <% $.vm_fqdn %>\nBOOTSTRAP: <% $.bootstrap_script_url %>\nDISTRO: <% $.distro %>\nRELEASE: <% $.release %>\nVERSION: <% coalesce($.version, ''latest'') %>\nVERSION INSTALLED:\n\t<% $.installed.version_str %>", "color": "#FF0000"}]'
             on-complete:
                 - fail

@@ -5,16 +5,17 @@ st2cd.st2_get_installed_version:
     type: direct
     input:
         - host
+        - packages
     output:
         distro: <% $.distro %>
-        version: <% $.version %>
+        versions: <% dict($.packages.zip($.result.select($.values().first().get(stdout)))) %>
 
     tasks:
         init:
             action: std.noop
             publish:
                 distro: indeterminate
-                version: indeterminate
+                versions: indeterminate
             on-success:
                 - get_distro
         get_distro:
@@ -27,25 +28,28 @@ st2cd.st2_get_installed_version:
                 - get_version_ubuntu: <% $.distro.toLower() = ubuntu %>
 
         get_version_centos:
+            with-items: package in <% $.packages %>
             action: core.remote_sudo
             input:
                 hosts: <% $.host %>
-                cmd: "echo `yum info installed st2 | grep Version | awk '{print $3}'`-`yum info installed st2 | grep Release | awk '{print $3}'`"
+                cmd: "echo `yum info installed <% $.package %> | grep Version | awk '{print $3}'`-`yum info installed st2 | grep Release | awk '{print $3}'`"
             publish:
-                version: <% task(get_version_centos).result.get($.host).stdout %>
+                result: <% task(get_version_centos).result %>
 
         get_version_redhat:
+            with-items: package in <% $.packages %>
             action: core.remote_sudo
             input:
                 hosts: <% $.host %>
-                cmd: "echo `yum info installed st2 | grep Version | awk '{print $3}'`-`yum info installed st2 | grep Release | awk '{print $3}'`"
+                cmd: "echo `yum info installed <% $.package %> | grep Version | awk '{print $3}'`-`yum info installed st2 | grep Release | awk '{print $3}'`"
             publish:
-                version: <% task(get_version_redhat).result.get($.host).stdout %>
+                result: <% task(get_version_redhat).result %>
 
         get_version_ubuntu:
+            with-items: package in <% $.packages %>
             action: core.remote_sudo
             input:
                 hosts: <% $.host %>
-                cmd: "apt-cache policy st2 | grep Installed: | grep -oE '[^ ]+$'"
+                cmd: "apt-cache policy <% $.package %> | grep Installed: | grep -oE '[^ ]+$'"
             publish:
-                version: <% task(get_version_ubuntu).result.get($.host).stdout %>
+                result: <% task(get_version_ubuntu).result %>
