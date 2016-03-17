@@ -143,7 +143,7 @@ __gather_linux_system_info() {
                 elif [ "$(egrep 'Scientific' /etc/${rsource})" != "" ]; then
                     n="Scientific Linux"
                 elif [ "$(egrep 'Red Hat Enterprise Linux' /etc/${rsource})" != "" ]; then
-                    n="RedHat"
+                    n="Red Hat Enterprise Server"
                 fi
                 ;;
             arch               ) n="Arch Linux"     ;;
@@ -202,5 +202,8 @@ __gather_linux_system_info
 
 ######### END SALT BOOTSTRAP DISTRO INFO
 
+if [ "${DISTRO_NAME}" = "Red Hat Enterprise Server" ]; then
+    DISTRO_NAME="RedHat"
+fi
 
 echo ${DISTRO_NAME}
