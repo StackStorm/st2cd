@@ -5,6 +5,10 @@ description: Promote a package to production from staging.
 enabled: true
 entry_point: workflows/promote_package.yaml
 parameters:
+  token:
+    type: string
+    description: Packagecloud API token
+    default: "{{system.pkg_cloud_token}}"
   package:
     type: string
     description: Package to promote
