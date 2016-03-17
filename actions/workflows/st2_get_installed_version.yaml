@@ -33,7 +33,7 @@ st2cd.st2_get_installed_version:
             action: core.remote_sudo
             input:
                 hosts: <% $.host %>
-                cmd: "echo `yum info installed <% $.package %> | grep Version | awk '{print $3}'`-`yum info installed st2 | grep Release | awk '{print $3}'`"
+                cmd: "echo `yum info installed <% $.package %> | grep Version | awk '{print $3}'`-`yum info installed <% $.package %> | grep Release | awk '{print $3}'`"
             publish:
                 result: <% task(get_version_centos).result %>
 
@@ -43,7 +43,7 @@ st2cd.st2_get_installed_version:
             action: core.remote_sudo
             input:
                 hosts: <% $.host %>
-                cmd: "echo `yum info installed <% $.package %> | grep Version | awk '{print $3}'`-`yum info installed st2 | grep Release | awk '{print $3}'`"
+                cmd: "echo `yum info installed <% $.package %> | grep Version | awk '{print $3}'`-`yum info installed <% $.package %> | grep Release | awk '{print $3}'`"
             publish:
                 result: <% task(get_version_redhat).result %>
 
