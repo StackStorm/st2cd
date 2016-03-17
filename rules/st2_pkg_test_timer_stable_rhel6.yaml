@@ -1,7 +1,7 @@
 ---
-name: st2_package_test_timer_stable_rhel6
+name: st2_pkg_test_timer_stable_rhel6
 pack: "st2cd"
-description: Run st2_package_test on timer for stable packages
+description: Run st2_pkg_test on timer for stable packages
 enabled: true
 
 trigger:
@@ -13,7 +13,7 @@ trigger:
 criteria: {}
 
 action:
-  ref: st2cd.st2_package_test
+  ref: st2cd.st2_pkg_test
   parameters:
     hostname: st2-pkg-stable-el6
     distro: RHEL6
