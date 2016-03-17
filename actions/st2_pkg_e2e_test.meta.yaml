@@ -1,10 +1,10 @@
 ---
-name: st2_pkg_test
+name: st2_pkg_e2e_test
 pack: st2cd
 description: End to end test for st2 package
 enabled: true
 runner_type: mistral-v2
-entry_point: workflows/st2_pkg_test.yaml
+entry_point: workflows/st2_pkg_e2e_test.yaml
 parameters:
     hostname:
         type: string
