@@ -10,6 +10,7 @@ st2cd.promote_package:
       - revision
       - os
       - repo
+      - token
     tasks:
 
       init:
@@ -20,7 +21,20 @@ st2cd.promote_package:
           rpm: "<% $.package %>-<% $.version %>-<% $.revision %>.x86_64.rpm"
           deb: "<% $.package %>_<% $.version %>-<% $.revision %>_amd64.deb"
           source: "<% $.repo = 'enterprise' and 'enterprise-staging' or $.repo = 'enterprise-unstable' and 'enterprise-staging-unstable' or $.repo = 'stable' and 'staging-stable' or $.repo = 'unstable' and 'staging-unstable' %>"
-          token: ""
+        on-success:
+          - get_token: "<% $.token == '' %>"
+          - download_trusty: "<% $.token != '' and $.os in list('all', 'deb', 'trusty') %>"
+          - download_wheezy: "<% $.token != '' $.os in list('all', 'deb', 'wheezy') %>"
+          - download_jessie: "<% $.token != '' $.os in list('all', 'deb', 'jessie') %>"
+          - download_el6: "<% $.token != '' $.os in list('all', 'rpm', 'el6') %>"
+          - download_el7: "<% $.token != '' $.os in list('all', 'rpm', 'el7') %>"
+
+      get_token:
+        action: core.kv_get
+        input:
+          key: "packagecloud_token"
+        publish:
+          token: <% $.get_token.result %>
         on-success:
           - download_trusty: "<% $.os in list('all', 'deb', 'trusty') %>"
           - download_wheezy: "<% $.os in list('all', 'deb', 'wheezy') %>"
