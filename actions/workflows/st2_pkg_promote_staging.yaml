@@ -44,7 +44,7 @@ st2cd.st2_pkg_promote_staging:
             input:
                 channel: <% $.channel %>
                 text: ""
-                attachments: '[{"title": "[st2cd.st2_pkg_promote_unstable: STARTED]", "title_link": "<% $.webui_base_url %>/#/history/<% env().st2_execution_id %>/general", "text": "HOSTNAME: <% coalesce($.hostname, "unspecified") %>\nDISTRO: <% $.distro %>\nRELEASE: unstable\nVERSION: <% coalesce($.version, ''latest'') %>", "color": "#808080"}]'
+                attachments: '[{"title": "[st2cd.st2_pkg_promote_staging: STARTED]", "title_link": "<% $.webui_base_url %>/#/history/<% env().st2_execution_id %>/general", "text": "HOSTNAME: <% coalesce($.hostname, "unspecified") %>\nDISTRO: <% $.distro %>\nRELEASE: unstable\nVERSION: <% coalesce($.version, ''latest'') %>", "color": "#808080"}]'
             on-success:
                 - validate_distro
         validate_distro:
@@ -179,7 +179,7 @@ st2cd.st2_pkg_promote_staging:
             input:
                 channel: <% $.channel %>
                 text: ""
-                attachments: '[{"title": "[st2cd.st2_pkg_promote_unstable: COMPLETED]", "title_link": "<% $.webui_base_url %>/#/history/<% env().st2_execution_id %>/general", "text": "HOSTNAME: <% coalesce($.hostname, "unspecified") %>\nDISTRO: <% $.distro %>\nRELEASE: unstable\nVERSION: <% coalesce($.version, ''latest'') %>\nVERSION TESTED:\n\t<% $.version_str %>\nPACKAGE PROMOTED:\n\tst2=<% $.promoted_st2 %>\n\tst2chatops=<% $.promoted_st2chatops %>\n\tst2mistral=<% $.promoted_st2mistral %>\n\tst2web=<% $.promoted_st2web %>", "color": "<% $.notify_color %>"}]'
+                attachments: '[{"title": "[st2cd.st2_pkg_promote_staging: COMPLETED]", "title_link": "<% $.webui_base_url %>/#/history/<% env().st2_execution_id %>/general", "text": "HOSTNAME: <% coalesce($.hostname, "unspecified") %>\nDISTRO: <% $.distro %>\nRELEASE: unstable\nVERSION: <% coalesce($.version, ''latest'') %>\nVERSION TESTED:\n\t<% $.version_str %>\nPACKAGE PROMOTED:\n\tst2=<% $.promoted_st2 %>\n\tst2chatops=<% $.promoted_st2chatops %>\n\tst2mistral=<% $.promoted_st2mistral %>\n\tst2web=<% $.promoted_st2web %>", "color": "<% $.notify_color %>"}]'
 
 
         notify_failure:
@@ -188,4 +188,4 @@ st2cd.st2_pkg_promote_staging:
             input:
                 channel: <% $.channel %>
                 text: ""
-                attachments: '[{"title": "[st2cd.st2_pkg_promote_unstable: FAILED]", "title_link": "<% $.webui_base_url %>/#/history/<% env().st2_execution_id %>/general", "text": "HOSTNAME: <% coalesce($.hostname, "unspecified") %>\nDISTRO: <% $.distro %>\nRELEASE: unstable\nVERSION: <% coalesce($.version, ''latest'') %>", "color": "#FF0000"}]'
+                attachments: '[{"title": "[st2cd.st2_pkg_promote_staging: FAILED]", "title_link": "<% $.webui_base_url %>/#/history/<% env().st2_execution_id %>/general", "text": "HOSTNAME: <% coalesce($.hostname, "unspecified") %>\nDISTRO: <% $.distro %>\nRELEASE: unstable\nVERSION: <% coalesce($.version, ''latest'') %>", "color": "#FF0000"}]'
