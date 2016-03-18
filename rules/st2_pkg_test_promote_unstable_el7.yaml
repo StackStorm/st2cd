@@ -1,0 +1,20 @@
+---
+name: st2_pkg_test_promote_unstable_el7
+pack: "st2cd"
+description: Test and promote unstable packages
+enabled: true
+
+trigger:
+  parameters:
+    delta: 24
+    unit: hours
+  type: core.st2.IntervalTimer
+
+criteria: {}
+
+action:
+  ref: st2cd.st2_pkg_promote_staging
+  parameters:
+    hostname: st2-pkg-unstable-el7
+    distro: RHEL7
+    release: unstable
