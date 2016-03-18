@@ -1,0 +1,24 @@
+---
+name: st2_pkg_promote_unstable
+pack: st2cd
+description: Run end to end tests and promote unstable st2 packages for a given distro
+enabled: true
+runner_type: mistral-v2
+entry_point: workflows/st2_pkg_promote_unstable.yaml
+parameters:
+    hostname:
+        type: string
+        description: >
+            Hostname will be auto assigned to st2-pkg-<release>-<distro>-<timestamp>
+            if it is not given.
+    distro:
+        type: string
+        required: true
+    version:
+        type: string
+    keyfile:
+        type: string
+        default: /home/stanley/.ssh/stanley_rsa
+    debug:
+        type: boolean
+        default: false

@@ -1,0 +1,188 @@
+---
+version: '2.0'
+
+st2cd.st2_pkg_promote_unstable:
+    type: direct
+    input:
+        - hostname
+        - distro
+        - version
+        - keyfile
+        - debug
+        - release: unstable
+        - distro_to_pkg_os_type_map:
+            RHEL6: el6
+            RHEL7: el7
+            UBUNTU14: trusty
+        - promoted_st2: False
+        - promoted_st2chatops: False
+        - promoted_st2mistral: False
+        - promoted_st2web: False
+
+    output:
+        versions: <% $.versions %>
+
+    task-defaults:
+        on-error:
+            - notify_failure
+
+    tasks:
+        get_webui_server:
+            action: core.local cmd="hostname"
+            publish:
+                webui_base_url: http://<% task(get_webui_server).result.stdout %>:8080
+            on-success:
+                - notify_start
+        notify_start:
+            action: slack.chat.postMessage
+            input:
+                channel: "#thunderdome"
+                text: ""
+                attachments: '[{"title": "[st2cd.st2_pkg_promote_unstable: STARTED]", "title_link": "<% $.webui_base_url %>/#/history/<% env().st2_execution_id %>/general", "text": "HOSTNAME: <% coalesce($.hostname, "unspecified") %>\nDISTRO: <% $.distro %>\nRELEASE: unstable\nVERSION: <% coalesce($.version, ''latest'') %>", "color": "#808080"}]'
+            on-success:
+                - validate_distro
+        validate_distro:
+            action: std.noop
+            publish:
+                pkg_os_type: <% $.distro_to_pkg_os_type_map.get($.distro) %>
+            on-success:
+                - get_hostname_suffix
+        get_hostname_suffix:
+            action: core.local
+            input:
+                cmd: "date +'%s'"
+            publish:
+                suffix: <% task(get_hostname_suffix).result.stdout %>
+            on-success:
+                - run_e2e_test
+        run_e2e_test:
+            action: st2cd.st2_pkg_e2e_test
+            input:
+                hostname: <% coalesce(
+                    $.hostname,
+                    "st2-pkg-" + $.release + "-" + $.distro.toLower() + "-" + str($.suffix)
+                    ) %>
+                distro: <% $.distro %>
+                release: <% $.release %>
+                version: <% $.version %>
+                keyfile: <% $.keyfile %>
+                debug: <% $.debug %>
+            publish:
+                versions: <% task(run_e2e_test).result.versions %>
+                version_str: <%
+                    task(run_e2e_test).result.versions.items().select(
+                        $[0] + "=" + $[1]).join("\n\t") %>
+            on-success:
+                - promote_st2
+                - promote_st2chatops
+                - promote_st2mistral
+                - promote_st2web
+
+
+        promote_st2:
+            action: st2cd.promote_package
+            input:
+                package: st2
+                repo: <% $.release %>
+                version: <% $.versions.get(st2).split("-")[0] %>
+                revision: <% $.versions.get(st2).split("-")[1] %>
+                os: <% $.pkg_os_type %>
+            publish:
+                promoted_st2: True        
+            on-complete:
+                - process_completion
+            on-error:
+                - noop
+
+
+        promote_st2chatops:
+            action: st2cd.promote_package
+            input:
+                package: st2chatops
+                repo: <% $.release %>
+                version: <% $.versions.get(st2chatops).split("-")[0] %>
+                revision: <% $.versions.get(st2chatops).split("-")[1] %>
+                os: <% $.pkg_os_type %>
+            publish:
+                promoted_st2chatops: True
+            on-complete:
+                - process_completion
+            on-error:
+                - noop
+
+
+        promote_st2mistral:
+            action: st2cd.promote_package
+            input:
+                package: st2mistral
+                repo: <% $.release %>
+                version: <% $.versions.get(st2mistral).split("-")[0] %>
+                revision: <% $.versions.get(st2mistral).split("-")[1] %>
+                os: <% $.pkg_os_type %>
+            publish:
+                promoted_st2mistral: True
+            on-complete:
+                - process_completion
+            on-error:
+                - noop
+
+
+        promote_st2web:
+            action: st2cd.promote_package
+            input:
+                package: st2web
+                repo: <% $.release %>
+                version: <% $.versions.get(st2web).split("-")[0] %>
+                revision: <% $.versions.get(st2web).split("-")[1] %>
+                os: <% $.pkg_os_type %>
+            publish:
+                promoted_st2web: True
+            on-complete:
+                - process_completion
+            on-error:
+                - noop
+
+
+        process_completion:
+            join: all
+            action: std.noop
+            on-success:
+                - set_notify_warning: <%
+                        not $.promoted_st2 or not $.promoted_st2chatops or
+                        not $.promoted_st2mistral or not $.promoted_st2 %>
+                - set_notify_ok: <%
+                        $.promoted_st2 and $.promoted_st2chatops and
+                        $.promoted_st2mistral and $.promoted_st2web %>
+        set_notify_warning:
+            action: std.noop
+            publish:
+                notify_color: "#FFCC00"
+                notify_channels:
+                    - "#thunderdome"
+                    - "#stackstorm"
+            on-success:
+                - notify_completion
+        set_notify_ok:
+            action: std.noop
+            publish:
+                notify_color: "#008000"
+                notify_channels:
+                    - "#thunderdome"
+            on-success:
+                - notify_completion
+        notify_completion:
+            with-items: channel in <% $.notify_channels %>
+            action: slack.chat.postMessage
+            input:
+                channel: <% $.channel %>
+                text: ""
+                attachments: '[{"title": "[st2cd.st2_pkg_promote_unstable: COMPLETED]", "title_link": "<% $.webui_base_url %>/#/history/<% env().st2_execution_id %>/general", "text": "HOSTNAME: <% coalesce($.hostname, "unspecified") %>\nDISTRO: <% $.distro %>\nRELEASE: unstable\nVERSION: <% coalesce($.version, ''latest'') %>\nVERSION TESTED:\n\t<% $.version_str %>\nPACKAGE PROMOTED:\n\tst2=<% $.promoted_st2 %>\n\tst2chatops=<% $.promoted_st2chatops %>\n\tst2mistral=<% $.promoted_st2mistral %>\n\tst2web=<% $.promoted_st2web %>", "color": "<% $.notify_color %>"}]'
+
+
+        notify_failure:
+            with-items: channel in <% list("#thunderdome", "#stackstorm") %>
+            action: slack.chat.postMessage
+            input:
+                channel: <% $.channel %>
+                text: ""
+                attachments: '[{"title": "[st2cd.st2_pkg_promote_unstable: FAILED]", "title_link": "<% $.webui_base_url %>/#/history/<% env().st2_execution_id %>/general", "text": "HOSTNAME: <% coalesce($.hostname, "unspecified") %>\nDISTRO: <% $.distro %>\nRELEASE: unstable\nVERSION: <% coalesce($.version, ''latest'') %>", "color": "#FF0000"}]'
