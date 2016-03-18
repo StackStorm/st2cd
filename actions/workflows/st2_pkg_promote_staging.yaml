@@ -18,6 +18,11 @@ st2cd.st2_pkg_promote_staging:
         - promoted_st2chatops: False
         - promoted_st2mistral: False
         - promoted_st2web: False
+        - notify_channels:
+            - "#thunderdome"
+        - notify_failure_channels:
+            - "#thunderdome"
+            - "#stackstorm"
 
     output:
         versions: <% $.versions %>
@@ -34,9 +39,10 @@ st2cd.st2_pkg_promote_staging:
             on-success:
                 - notify_start
         notify_start:
+            with-items: channel in <% $.notify_channels %>
             action: slack.chat.postMessage
             input:
-                channel: "#thunderdome"
+                channel: <% $.channel %>
                 text: ""
                 attachments: '[{"title": "[st2cd.st2_pkg_promote_unstable: STARTED]", "title_link": "<% $.webui_base_url %>/#/history/<% env().st2_execution_id %>/general", "text": "HOSTNAME: <% coalesce($.hostname, "unspecified") %>\nDISTRO: <% $.distro %>\nRELEASE: unstable\nVERSION: <% coalesce($.version, ''latest'') %>", "color": "#808080"}]'
             on-success:
@@ -157,21 +163,18 @@ st2cd.st2_pkg_promote_staging:
             action: std.noop
             publish:
                 notify_color: "#FFCC00"
-                notify_channels:
-                    - "#thunderdome"
-                    - "#stackstorm"
+                notify_completion_channels: <% $.notify_failure_channels %>
             on-success:
                 - notify_completion
         set_notify_ok:
             action: std.noop
             publish:
                 notify_color: "#008000"
-                notify_channels:
-                    - "#thunderdome"
+                notify_completion_channels: <% $.notify_channels %>
             on-success:
                 - notify_completion
         notify_completion:
-            with-items: channel in <% $.notify_channels %>
+            with-items: channel in <% $.notify_completion_channels %>
             action: slack.chat.postMessage
             input:
                 channel: <% $.channel %>
@@ -180,7 +183,7 @@ st2cd.st2_pkg_promote_staging:
 
 
         notify_failure:
-            with-items: channel in <% list("#thunderdome", "#stackstorm") %>
+            with-items: channel in <% $.notify_failure_channels %>
             action: slack.chat.postMessage
             input:
                 channel: <% $.channel %>

@@ -19,6 +19,11 @@ st2cd.st2_pkg_e2e_test:
         - debug
         - st2_username: st2admin
         - st2_password: Ch@ngeMe
+        - notify_channels:
+            - "#thunderdome"
+        - notify_failure_channels:
+            - "#thunderdome"
+            - "#stackstorm"
 
     output:
         versions: <% $.installed.versions %>
@@ -103,9 +108,10 @@ st2cd.st2_pkg_e2e_test:
 
 
         notify_start:
+            with-items: channel in <% $.notify_channels %>
             action: slack.chat.postMessage
             input:
-                channel: "#thunderdome"
+                channel: <% $.channel %>
                 text: ""
                 attachments: '[{"title": "[st2cd.st2_pkg_e2e_test: STARTED]", "title_link": "<% $.webui_base_url %>/#/history/<% env().st2_execution_id %>/general", "text": "HOSTNAME: <% $.vm_fqdn %>\nBOOTSTRAP: <% $.bootstrap_script_url %>\nDISTRO: <% $.distro %>\nRELEASE: <% $.release %>\nVERSION: <% coalesce($.version, ''latest'') %>", "color": "#808080"}]'
 
@@ -117,9 +123,10 @@ st2cd.st2_pkg_e2e_test:
             on-complete:
                 - notify_success
         notify_success:
+            with-items: channel in <% $.notify_channels %>
             action: slack.chat.postMessage
             input:
-                channel: "#thunderdome"
+                channel: <% $.channel %>
                 text: ""
                 attachments: '[{"title": "[st2cd.st2_pkg_e2e_test: SUCCEEDED]", "title_link": "<% $.webui_base_url %>/#/history/<% env().st2_execution_id %>/general", "text": "HOSTNAME: <% $.vm_fqdn %>\nBOOTSTRAP: <% $.bootstrap_script_url %>\nDISTRO: <% $.distro %>\nRELEASE: <% $.release %>\nVERSION: <% coalesce($.version, ''latest'') %>\nVERSION INSTALLED:\n\t<% $.installed.version_str %>", "color": "#008000"}]'
 
@@ -131,7 +138,7 @@ st2cd.st2_pkg_e2e_test:
             on-complete:
                 - notify_failure
         notify_failure:
-            with-items: channel in <% list("#thunderdome", "#stackstorm") %>
+            with-items: channel in <% $.notify_failure_channels %>
             action: slack.chat.postMessage
             input:
                 channel: <% $.channel %>
