@@ -1,15 +1,15 @@
 ---
 version: '2.0'
 
-st2cd.st2_pkg_promote_unstable:
+st2cd.st2_pkg_promote_staging:
     type: direct
     input:
         - hostname
         - distro
+        - release
         - version
         - keyfile
         - debug
-        - release: unstable
         - distro_to_pkg_os_type_map:
             RHEL6: el6
             RHEL7: el7

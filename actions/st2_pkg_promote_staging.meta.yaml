@@ -1,10 +1,10 @@
 ---
-name: st2_pkg_promote_unstable
+name: st2_pkg_promote_staging
 pack: st2cd
-description: Run end to end tests and promote unstable st2 packages for a given distro
+description: Run end to end tests and promote st2 packages from staging for a given distro
 enabled: true
 runner_type: mistral-v2
-entry_point: workflows/st2_pkg_promote_unstable.yaml
+entry_point: workflows/st2_pkg_promote_staging.yaml
 parameters:
     hostname:
         type: string
@@ -14,6 +14,16 @@ parameters:
     distro:
         type: string
         required: true
+        enum:
+            - RHEL6
+            - RHEL7
+            - UBUNTU14
+    release:
+        type: string
+        required: true
+        enum:
+            - stable
+            - unstable
     version:
         type: string
     keyfile:
