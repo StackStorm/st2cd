@@ -58,14 +58,20 @@
         name: "{{hostname}}.{{dns_zone}}"
         value: "{{ec2_instance_private_dns}}"
         zone: "{{dns_zone}}"
+      on-success: "get_distro"
+    -
+      name: "get_distro"
+      ref: "st2cd.get_distro"
+      params:
+        hosts: "{{ec2_instance_private_ip}}"
       on-success: "set_hostname"
     -
       name: "set_hostname"
-      ref: "st2cd.set_hostname_cloud"
+      ref: "st2cd.set_hostname"
       params:
-        distro: "{{distro}}"
         hosts: "{{ec2_instance_private_ip}}"
         hostname: "{{hostname}}.{{dns_zone}}"
+        distro: "{{get_distro[ec2_instance_private_ip].stdout}}"
         timeout: 300
       on-success: "reboot"
     -
