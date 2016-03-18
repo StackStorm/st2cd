@@ -68,6 +68,14 @@ st2cd.st2_pkg_e2e_test:
             publish:
                 vm_info: <% task(create_vm).result.tasks[2].result.result[0] %>
             on-success:
+                - patch_rhel6: <% $.distro = 'RHEL6' %>
+                - get_bootstrap_script: <% $.distro != 'RHEL6' %>
+        patch_rhel6:
+            action: core.remote_sudo
+            input:
+                hosts: <% $.vm_fqdn %>
+                cmd: yum-config-manager --enable rhui-REGION-rhel-server-releases-optional
+            on-success:
                 - get_bootstrap_script
         get_bootstrap_script:
             action: core.remote_sudo
