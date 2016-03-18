@@ -14,11 +14,17 @@ st2cd.st2_pkg_e2e_test:
         - role
         - release
         - version
+        - pkg_env
         - bootstrap_branch
         - bootstrap_script
         - debug
         - st2_username: st2admin
         - st2_password: Ch@ngeMe
+        - notify_channels:
+            - "#thunderdome"
+        - notify_failure_channels:
+            - "#thunderdome"
+            - "#stackstorm"
 
     output:
         versions: <% $.installed.versions %>
@@ -62,6 +68,14 @@ st2cd.st2_pkg_e2e_test:
             publish:
                 vm_info: <% task(create_vm).result.tasks[2].result.result[0] %>
             on-success:
+                - patch_rhel6: <% $.distro = 'RHEL6' %>
+                - get_bootstrap_script: <% $.distro != 'RHEL6' %>
+        patch_rhel6:
+            action: core.remote_sudo
+            input:
+                hosts: <% $.vm_fqdn %>
+                cmd: yum-config-manager --enable rhui-REGION-rhel-server-releases-optional
+            on-success:
                 - get_bootstrap_script
         get_bootstrap_script:
             action: core.remote_sudo
@@ -74,7 +88,7 @@ st2cd.st2_pkg_e2e_test:
             action: core.remote_sudo
             input:
                 hosts: <% $.vm_fqdn %>
-                cmd: bash /tmp/st2_bootstrap.sh --<% $.release %> --version=<% coalesce($.version, '') %>
+                cmd: bash /tmp/st2_bootstrap.sh --<% $.pkg_env %> --<% $.release %> --version=<% coalesce($.version, '') %>
                 timeout: 600
             on-success:
                 - get_installed_version
@@ -103,9 +117,10 @@ st2cd.st2_pkg_e2e_test:
 
 
         notify_start:
+            with-items: channel in <% $.notify_channels %>
             action: slack.chat.postMessage
             input:
-                channel: "#thunderdome"
+                channel: <% $.channel %>
                 text: ""
                 attachments: '[{"title": "[st2cd.st2_pkg_e2e_test: STARTED]", "title_link": "<% $.webui_base_url %>/#/history/<% env().st2_execution_id %>/general", "text": "HOSTNAME: <% $.vm_fqdn %>\nBOOTSTRAP: <% $.bootstrap_script_url %>\nDISTRO: <% $.distro %>\nRELEASE: <% $.release %>\nVERSION: <% coalesce($.version, ''latest'') %>", "color": "#808080"}]'
 
@@ -117,9 +132,10 @@ st2cd.st2_pkg_e2e_test:
             on-complete:
                 - notify_success
         notify_success:
+            with-items: channel in <% $.notify_channels %>
             action: slack.chat.postMessage
             input:
-                channel: "#thunderdome"
+                channel: <% $.channel %>
                 text: ""
                 attachments: '[{"title": "[st2cd.st2_pkg_e2e_test: SUCCEEDED]", "title_link": "<% $.webui_base_url %>/#/history/<% env().st2_execution_id %>/general", "text": "HOSTNAME: <% $.vm_fqdn %>\nBOOTSTRAP: <% $.bootstrap_script_url %>\nDISTRO: <% $.distro %>\nRELEASE: <% $.release %>\nVERSION: <% coalesce($.version, ''latest'') %>\nVERSION INSTALLED:\n\t<% $.installed.version_str %>", "color": "#008000"}]'
 
@@ -131,7 +147,7 @@ st2cd.st2_pkg_e2e_test:
             on-complete:
                 - notify_failure
         notify_failure:
-            with-items: channel in <% list("#thunderdome", "#stackstorm") %>
+            with-items: channel in <% $.notify_failure_channels %>
             action: slack.chat.postMessage
             input:
                 channel: <% $.channel %>

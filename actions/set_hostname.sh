@@ -1,0 +1,27 @@
+#!/bin/bash
+set -e
+
+HOSTNAME=$1
+DISTRO=$2
+
+DISTRO_LCASE=`echo "${DISTRO}" | awk '{print tolower($0)}'`
+
+SUPPORTED_DISTROS=(
+    "centos"
+    "fedora"
+    "redhat"
+    "ubuntu"
+)
+
+if [[ ! ${SUPPORTED_DISTROS[@]} =~ (^| )${DISTRO_LCASE}($| ) ]]; then
+    >&2 echo "ERROR: ${DISTRO} is an unsupported Linux distribution."
+    exit 1
+fi
+
+if [[ ${DISTRO_LCASE} = "ubuntu" ]]; then
+    sed -i -e "s/\(preserve_hostname: \)false/\1true/" /etc/cloud/cloud.cfg && echo "${HOSTNAME}" > /etc/hostname && hostname ${HOSTNAME} && echo "127.0.0.1 ${HOSTNAME}" >> /etc/hosts
+elif [[ ${DISTRO_LCASE} = "redhat" || ${DISTRO_LCASE} = "centos" ]]; then
+    sed -i -e "s/\(HOSTNAME=\).*/\1${HOSTNAME}/" /etc/sysconfig/network && hostname ${HOSTNAME} && echo "127.0.0.1 ${HOSTNAME}" >> /etc/hosts
+elif [[ ${DISTRO_LCASE} = "fedora" ]]; then
+    echo -e "HOSTNAME=${HOSTNAME}" >> /etc/sysconfig/network && hostname ${HOSTNAME} && echo "127.0.0.1 ${HOSTNAME}" >> /etc/hosts
+fi

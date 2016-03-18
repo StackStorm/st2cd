@@ -1,0 +1,31 @@
+---
+name: set_hostname
+runner_type: remote-shell-script
+description: Set the hostname on a VM
+enabled: true
+entry_point: set_hostname.sh
+parameters: 
+    hostname:
+        type: string
+        description: The hostname to set
+        required: true
+        position: 0
+    distro:
+        type: string
+        description: The Linux distro
+        required: true
+        enum:
+            - Ubuntu
+            - Fedora
+            - CentOS
+            - RedHat
+        position: 1
+    sudo:
+        immutable: true
+        default: true
+    cmd:
+        immutable: true
+        default: ""
+    kwarg_op:
+        immutable: true
+        default: "--"

@@ -11,6 +11,7 @@ st2cd.promote_package:
       - os
       - repo
       - token
+      - timeout: 600
     tasks:
 
       init:
@@ -32,12 +33,14 @@ st2cd.promote_package:
         action: core.local
         input:
           cmd: "wget -O /tmp/st2-up/ubuntu/trusty/<% $.deb %> https://packagecloud.io/StackStorm/<% $.source %>/ubuntu/pool/trusty/main/<% $.package.substring(0,1) %>/<% $.package %>/<% $.deb %>"
+          timeout: <% $.timeout %>
         on-success: upload_trusty
 #        on-error: cleanup
       upload_trusty:
         action: core.local
         input:
           cmd: "LANG=en_US.utf8 PACKAGECLOUD_TOKEN=<% $.token %> package_cloud push StackStorm/<% $.repo %>/ubuntu/trusty /tmp/st2-up/ubuntu/trusty/<% $.deb %>"
+          timeout: <% $.timeout %>
 #        on-success: cleanup
 #        on-error: cleanup
 
@@ -45,12 +48,14 @@ st2cd.promote_package:
         action: core.local
         input:
           cmd: "wget -O /tmp/st2-up/debian/wheezy/<% $.deb %> https://packagecloud.io/StackStorm/<% $.source %>/debian/pool/wheezy/main/<% $.package.substring(0,1) %>/<% $.package %>/<% $.deb %>"
+          timeout: <% $.timeout %>
         on-success: upload_wheezy
 #        on-error: cleanup
       upload_wheezy:
         action: core.local
         input:
           cmd: "LANG=en_US.utf8 PACKAGECLOUD_TOKEN=<% $.token %> package_cloud push StackStorm/<% $.repo %>/debian/wheezy /tmp/st2-up/debian/wheezy/<% $.deb %>"
+          timeout: <% $.timeout %>
 #        on-success: cleanup
 #        on-error: cleanup
 
@@ -58,12 +63,14 @@ st2cd.promote_package:
         action: core.local
         input:
           cmd: "wget -O /tmp/st2-up/debian/jessie/<% $.deb %> https://packagecloud.io/StackStorm/<% $.source %>/debian/pool/jessie/main/<% $.package.substring(0,1) %>/<% $.package %>/<% $.deb %>"
+          timeout: <% $.timeout %>
         on-success: upload_jessie
 #        on-error: cleanup
       upload_jessie:
         action: core.local
         input:
           cmd: "LANG=en_US.utf8 PACKAGECLOUD_TOKEN=<% $.token %> package_cloud push StackStorm/<% $.repo %>/debian/jessie /tmp/st2-up/debian/jessie/<% $.deb %>"
+          timeout: <% $.timeout %>
 #        on-success: cleanup
 #        on-error: cleanup
 
@@ -71,12 +78,14 @@ st2cd.promote_package:
         action: core.local
         input:
           cmd: "wget -O /tmp/st2-up/el/6/<% $.rpm %> https://packagecloud.io/StackStorm/<% $.source %>/el/6/x86_64/<% $.rpm %>"
+          timeout: <% $.timeout %>
         on-success: upload_el6
 #        on-error: cleanup
       upload_el6:
         action: core.local
         input:
           cmd: "LANG=en_US.utf8 PACKAGECLOUD_TOKEN=<% $.token %> package_cloud push StackStorm/<% $.repo %>/el/6 /tmp/st2-up/el/6/<% $.rpm %>"
+          timeout: <% $.timeout %>
 #        on-success: cleanup
 #        on-error: cleanup
 
@@ -84,12 +93,14 @@ st2cd.promote_package:
         action: core.local
         input:
           cmd: "wget -O /tmp/st2-up/el/7/<% $.rpm %> https://packagecloud.io/StackStorm/<% $.source %>/el/7/x86_64/<% $.rpm %>"
+          timeout: <% $.timeout %>
         on-success: upload_el7
 #        on-error: cleanup
       upload_el7:
         action: core.local
         input:
           cmd: "LANG=en_US.utf8 PACKAGECLOUD_TOKEN=<% $.token %> package_cloud push StackStorm/<% $.repo %>/el/7 /tmp/st2-up/el/7/<% $.rpm %>"
+          timeout: <% $.timeout %>
 #        on-success: cleanup
 #        on-error: cleanup
 

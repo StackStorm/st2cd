@@ -1,0 +1,34 @@
+---
+name: st2_pkg_promote_staging
+pack: st2cd
+description: Run end to end tests and promote st2 packages from staging for a given distro
+enabled: true
+runner_type: mistral-v2
+entry_point: workflows/st2_pkg_promote_staging.yaml
+parameters:
+    hostname:
+        type: string
+        description: >
+            Hostname will be auto assigned to st2-pkg-<release>-<distro>-<timestamp>
+            if it is not given.
+    distro:
+        type: string
+        required: true
+        enum:
+            - RHEL6
+            - RHEL7
+            - UBUNTU14
+    release:
+        type: string
+        required: true
+        enum:
+            - stable
+            - unstable
+    version:
+        type: string
+    keyfile:
+        type: string
+        default: /home/stanley/.ssh/stanley_rsa
+    debug:
+        type: boolean
+        default: false
