@@ -49,6 +49,12 @@ parameters:
         default: stable
     version:
         type: string
+    pkg_env:
+        type: string
+        enum:
+            - staging
+            - production
+        default: production
     bootstrap_branch:
         type: string
         default: master

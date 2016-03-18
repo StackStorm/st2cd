@@ -10,6 +10,7 @@ st2cd.st2_pkg_promote_staging:
         - version
         - keyfile
         - debug
+        - pkg_env: staging
         - distro_to_pkg_os_type_map:
             RHEL6: el6
             RHEL7: el7
@@ -71,6 +72,7 @@ st2cd.st2_pkg_promote_staging:
                 distro: <% $.distro %>
                 release: <% $.release %>
                 version: <% $.version %>
+                pkg_env: <% $.pkg_env %>
                 keyfile: <% $.keyfile %>
                 debug: <% $.debug %>
             publish:
