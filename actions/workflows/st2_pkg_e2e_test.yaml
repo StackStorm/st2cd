@@ -89,7 +89,7 @@ st2cd.st2_pkg_e2e_test:
             input:
                 hosts: <% $.vm_fqdn %>
                 cmd: bash /tmp/st2_bootstrap.sh --<% $.pkg_env %> --<% $.release %> --version=<% coalesce($.version, '') %>
-                timeout: 600
+                timeout: 900
             on-success:
                 - get_installed_version
         get_installed_version:
