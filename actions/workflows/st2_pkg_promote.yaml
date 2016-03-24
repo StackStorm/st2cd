@@ -1,0 +1,99 @@
+---
+version: '2.0'
+
+st2cd.st2_pkg_promote:
+    description: Promote a StackStorm package from staging to production repo
+    type: direct
+    input:
+        - package
+        - release
+        - version
+        - revision
+        - distro_version
+        - api_token
+        - timeout: 900
+        - distro_arch_map:
+            debian: amd64
+            el: x86_64
+            ubuntu: amd64
+        - distro_pkg_type_map:
+            debian: deb
+            el: rpm
+            ubuntu: deb
+
+    tasks:
+        init:
+            action: std.noop
+            publish:
+                prd_repo: StackStorm/<% $.release %>
+                stg_repo: StackStorm/staging-<% $.release %>
+                arch: <% $.distro_arch_map.get($.distro_version.split("/")[0]) %>
+                package_type: <% $.distro_pkg_type_map.get($.distro_version.split("/")[0]) %>
+            on-success:
+                - get_stg_pkg_info
+        get_stg_pkg_info:
+            action: packagecloud.show_package
+            input:
+                repo: <% $.stg_repo %>
+                package: <% $.package %>
+                package_version: <% $.version %>
+                package_revision: <% $.revision %>
+                distro: <% $.distro_version.split("/")[0] %>
+                distro_version: <% $.distro_version.split("/")[1] %>
+                arch: <% $.arch %>
+                package_type: <% $.package_type %>
+            publish:
+                filename: <% task(get_stg_pkg_info).result.body.filename %>
+                url: <% task(get_stg_pkg_info).result.body.package_html_url %>
+            on-success:
+                - get_prd_pkg_info
+        get_prd_pkg_info:
+            action: packagecloud.show_package
+            input:
+                repo: <% $.prd_repo %>
+                package: <% $.package %>
+                package_version: <% $.version %>
+                package_revision: <% $.revision %>
+                distro: <% $.distro_version.split("/")[0] %>
+                distro_version: <% $.distro_version.split("/")[1] %>
+                arch: <% $.arch %>
+                package_type: <% $.package_type %>
+            on-error:
+                - download_stg_pkg: <% task(get_prd_pkg_info).result.get(status_code, 0) = 404 %>
+                - notify_failure: <% task(get_prd_pkg_info).result.get(status_code, 0) != 404 %>
+            on-success:
+                - checksum
+
+
+        checksum:
+            action: std.noop
+            on-complete:
+                - notify_success: <%
+                    task(get_prd_pkg_info).result.body.sha512sum =
+                    task(get_stg_pkg_info).result.body.sha512sum %> 
+                - notify_failure: <%
+                    task(get_prd_pkg_info).result.body.sha512sum != 
+                    task(get_stg_pkg_info).result.body.sha512sum %>   
+
+
+        download_stg_pkg:
+            action: core.local
+            input:
+                cmd: wget -O /tmp/<% $.filename %> https://packagecloud.io/<% $.url %>/download
+            on-success:
+                - upload_stg_pkg_to_prd
+        upload_stg_pkg_to_prd:
+            action: core.local
+            input:
+                env:
+                    LANG: en_US.utf8
+                    PACKAGECLOUD_TOKEN: <% $.api_token %>
+                cmd: package_cloud push <% $.prd_repo %>/<% $.distro_version %> /tmp/<% $.filename %>
+            on-success:
+                - notify_success
+        notify_success:
+            action: std.noop
+
+
+        notify_failure:
+            action: std.fail
