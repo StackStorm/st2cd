@@ -59,7 +59,7 @@ st2cd.st2_pkg_promote:
                 arch: <% $.arch %>
                 package_type: <% $.package_type %>
             on-error:
-                - download_stg_pkg: <% task(get_prd_pkg_info).result.get(status_code, 0) = 404 %>
+                - get_pkg_filename: <% task(get_prd_pkg_info).result.get(status_code, 0) = 404 %>
                 - notify_failure: <% task(get_prd_pkg_info).result.get(status_code, 0) != 404 %>
             on-success:
                 - checksum
@@ -76,10 +76,22 @@ st2cd.st2_pkg_promote:
                     task(get_stg_pkg_info).result.body.sha512sum %>   
 
 
+        get_pkg_filename:
+            action: core.local
+            input:
+                cmd: date +'%s'
+            publish:
+                target: <%
+                    str(task(get_pkg_filename).result.stdout) + '-' +
+                    str(random(100000, 999999)) + '-' +
+                    $.filename %>
+            on-success:
+                - download_stg_pkg
         download_stg_pkg:
             action: core.local
             input:
-                cmd: wget -O /tmp/<% $.filename %> https://packagecloud.io/<% $.url %>/download
+                cmd: wget -O /tmp/<% $.target %> https://packagecloud.io/<% $.url %>/download
+                timeout: <% $.timeout %>
             on-success:
                 - upload_stg_pkg_to_prd
         upload_stg_pkg_to_prd:
@@ -88,9 +100,16 @@ st2cd.st2_pkg_promote:
                 env:
                     LANG: en_US.utf8
                     PACKAGECLOUD_TOKEN: <% $.api_token %>
-                cmd: package_cloud push <% $.prd_repo %>/<% $.distro_version %> /tmp/<% $.filename %>
+                cmd: package_cloud push <% $.prd_repo %>/<% $.distro_version %> /tmp/<% $.target %>
+                timeout: <% $.timeout %>
             on-success:
                 - notify_success
+            on-complete:
+                - cleanup
+        cleanup:
+            action: core.local
+            input:
+                cmd: rm -rf /tmp/<% $.target %>
         notify_success:
             action: std.noop
 
