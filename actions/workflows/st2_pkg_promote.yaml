@@ -104,12 +104,18 @@ st2cd.st2_pkg_promote:
                 timeout: <% $.timeout %>
             on-success:
                 - notify_success
+            on-error:
+                - notify_failure
             on-complete:
                 - cleanup
+
+
         cleanup:
             action: core.local
             input:
                 cmd: rm -rf /tmp/<% $.target %>
+
+
         notify_success:
             action: std.noop
 
