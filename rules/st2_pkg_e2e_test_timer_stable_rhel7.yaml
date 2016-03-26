@@ -17,4 +17,5 @@ action:
   parameters:
     hostname: st2-pkg-stable-el7
     distro: RHEL7
+    pkg_env: production
     release: stable
