@@ -60,6 +60,9 @@ parameters:
         default: master
     bootstrap_script:
         type: string
+    triggering_sha_url:
+        type: string
+        description: Optional info on the sha that triggered the end to end test.
     debug:
         type: boolean
         default: false
