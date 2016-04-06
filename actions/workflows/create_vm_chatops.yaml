@@ -11,7 +11,7 @@
       name: "get_distro_info"
       ref: "st2cd.kvstore"
       params:
-        key: "distro_{{os}}"
+        key: "distro_{{os|lower}}"
         action: "get"
       on-success: "run_instance"
     -
