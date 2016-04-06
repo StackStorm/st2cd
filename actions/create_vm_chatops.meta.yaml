@@ -28,7 +28,7 @@
       required: true
     purpose:
       type: "string"
-      default: "Ask {{ action_context.api_user }}"
+      default: "whatever. Ask {{ action_context.api_user }}"
     skip_notify:
       default:
         - get_subnet_id

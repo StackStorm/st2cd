@@ -8,7 +8,7 @@
       on-success: "get_distro_info"
     -
       name: "get_distro_info"
-      ref: "st2.kv.get"
+      ref: "st2.kv.get_object"
       params:
         key: "distro_{{os|lower}}"
       on-success: "run_instance"
