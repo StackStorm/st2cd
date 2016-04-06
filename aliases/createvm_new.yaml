@@ -4,6 +4,6 @@ pack: "st2cd"
 action_ref: "st2cd.create_vm_chatops"
 formats:
   - display: "new {{ os }} box {{ hostname }} for {{ purpose }}"
-  	representation:
-  	  - "(create |spin up )?(an? )?(new )?{{ os }} box {{ hostname }} for {{ purpose }}"
+    representation:
+      - "(create |spin up )?(an? )?(new )?{{ os }} box {{ hostname }} for {{ purpose }}"
 description: "Spin up a clean VM"
