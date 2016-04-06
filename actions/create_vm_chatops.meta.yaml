@@ -1,0 +1,31 @@
+---
+  name: "create_vm_chatops"
+  pack: "st2cd"
+  runner_type: "action-chain"
+  description: "Create a VM through ChatOps and add DNS"
+  enabled: true
+  entry_point: "workflows/create_vm_chatops.yaml"
+  parameters:
+    instance_type:
+      type: "string"
+      description: "Flavor of to use for instance creation"
+      default: "t2.medium"
+    environment:
+      type: "string"
+      description: "Environment to deploy to"
+      default: "staging"
+      enum:
+        - "production"
+        - "staging"
+        - "sandbox"
+    hostname:
+      type: "string"
+      description: "Short hostname"
+      required: true
+    distro:
+      type: "string"
+      default: "UBUNTU14"
+      required: true
+    purpose:
+      type: "string"
+      default: "Ask {{ action_context.api_user }}"
