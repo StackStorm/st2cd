@@ -29,3 +29,17 @@
     purpose:
       type: "string"
       default: "Ask {{ action_context.api_user }}"
+    skip_notify:
+      default:
+        - get_subnet_id
+        - get_distro_info
+        - run_instance
+        - wait_for_instance
+        - wait_for_ssh
+        - add_name_tag
+        - add_purpose_tag
+        - add_creator_tag
+        - add_cname
+        - set_hostname
+        - reboot
+        - wait_for_ssh_post_reboot
