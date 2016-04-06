@@ -6,7 +6,7 @@
       params:
         key: "{{environment}}_subnet"
         action: "get"
-      on-success: "get_ami"
+      on-success: "get_distro_info"
     -
       name: "get_distro_info"
       ref: "st2cd.kvstore"
@@ -50,14 +50,14 @@
       params:
         resource_ids: "{{ec2_instance_id}}"
         tags: "Name={{hostname}}"
-      on-success: "add_cname"
+      on-success: "add_purpose_tag"
     -
       name: "add_purpose_tag"
       ref: "aws.ec2_create_tags"
       params:
         resource_ids: "{{ec2_instance_id}}"
         tags: "Purpose=For {{purpose}}"
-      on-success: "add_cname"
+      on-success: "add_creator_tag"
     -
       name: "add_creator_tag"
       ref: "aws.ec2_create_tags"
