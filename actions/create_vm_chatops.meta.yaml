@@ -22,9 +22,9 @@
       type: "string"
       description: "Short hostname"
       required: true
-    distro:
+    os:
       type: "string"
-      default: "UBUNTU14"
+      default: "ubuntu"
       required: true
     purpose:
       type: "string"
