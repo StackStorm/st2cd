@@ -19,7 +19,7 @@
         image_id: "{{get_distro_info.result.ami}}"
         instance_type: "{{instance_type}}"
         subnet_id: "{{get_subnet_id.result}}"
-        key_name: "{{key_name}}"
+        key_name: "st2_deploy"
       publish:
         ec2_instance_id: "{{run_instance.result[0].id}}"
         ec2_instance_private_ip: "{{run_instance.result[0].private_ip_address}}"
@@ -31,6 +31,13 @@
       params:
         instance_id: "{{ec2_instance_id}}"
         state: "running"
+      on-success: "add_tags"
+    -
+      name: "add_tags"
+      ref: "aws.ec2_create_tags"
+      params:
+        resource_ids: "{{ec2_instance_id}}"
+        tags: "Name={{hostname}},Purpose=For {{purpose}},Creator={{author}}"
       on-success: "wait_for_ssh"
     -
       name: "wait_for_ssh"
@@ -38,30 +45,9 @@
       params:
         hostname: "{{ec2_instance_private_ip}}"
         username: "stanley"
-        keyfile: "{{keyfile}}"
+        keyfile: "/home/stanley/.ssh/stanley_rsa"
         ssh_timeout: 20
         retries: 30
-      on-success: "add_name_tag"
-    -
-      name: "add_name_tag"
-      ref: "aws.ec2_create_tags"
-      params:
-        resource_ids: "{{ec2_instance_id}}"
-        tags: "Name={{hostname}}"
-      on-success: "add_purpose_tag"
-    -
-      name: "add_purpose_tag"
-      ref: "aws.ec2_create_tags"
-      params:
-        resource_ids: "{{ec2_instance_id}}"
-        tags: "Purpose=For {{purpose}}"
-      on-success: "add_creator_tag"
-    -
-      name: "add_creator_tag"
-      ref: "aws.ec2_create_tags"
-      params:
-        resource_ids: "{{ec2_instance_id}}"
-        tags: "Creator={{action_context.api_user}}"
       on-success: "add_cname"
     -
       name: "add_cname"
@@ -70,15 +56,33 @@
         name: "{{hostname}}.{{dns_zone}}"
         value: "{{ec2_instance_private_dns}}"
         zone: "{{dns_zone}}"
+      on-success: "get_distro"
+    -
+      name: "get_distro"
+      ref: "st2cd.get_distro"
+      params:
+        hosts: "{{ec2_instance_private_ip}}"
       on-success: "set_hostname"
     -
       name: "set_hostname"
-      ref: "st2cd.set_hostname_cloud"
+      ref: "st2cd.set_hostname"
       params:
-        distro: "{{get_distro_info.result.st2cd_name}}"
         hosts: "{{ec2_instance_private_ip}}"
         hostname: "{{hostname}}.{{dns_zone}}"
+        distro: "{{get_distro[ec2_instance_private_ip].stdout}}"
         timeout: 300
+      on-success: "add_keys"
+    -
+      name: "add_keys"
+      ref: "core.remote_sudo"
+      params:
+        hosts: "{{ec2_instance_private_ip}}"
+        cmd: |
+          keyfile=/home/stanley/.ssh/authorized_keys;
+          for u in {{ users }}; do
+            echo "# $u" >>$keyfile;
+            curl https://github.com/$u.keys >>$keyfile;
+          done
       on-success: "reboot"
     -
       name: "reboot"
@@ -93,7 +97,7 @@
       params:
         hostname: "{{ec2_instance_private_ip}}"
         username: "stanley"
-        keyfile: "{{keyfile}}"
+        keyfile: "/home/stanley/.ssh/stanley_rsa"
         ssh_timeout: 30
         retries: 10
   default: "get_subnet_id"

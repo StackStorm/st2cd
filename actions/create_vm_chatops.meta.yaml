@@ -26,20 +26,33 @@
       type: "string"
       default: "ubuntu"
       required: true
+    author:
+      type: "string"
+      default: "{{ action_context.api_user }}"
+      immutable: true
+    dns_zone:
+      type: "string"
+      description: "Route53 DNS Zone to add host to"
+      default: "uswest2.stackstorm.net"
+      immutable: true
     purpose:
       type: "string"
-      default: "whatever. Ask {{ action_context.api_user }}"
+      default: "whatever. Ask {{ author }}"
+    users:
+      type: "string"
+      description: "Space-separated list of GitHub usernames"
+      default: "manasdk dzimine doriftoshoes lakshmi-kannan m4dcoder enykeev kami emedvedev armab"
     skip_notify:
       default:
         - get_subnet_id
         - get_distro_info
+        - get_distro
         - run_instance
         - wait_for_instance
         - wait_for_ssh
-        - add_name_tag
-        - add_purpose_tag
-        - add_creator_tag
+        - add_tags
         - add_cname
+        - add_keys
         - set_hostname
         - reboot
         - wait_for_ssh_post_reboot
