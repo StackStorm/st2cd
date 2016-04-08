@@ -44,7 +44,6 @@
     purpose:
       type: "string"
       description: "Planned purpose of the VM"
-      required: true
     distro:
       default: "UBUNTU14"
       enum:
@@ -58,6 +57,9 @@
         - "pkg_RHEL7"
         - "pkg_CENTOS6"
         - "pkg_CENTOS7"
+        - "ubuntu"
+        - "centos6"
+        - "centos7"
     notification_channel:
       type: "string"
       description: "used by rule with actiontrigger"

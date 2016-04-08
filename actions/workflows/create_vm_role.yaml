@@ -47,7 +47,7 @@
       ref: "aws.ec2_create_tags"
       params:
         resource_ids: "{{ec2_instance_id}}"
-        tags: "Name={{hostname}},Purpose={{purpose[0]|upper}}{{purpose[1:]}},Creator={{creator}},Role={{role}}"
+        tags: "Name={{hostname}},Creator={{creator}},Role={{role}}{% if purpose %},Purpose={{purpose[0]|upper}}{{purpose[1:]}}{% endif %}"
       on-success: "add_cname"
     -
       name: "add_cname"
