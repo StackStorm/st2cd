@@ -2,17 +2,15 @@
   chain:
     -
       name: "get_subnet_id"
-      ref: "st2cd.kvstore"
+      ref: "st2.kv.get"
       params:
         key: "{{environment}}_subnet"
-        action: "get"
       on-success: "get_ami"
     -
       name: "get_ami"
-      ref: "st2cd.kvstore"
+      ref: "st2.kv.get"
       params:
         key: "ami_{{distro}}"
-        action: "get"
       on-success: "run_instance"
     -
       name: "run_instance"
@@ -43,13 +41,13 @@
         keyfile: "{{keyfile}}"
         ssh_timeout: 20
         retries: 30
-      on-success: "add_name_tag"
+      on-success: "add_tags"
     -
-      name: "add_name_tag"
+      name: "add_tags"
       ref: "aws.ec2_create_tags"
       params:
         resource_ids: "{{ec2_instance_id}}"
-        tags: "Name={{hostname}}"
+        tags: "Name={{hostname}},Purpose={{purpose[0]|upper}}{{purpose[1:]}},Creator={{creator}},Role={{role}}"
       on-success: "add_cname"
     -
       name: "add_cname"
