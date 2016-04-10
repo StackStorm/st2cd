@@ -89,7 +89,7 @@ st2cd.st2_pkg_e2e_test:
             action: core.remote_sudo
             input:
                 hosts: <% $.vm_fqdn %>
-                cmd: bash /tmp/st2_bootstrap.sh --<% $.pkg_env %> --<% $.release %> --version=<% coalesce($.version, '') %>
+                cmd: bash /tmp/st2_bootstrap.sh --<% $.pkg_env %> --<% $.release %> --version=<% coalesce($.version, '') %> --user=<% $.st2_username %> --password=<% $.st2_password %>
                 timeout: 900
             on-success:
                 - get_installed_version
