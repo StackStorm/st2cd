@@ -21,10 +21,6 @@
       type: "string"
       description: "SSH key to use during intial instance creation"
       default: "st2_deploy"
-    base_user:
-      type: "string"
-      description: "Username for initial ssh test"
-      default: "ubuntu"
     keyfile:
       type: "string"
       description: "Path to local private key that corresponds to {{key_name}}"
@@ -40,6 +36,14 @@
     role:
       type: "string"
       description: "Role to use during puppet apply"
+      default: "default"
+    creator:
+      type: "string"
+      default: "{{ 'api_user' in action_context and action_context.api_user or action_context.user }}"
+      immutable: true
+    purpose:
+      type: "string"
+      description: "Planned purpose of the VM"
     distro:
       default: "UBUNTU14"
       enum:
@@ -53,6 +57,9 @@
         - "pkg_RHEL7"
         - "pkg_CENTOS6"
         - "pkg_CENTOS7"
+        - "ubuntu"
+        - "centos6"
+        - "centos7"
     notification_channel:
       type: "string"
       description: "used by rule with actiontrigger"
@@ -67,10 +74,11 @@
       default:
         - get_subnet_id
         - get_ami
+        - get_distro
         - run_instance
         - wait_for_instance
         - wait_for_ssh
-        - add_name_tag
+        - add_tags
         - add_cname
         - set_hostname
         - reboot

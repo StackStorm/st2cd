@@ -4,17 +4,17 @@
   description: "Clean a git repo"
   enabled: true
   entry_point: ""
-  parameters: 
-    sudo: 
+  parameters:
+    sudo:
       immutable: true
       default: true
     role:
       type: "string"
       default: ""
-    cmd: 
+    cmd:
       immutable: false
       default: "{% if role != \"\" %}echo -e '---\\nrole: {{role}}' > /etc/facter/facts.d/role.yaml{% else %}echo -e 'No role defined'{% endif %}"
-    kwarg_op: 
+    kwarg_op:
       immutable: true
       default: "--"
 

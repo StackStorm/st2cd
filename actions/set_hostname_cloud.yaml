@@ -4,8 +4,8 @@
   description: "Set the hostname on a VM and update cloud.cfg"
   enabled: true
   entry_point: ""
-  parameters: 
-    sudo: 
+  parameters:
+    sudo:
       immutable: true
       default: true
     hostname:
@@ -40,7 +40,7 @@
       type: "string"
       immutable: true
       default: 'sed -i -e "s/\(preserve_hostname: \)false/\1true/" /etc/cloud/cloud.cfg && echo "{{hostname}}" > /etc/hostname && hostname {{hostname}} && echo "127.0.0.1 {{hostname}}" >> /etc/hosts'
-    kwarg_op: 
+    kwarg_op:
       immutable: true
       default: "--"
 

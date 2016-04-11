@@ -2,27 +2,26 @@
   chain:
     -
       name: "token"
-      ref: "st2cd.kvstore"
+      ref: "st2.kv.get"
       params:
-        action: "get"
         key: "st2_github_token"
       on-success: "fetch_puppet_bootstrap_script"
-    - 
+    -
       name: "fetch_puppet_bootstrap_script"
       ref: "st2cd.fetch_puppet_bootstrap"
-      params: 
+      params:
         hosts: "{{hosts}}"
         file: "bootstrap-puppet"
         token: "{{token.result}}"
       on-success: "run_puppet_bootstrap"
-    - 
+    -
       name: "run_puppet_bootstrap"
       ref: "st2cd.run_puppet_bootstrap"
-      params: 
+      params:
         hosts: "{{hosts}}"
         timeout: 1800
       on-success: "run_linux_bootstrap"
-    - 
+    -
       name: "run_linux_bootstrap"
       ref: "core.remote_sudo"
       params:
@@ -37,10 +36,10 @@
         hosts: "{{hosts}}"
         role: "{{role}}"
       on-success: "run_puppet_apply"
-    - 
+    -
       name: "run_puppet_apply"
       ref: "st2cd.run_puppet_apply"
-      params: 
+      params:
         hosts: "{{hosts}}"
         timeout: 1800
   default: "token"

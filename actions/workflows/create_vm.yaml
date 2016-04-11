@@ -2,17 +2,15 @@
   chain:
     -
       name: "get_subnet_id"
-      ref: "st2cd.kvstore"
+      ref: "st2.kv.get"
       params:
         key: "{{environment}}_subnet"
-        action: "get"
       on-success: "get_ami"
     -
       name: "get_ami"
-      ref: "st2cd.kvstore"
+      ref: "st2.kv.get"
       params:
         key: "ami_{{distro}}"
-        action: "get"
       on-success: "run_instance"
     -
       name: "run_instance"
