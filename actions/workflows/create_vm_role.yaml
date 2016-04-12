@@ -56,6 +56,8 @@
         name: "{{hostname}}.{{dns_zone}}"
         value: "{{ec2_instance_private_dns}}"
         zone: "{{dns_zone}}"
+      publish:
+        cname: "{{hostname}}.{{dns_zone}}"
       on-success: "get_distro"
     -
       name: "get_distro"
