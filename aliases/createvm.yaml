@@ -13,11 +13,22 @@ result:
   format: |
     {% if execution.status == 'succeeded' -%}
     your VM is ready! You can now log in, all of the Stormers' accounts and keys are already there. Welcome!{~}
-    Hostname: {{ execution.parameters.hostname }}.{{ execution.parameters.dns_zone }}.
+    Hostname: {{ execution.parameters.hostname }}.
+      {%- if 'dns_zone' in execution.parameters -%}
+        {{ execution.parameters.dns_zone }}
+      {%- else -%}
+        {{ execution.action.parameters.dns_zone.default }}
+      {%- endif -%}.
     Instance type: `{{execution.parameters.instance_type }}`.
     Purpose: {{ execution.parameters.purpose }}.
     Puppet role: {{ execution.parameters.role }}.
-    ```ssh {{ execution.parameters.hostname }}.{{ execution.parameters.dns_zone }}```
+    ```ssh {{ execution.parameters.hostname }}.
+      {%- if 'dns_zone' in execution.parameters -%}
+        {{ execution.parameters.dns_zone }}
+      {%- else -%}
+        {{ execution.action.parameters.dns_zone.default }}
+      {%- endif -%}
+    ```
     {%- else -%}
     something went wrong during VM creation! Please check the execution data:{~}
     {{ execution }}
