@@ -63,7 +63,14 @@ workflows:
                 input:
                     host: <% $.host %>
                     env: <% $.st2_cli_env %>
-
+            on-success:
+                    - robot_test
+            robot_test:
+                action: core.remote
+                input:
+                    hosts: <% $.host %>
+                    env: <% $.st2_cli_env %>
+                    cmd: cd ~/st2tests && source robotfm_tests/venv/bin/activate && pybot robotfm_tests/ 
 
     test_basic:
         type: direct
