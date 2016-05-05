@@ -8,5 +8,5 @@ git clone https://github.com/StackStorm/st2tests.git
 cd st2tests
 virtualenv venv
 . venv/bin/activate
-pip install -r test-requirements.txt
+pip install -r robotfm_tests/test-requirements.txt
 
