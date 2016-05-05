@@ -70,7 +70,7 @@ workflows:
                 input:
                     hosts: <% $.host %>
                     env: <% $.st2_cli_env %>
-                    cmd: cd ~/st2tests && source robotfm_tests/venv/bin/activate && pybot robotfm_tests/ 
+                    cmd: cd /tmp/st2tests && source venv/bin/activate && pybot robotfm_tests/ 
 
     test_basic:
         type: direct
