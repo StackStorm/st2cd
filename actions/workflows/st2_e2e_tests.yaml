@@ -63,7 +63,7 @@ workflows:
                 input:
                     host: <% $.host %>
                     env: <% $.st2_cli_env %>
-            on-success:
+                on-success:
                     - robot_test
             robot_test:
                 action: core.remote
