@@ -71,7 +71,7 @@ workflows:
                     hosts: <% $.host %>
                     env: <% $.st2_cli_env %>
                     cmd: cd /tmp/st2tests && source venv/bin/activate && pybot robotfm_tests/
-                    timeout: 300
+                    timeout: 1200
 
     test_basic:
         type: direct
