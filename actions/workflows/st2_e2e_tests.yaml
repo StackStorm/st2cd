@@ -41,6 +41,7 @@ workflows:
                 input:
                     hosts: <% $.host %>
                     env: <% $.st2_cli_env %>
+                    timeout: 180
                 on-success:
                     - run_basic_tests
             run_basic_tests:
