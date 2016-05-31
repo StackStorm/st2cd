@@ -1,0 +1,22 @@
+---
+    name: "st2_docs_v14"
+    description: "Build st2 packages after tests succeed and push them to production"
+    enabled: true
+    trigger:
+        type: "GitHubWebhook.github_event"
+    criteria:
+        trigger.body.ref:
+            pattern: "refs/heads/v1.4"
+            type: "equals"
+        trigger.body.repository.full_name:
+            pattern: "StackStorm/st2docs"
+            type: "equals"
+    action:
+        ref: "st2cd.st2_docs"
+        parameters:
+            repo: "{{trigger.body.repository.clone_url}}"
+            branch: "v1.4"
+            revision: "{{trigger.body.head_commit.id}}"
+            author: "{{trigger.body.head_commit.author.username}}"
+            environment: "production"
+            docs_url: "{{system.s3_bucket_docs_production}}"
