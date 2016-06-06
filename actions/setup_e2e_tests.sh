@@ -26,5 +26,5 @@ virtualenv venv
 pip install -r robotfm_tests/test-requirements.txt
 
 # Restart st2 primarily reload the keyvalue configuration
-st2ctl restart
+sudo st2ctl restart
 sleep 5
