@@ -10,7 +10,7 @@ sudo mkdir -p ${CRYPTO_BASE}
 sudo st2-generate-symmetric-crypto-key --key-path ${CRYPTO_KEY_FILE}
 sudo chgrp st2packs ${CRYPTO_KEY_FILE}
 
-cat <<keyvalue_options >>${ST2_CONF}
+sudo cat <<keyvalue_options >>${ST2_CONF}
 [keyvalue]
 encryption_key_path=${CRYPTO_KEY_FILE}
 keyvalue_options
