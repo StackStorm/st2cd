@@ -28,15 +28,16 @@ st2cd.st2_pkg_release:
                 project: stackstorm/<% $.project %>
                 branch: <% $.branch %>
             publish:
-                build_numbers: <% task(package_all).result.select($.result.build_number) %>
+                package_jobs: <% task(package_all).result.select(
+                                [$.result.reponame, $.result.build_num]) %>
             on-success:
                 - wait_for_packages
         wait_for_packages:
-            with-items: build_number in <% $.build_numbers %>
+            with-items: package_job in <% $.package_jobs %>
             action: circle_ci.wait_until_build_finishes
             input:
-                project: <% $.project %>
-                build_number: <% $.build_number %>
+                project: stackstorm/<% $.package_job[0] %>
+                build_number: <% $.package_job[1] %>
                 wait_timeout: 1800
             on-success:
                 - promote_all
