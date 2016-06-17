@@ -43,6 +43,12 @@ echo "Creating branch for mistral..."
 cd ${REPO_MAIN}
 ${GIT} checkout -b ${BRANCH}
 
+VERSION_FILE="version_st2.py"
+echo "Setting version in ${VERSION_FILE} to ${VERSION}..."
+sed -i -e "s/\(__version__ = \).*/\1'${VERSION}'/" ${VERSION_FILE}
+git add ${VERSION_FILE}
+git commit -qm "Update version info for release - ${VERSION}"
+
 if [[ $(grep -c . <<< "${REQUIREMENTS}") > 1 ]]; then
     echo "Updating requirements.txt..."
     REQUIREMENTS=`echo "${REQUIREMENTS}" | sed '/https:\/\/github.com\/stackstorm/Id'`
