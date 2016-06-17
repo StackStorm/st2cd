@@ -70,4 +70,4 @@ st2cd.mistral_release_candidate:
             input:
                 channel: <% $.channel %>
                 text: ""
-                attachments: '[{"fallback": "[st2cd.mistral_release_candidate: FAILED]", "title": "[st2cd.mistral_release_candidate: SUCCEEDED]", "title_link": "<% $.webui_base_url %>/#/history/<% env().st2_execution_id %>/general", "text": "Error releasing candidate <% $.version %>.", "color": "#FF0000"}]'
+                attachments: '[{"fallback": "[st2cd.mistral_release_candidate: FAILED]", "title": "[st2cd.mistral_release_candidate: FAILED]", "title_link": "<% $.webui_base_url %>/#/history/<% env().st2_execution_id %>/general", "text": "Error releasing candidate <% $.version %>.", "color": "#FF0000"}]'
