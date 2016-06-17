@@ -7,6 +7,12 @@ st2cd.st2_prep_release:
         - fork
         - host
         - cwd
+        - local_repo_sfx: null
+
+    task-defaults:
+        on-error:
+            - cleanup_on_failure: <% $.local_repo_sfx != null %>
+
     tasks:
         init:
             action: core.local
@@ -114,3 +120,12 @@ st2cd.st2_prep_release:
                 local_repo: <% 'st2enterprise_auth_ldap_' + $.local_repo_sfx %>
                 hosts: <% $.host %>
                 cwd: <% $.cwd %>
+
+
+        cleanup_on_failure:
+            action: core.remote
+            input:
+                cmd: <% 'rm -rf ' + $.cwd + '/st2*' + $.local_repo_sfx %>
+                hosts: <% $.host %>
+            on-complete:
+                - fail
