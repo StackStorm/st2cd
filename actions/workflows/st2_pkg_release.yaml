@@ -1,63 +1,48 @@
 version: '2.0'
-name: st2cd.st2_pkg_release
-description: Package and test st2 for release.
-
-workflows:
-
-    main:
-        input:
-            - version
-            - projects:
-                - st2
-                - st2flow
-                - st2-packages
-                - st2-enterprise-auth-backend-ldap
-            - distros:
-                - RHEL6
-                - RHEL7
-                - UBUNTU14
-        tasks:
-            init:
-                action: core.local
-                input:
-                    cmd: "echo <% $.version %> | cut -d \".\" -f1-2"
-                publish:
-                    branch: v<% task(init).result.stdout %>
-                on-success:
-                    - package_all
-            package_all:
-                with-items: project in <% $.projects %>
-                workflow: package
-                input:
-                    project: <% $.project %>
-                    branch: <% $.branch %>
-                on-success:
-                    - promote_all
-            promote_all:
-                with-items: distro in <% $.distros %>
-                action: st2ci.st2_pkg_test_and_promote
-                input:
-                    distro: <% $.distro %>
-                    release: stable
-
-
-    package:
-        input:
-            - project
-            - branch
-        tasks:
-            build:
-                action: circle_ci.run_build
-                input:
-                    project: stackstorm/<% $.project %>
-                    branch: <% $.branch %>
-                publish:
-                    build_number: <% task(run_build).result.result.build_num %>
-                on-success:
-                    - wait
-            wait:
-                action: circle_ci.wait_until_build_finishes
-                input:
-                    project: <% $.project %>
-                    build_number: <% $.build_number %>
-                    wait_timeout: 1800
+st2cd.st2_pkg_release:
+    description: Package and test st2 for release.
+    input:
+        - version
+        - projects:
+            - st2
+            - st2flow
+            - st2-packages
+            - st2-enterprise-auth-backend-ldap
+        - distros:
+            - RHEL6
+            - RHEL7
+            - UBUNTU14
+    tasks:
+        init:
+            action: core.local
+            input:
+                cmd: "echo <% $.version %> | cut -d \".\" -f1-2"
+            publish:
+                branch: v<% task(init).result.stdout %>
+            on-success:
+                - package_all
+        package_all:
+            with-items: project in <% $.projects %>
+            action: circle_ci.run_build
+            input:
+                project: stackstorm/<% $.project %>
+                branch: <% $.branch %>
+            publish:
+                build_numbers: <% task(package_all).result.select($.result.build_number) %>
+            on-success:
+                - wait_for_packages
+        wait_for_packages:
+            with-items: build_number in <% $.build_numbers %>
+            action: circle_ci.wait_until_build_finishes
+            input:
+                project: <% $.project %>
+                build_number: <% $.build_number %>
+                wait_timeout: 1800
+            on-success:
+                - promote_all
+        promote_all:
+            with-items: distro in <% $.distros %>
+            action: st2ci.st2_pkg_test_and_promote
+            input:
+                distro: <% $.distro %>
+                release: stable
