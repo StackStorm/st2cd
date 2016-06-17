@@ -36,7 +36,3 @@ parameters:
   debug:
     type: boolean
     default: false
-  workflow:
-    default: st2cd.mistral_release_candidate.main
-    immutable: true
-    type: string

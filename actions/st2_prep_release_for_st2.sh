@@ -1,0 +1,153 @@
+#!/bin/bash
+set -e
+
+PROJECT=$1
+VERSION=$2
+FORK=$3
+LOCAL_REPO=$4
+GIT_REPO="git@github.com:${FORK}/${PROJECT}.git"
+SHORT_VERSION=`echo ${VERSION} | cut -d "." -f1-2`
+BRANCH="v${SHORT_VERSION}"
+CWD=`pwd`
+
+
+# CHECK IF BRANCH EXISTS
+BRANCH_EXISTS=`git ls-remote --heads ${GIT_REPO} | grep refs/heads/${BRANCH} || true`
+
+if [[ ! -z "${BRANCH_EXISTS}" ]]; then
+    >&2 echo "ERROR: Branch ${BRANCH} already exist in ${GIT_REPO}."
+    exit 1
+fi
+
+
+# GIT CLONE AND BRANCH
+if [[ -e ${LOCAL_REPO} ]]; then
+    CURRENT_TIMESTAMP=`date +'%s'`
+    RANDOM_NUMBER=`awk -v min=100 -v max=999 'BEGIN{srand(); print int(min+rand()*(max-min+1))}'`
+    LOCAL_REPO=${PROJECT}_${CURRENT_TIMESTAMP}_${RANDOM_NUMBER}
+fi
+
+echo "Cloning ${GIT_REPO} to ${LOCAL_REPO}..."
+
+if [ -d "${LOCAL_REPO}" ]; then
+    rm -rf ${LOCAL_REPO}
+fi
+
+git clone ${GIT_REPO} ${LOCAL_REPO}
+
+cd ${LOCAL_REPO}
+echo "Currently at directory `pwd`..."
+
+echo "Creating new branch ${BRANCH}..."
+git checkout -b ${BRANCH} origin/master
+
+
+# SET NEW ST2 VERSION INFO
+files=(
+    "st2common/st2common/__init__.py"
+    "st2client/st2client/__init__.py"
+)
+
+for f in "${files[@]}"
+do
+    if [[ ! -e "$f" ]]; then
+        >&2 echo "ERROR: Version file ${f} does not exist."
+        exit 1
+    fi
+
+    echo "Setting version in ${f} to ${VERSION}..."
+    sed -i -e "s/\(__version__ = \).*/\1'${VERSION}'/" ${f}
+
+    VERSION_INFO="__version__ = '${VERSION}'"
+    grep "${VERSION_INFO}" ${f}
+    if [[ $? -ne 0 ]]; then
+        >&2 echo "ERROR: Unable to update the st2 version in ${f}."
+        exit 1
+    fi
+
+    git add ${f}
+done
+
+git commit -qm "Update version info for release - ${VERSION}"
+
+
+# SET NEW MISTRAL VERSION
+MISTRAL_VERSION=st2-${VERSION}
+MISTRALCLIENT_REPO=https://github.com/StackStorm/python-mistralclient.git
+MISTRALCLIENT_REPO_NAME=python-mistralclient.git
+
+# Check if the branch exists in the python-mistralclient repo.
+MISTRAL_BRANCH_EXISTS=`git ls-remote --heads ${MISTRALCLIENT_REPO} | grep refs/heads/${MISTRAL_VERSION} || true`
+
+if [[ -z "${MISTRAL_BRANCH_EXISTS}" ]]; then
+    >&2 echo "WARNING: Branch ${MISTRAL_VERSION} does not exist in ${MISTRALCLIENT_REPO}."
+fi
+
+# Replace the python-mistralclient version number in st2.
+OLD_REQUIREMENT=${MISTRALCLIENT_REPO_NAME}
+NEW_REQUIREMENT=${MISTRALCLIENT_REPO_NAME}@${MISTRAL_VERSION}
+
+ST2_ACTION_IN_REQ_FILE="st2actions/in-requirements.txt"
+
+if [[ ! -e "${ST2_ACTION_IN_REQ_FILE}" ]]; then
+    >&2 echo "ERROR: Requirement file ${ST2_ACTION_IN_REQ_FILE} does not exist."
+    exit 1
+fi  
+
+sed -i "s/${OLD_REQUIREMENT}/${NEW_REQUIREMENT}/g" ${ST2_ACTION_IN_REQ_FILE}
+
+grep ${NEW_REQUIREMENT} ${ST2_ACTION_IN_REQ_FILE}
+if [[ $? -ne 0 ]]; then
+    >&2 echo "ERROR: Unable to update the mistralclient version in ${ST2_ACTION_IN_REQ_FILE}."
+    exit 1
+fi
+
+ST2_REQ_FILE="requirements.txt"
+
+if [[ ! -e "${ST2_REQ_FILE}" ]]; then
+    >&2 echo "ERROR: Requirement file ${ST2_REQ_FILE} does not exist."
+    exit 1
+fi
+
+sed -i "s/${OLD_REQUIREMENT}/${NEW_REQUIREMENT}/g" ${ST2_REQ_FILE}
+
+grep ${NEW_REQUIREMENT} ${ST2_REQ_FILE}
+if [[ $? -ne 0 ]]; then
+    >&2 echo "ERROR: Unable to update the mistralclient version in ${ST2_REQ_FILE}."
+    exit 1
+fi
+
+git add ${ST2_ACTION_IN_REQ_FILE}
+git add ${ST2_REQ_FILE}
+git commit -qm "Update mistralclient version - ${MISTRAL_VERSION}"
+
+
+# SET DATE IN CHANGELOG
+DATE=`date +%s`
+RELEASE_DATE=`date +"%B %d, %Y"`
+CHANGELOG_FILE="CHANGELOG.rst"
+RELEASE_STRING="${VERSION} - ${RELEASE_DATE}"
+DASH_HEADER_CMD="printf '%.0s-' {1..${#RELEASE_STRING}}"
+DASH_HEADER=$(/bin/bash -c "${DASH_HEADER_CMD}")
+
+if [[ ! -e "${CHANGELOG_FILE}" ]]; then
+    >&2 echo "ERROR: Changelog ${CHANGELOG_FILE} does not exist."
+    exit 1
+fi
+
+echo "Setting version in ${CHANGELOG_FILE} to ${VERSION}..."
+sed -i "s/in development/${RELEASE_STRING}/g" ${CHANGELOG_FILE}
+sed -i "/${RELEASE_STRING}/!b;n;c${DASH_HEADER}" ${CHANGELOG_FILE}
+sed -i "/${RELEASE_STRING}/i \in development\n--------------\n\n" ${CHANGELOG_FILE}
+
+git add ${CHANGELOG_FILE}
+git commit -qm "Update changelog info for release - ${VERSION}"
+
+
+# PUSH NEW BRANCH WITH COMMITS
+git push origin ${BRANCH} -q
+
+
+# CLEANUP
+cd ${CWD}
+rm -rf ${LOCAL_REPO}

@@ -1,58 +1,68 @@
 version: '2.0'
-name: st2cd.mistral_branch_candidate
-description: Create a new release candidate for Mistral.
-
-workflows:
-
-    main:
-        type: direct
-        input:
-            - host
-            - version
-            - repo_main
-            - repo_client
-            - repo_action
-            - repo_branch
-            - repo_dir
-            - requirements
-            - debug
-        tasks:
-            clone_repos:
-                with-items:
-                    - proj in <% list(mistral, mistralclient, st2mistral) %>
-                    - repo in <% list($.repo_main, $.repo_client, $.repo_action) %>
-                action: st2cd.git_clone
-                input:
-                    hosts: <% $.host %>
-                    repo: <% $.repo %>
-                    branch: <% $.repo_branch %>
-                    target: <% $.repo_dir %>/<% $.proj %>_<% $.repo_branch %>
-                publish:
-                    clone_paths: <%
-                        dict(mistral=>$.clone_repos[0].get($.host).stdout,
-                             mistralclient=>$.clone_repos[1].get($.host).stdout,
-                             st2mistral=>$.clone_repos[2].get($.host).stdout) %>
-                on-success:
-                    - create_branch
-                on-error:
-                    - remove_repos
-                    - fail
-            create_branch:
-                action: st2cd.mistral_create_branch
-                input:
-                    hosts: <% $.host %>
-                    version: <% $.version %>
-                    repo_main: <% $.clone_paths.get(mistral) %>
-                    repo_client: <% $.clone_paths.get(mistralclient) %>
-                    repo_action: <% $.clone_paths.get(st2mistral) %>
-                    requirements: <% $.requirements %>
-                on-complete:
-                    - remove_repos
-            remove_repos:
-                with-items: repo in <% list($.clone_paths.get(mistral),
-                                            $.clone_paths.get(mistralclient),
-                                            $.clone_paths.get(st2mistral)) %>
-                action: st2cd.git_clean
-                input:
-                    hosts: <% $.host %>
-                    repo: <% $.repo %>
+st2cd.mistral_branch_candidate:
+    description: Create a new release candidate for Mistral.
+    input:
+        - host
+        - version
+        - repo_main
+        - repo_client
+        - repo_action
+        - repo_branch
+        - repo_dir
+        - requirements
+        - debug
+    tasks:
+        init:
+            action: std.noop
+            on-complete:
+                - get_host: <% $.host = null %>
+                - clone_repos: <% $.host != null %>
+        get_host:
+            action: linux.dig
+            input:
+                hostname: st2-build-slave-ubuntu.service.consul
+                rand: true
+                count: 1
+            publish:
+                host: <% task(get_host).result.result[0] %>
+            on-success:
+                - clone_repos
+        clone_repos:
+            with-items:
+                - proj in <% list(mistral, mistralclient, st2mistral) %>
+                - repo in <% list($.repo_main, $.repo_client, $.repo_action) %>
+            action: st2cd.git_clone
+            input:
+                hosts: <% $.host %>
+                repo: <% $.repo %>
+                branch: <% $.repo_branch %>
+                target: <% $.repo_dir %>/<% $.proj %>_<% $.repo_branch %>
+            publish:
+                clone_paths: <%
+                    dict(mistral=>$.clone_repos[0].get($.host).stdout,
+                         mistralclient=>$.clone_repos[1].get($.host).stdout,
+                         st2mistral=>$.clone_repos[2].get($.host).stdout) %>
+            on-success:
+                - create_branch
+            on-error:
+                - remove_repos
+                - fail
+        create_branch:
+            action: st2cd.mistral_create_branch
+            input:
+                hosts: <% $.host %>
+                version: <% $.version %>
+                repo_main: <% $.clone_paths.get(mistral) %>
+                repo_client: <% $.clone_paths.get(mistralclient) %>
+                repo_action: <% $.clone_paths.get(st2mistral) %>
+                requirements: <% $.requirements %>
+            on-complete:
+                - remove_repos
+        remove_repos:
+            with-items: repo in <% list($.clone_paths.get(mistral),
+                                        $.clone_paths.get(mistralclient),
+                                        $.clone_paths.get(st2mistral)) %>
+            action: st2cd.git_clean
+            input:
+                hosts: <% $.host %>
+                repo: <% $.repo %>

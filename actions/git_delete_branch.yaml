@@ -1,0 +1,34 @@
+---
+name: git_delete_branch
+runner_type: run-remote-script
+description: Remove branch from repo and push to remote.
+enabled: true
+entry_point: git_delete_branch.sh
+parameters:
+    project:
+        type: string
+        description: Name of the project
+        required: true
+        position: 0
+    branch:
+        type: string
+        description: Branch to delete
+        required: true
+        position: 1
+    fork:
+        type: string
+        description: Fork to use
+        default: StackStorm
+        position: 2
+    dir:
+        immutable: true
+        default: /home/stanley/
+    sudo:
+        immutable: true
+        default: false
+    cmd:
+        immutable: true
+        default: ""
+    kwarg_op:
+        immutable: true
+        default: "--"
