@@ -9,7 +9,7 @@ parameters:
         type: string
         description: Version to use for the release. Should include the patch e.g. 0.1.0
         required: true
-    workflow:
-        default: st2cd.st2_pkg_release.main
-        immutable: true
+    enterprise_key:
         type: string
+        description: License key for testing the enterprise release.
+        required: true

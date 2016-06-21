@@ -3,6 +3,7 @@ st2cd.st2_pkg_release:
     description: Package and test st2 for release.
     input:
         - version
+        - enterprise_key
         - projects:
             - st2
             - st2flow
@@ -40,10 +41,21 @@ st2cd.st2_pkg_release:
                 build_number: <% $.package_job[1] %>
                 wait_timeout: 1800
             on-success:
-                - promote_all
-        promote_all:
+                - test_all_community
+                - test_all_enterprise
+        test_all_community:
             with-items: distro in <% $.distros %>
-            action: st2ci.st2_pkg_test_and_promote
+            action: st2ci.st2_pkg_e2e_test
             input:
                 distro: <% $.distro %>
+                pkg_env: staging
                 release: stable
+        test_all_enterprise:
+            with-items: distro in <% $.distros %>
+            action: st2ci.st2ci.st2_pkg_e2e_test
+            input:
+                distro: <% $.distro %>
+                pkg_env: staging
+                release: stable
+                enterprise: true
+                enterprise_key: <% $.enterprise_key %>
