@@ -39,22 +39,9 @@ git clone ${GIT_REPO} ${LOCAL_REPO}
 cd ${LOCAL_REPO}
 echo "Currently at directory `pwd`..."
 
-echo "Creating new branch ${BRANCH}..."
-git checkout -b ${BRANCH} origin/master
 
-
-# SET NEW ST2 AND MISTRAL VERSION INFO
+# SET NEW MISTRAL VERSION INFO AT MASTER
 VERSION_FILE="rake/build/environment.rb"
-
-# Update the st2 version
-echo "Setting version in ${VERSION_FILE} to ${BRANCH}..."
-sed -i -e "s/\(envpass :gitrev,[ ]*'\).*\(',[ ]*from: 'ST2_GITREV'\)/\1${BRANCH}\2/" ${VERSION_FILE}
-NEW_VERSION_STR="envpass :gitrev,[ ]*'${BRANCH}',[ ]*from: 'ST2_GITREV'"
-NEW_VERSION_STR_MATCH=`grep "${NEW_VERSION_STR}" ${VERSION_FILE} || true`
-if [[ -z "${NEW_VERSION_STR_MATCH}" ]]; then
-    >&2 echo "ERROR: Unable to update the st2 version in ${VERSION_FILE}."
-    exit 1
-fi
 
 # Update the mistral version (1st location)
 echo "Setting mistral version in ${VERSION_FILE} to ${MISTRAL_VERSION}..."
@@ -77,9 +64,26 @@ fi
 
 git add ${VERSION_FILE}
 git commit -qm "Update version info for release - ${VERSION}"
+git push origin master -q
 
 
-# PUSH NEW BRANCH WITH COMMITS
+# SET NEW ST2 VERSION INFO AT RELEASE BRANCH
+echo "Creating new branch ${BRANCH}..."
+git checkout -b ${BRANCH} origin/master
+VERSION_FILE="rake/build/environment.rb"
+
+# Update the st2 version
+echo "Setting version in ${VERSION_FILE} to ${BRANCH}..."
+sed -i -e "s/\(envpass :gitrev,[ ]*'\).*\(',[ ]*from: 'ST2_GITREV'\)/\1${BRANCH}\2/" ${VERSION_FILE}
+NEW_VERSION_STR="envpass :gitrev,[ ]*'${BRANCH}',[ ]*from: 'ST2_GITREV'"
+NEW_VERSION_STR_MATCH=`grep "${NEW_VERSION_STR}" ${VERSION_FILE} || true`
+if [[ -z "${NEW_VERSION_STR_MATCH}" ]]; then
+    >&2 echo "ERROR: Unable to update the st2 version in ${VERSION_FILE}."
+    exit 1
+fi
+
+git add ${VERSION_FILE}
+git commit -qm "Update version info for release - ${VERSION}"
 git push origin ${BRANCH} -q
 
 

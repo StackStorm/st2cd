@@ -38,11 +38,31 @@ git clone ${GIT_REPO} ${LOCAL_REPO}
 cd ${LOCAL_REPO}
 echo "Currently at directory `pwd`..."
 
+
+# SET NEW ST2 VERSION INFO AT MASTER
+ST2DOCS_CONF_PY="docs/source/conf.py"
+OLD_VERSION_LIST="release_versions = \["
+NEW_VERSION_LIST="release_versions = \['${SHORT_VERSION}', "
+
+NEW_VERSION_LIST_MATCH=`grep "${NEW_VERSION_LIST}" ${ST2DOCS_CONF_PY} || true`
+if [[ -z "${NEW_VERSION_LIST_MATCH}" ]]; then
+    sed -i "s/${OLD_VERSION_LIST}/${NEW_VERSION_LIST}/g" ${ST2DOCS_CONF_PY}
+    git add ${ST2DOCS_CONF_PY}
+    git commit -qm "Update version info for release - ${VERSION}"
+    git push origin master -q
+fi
+
+NEW_VERSION_LIST_MATCH=`grep "${NEW_VERSION_LIST}" ${ST2DOCS_CONF_PY} || true`
+if [[ -z "${NEW_VERSION_LIST_MATCH}" ]]; then
+    >&2 echo "ERROR: Unable to update the st2 version in ${ST2DOCS_CONF_PY}."
+    exit 1
+fi
+
+
+# SET NEW ST2 VERSION INFO AT RELEASE BRANCH
 echo "Creating new branch ${BRANCH}..."
 git checkout -b ${BRANCH} origin/master
 
-
-# SET NEW ST2 VERSION INFO
 ST2DOCS_VERSION_FILE="version.txt"
 echo "${VERSION}" > ${ST2DOCS_VERSION_FILE}
 
@@ -52,27 +72,8 @@ if [[ $? -ne 0 ]]; then
     exit 1
 fi
 
-ST2DOCS_CONF_PY="docs/source/conf.py"
-OLD_VERSION_LIST="release_versions = \["
-NEW_VERSION_LIST="release_versions = \['${SHORT_VERSION}', "
-
-NEW_VERSION_LIST_MATCH=`grep "${NEW_VERSION_LIST}" ${ST2DOCS_CONF_PY} || true`
-if [[ -z "${NEW_VERSION_LIST_MATCH}" ]]; then
-    sed -i "s/${OLD_VERSION_LIST}/${NEW_VERSION_LIST}/g" ${ST2DOCS_CONF_PY}
-fi
-
-NEW_VERSION_LIST_MATCH=`grep "${NEW_VERSION_LIST}" ${ST2DOCS_CONF_PY} || true`
-if [[ -z "${NEW_VERSION_LIST_MATCH}" ]]; then
-    >&2 echo "ERROR: Unable to update the st2 version in ${ST2DOCS_CONF_PY}."
-    exit 1
-fi
-
 git add ${ST2DOCS_VERSION_FILE}
-git add ${ST2DOCS_CONF_PY}
 git commit -qm "Update version info for release - ${VERSION}"
-
-
-# PUSH NEW BRANCH WITH COMMITS
 git push origin ${BRANCH} -q
 
 

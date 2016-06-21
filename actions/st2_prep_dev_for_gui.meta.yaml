@@ -1,9 +1,9 @@
 ---
-name: st2_prep_release_for_gui
-description: Prepare the GUI repo for release
+name: st2_prep_dev_for_gui
+description: Prepare the GUI repo for next iteration of development
 enabled: true
 runner_type: remote-shell-script
-entry_point: st2_prep_release_for_gui.sh
+entry_point: st2_prep_dev_for_gui.sh
 parameters:
     project:
         type: string
@@ -16,7 +16,7 @@ parameters:
         position: 0
     version:
         type: string
-        description: Version to use for the release. Should include the patch e.g. 0.1.0
+        description: Version to use for the next release. Should include the patch e.g. 0.1.0
         required: true
         position: 1
     fork:

@@ -1,6 +1,6 @@
 version: '2.0'
-st2cd.st2_prep_release:
-    description: Prepare st2 for release.
+st2cd.st2_prep_dev:
+    description: Prepare st2 for next iteration of development.
     input:
         - version
         - fork
@@ -40,7 +40,7 @@ st2cd.st2_prep_release:
             on-complete:
                 - prep_st2
         prep_st2:
-            action: st2cd.st2_prep_release_for_st2            
+            action: st2cd.st2_prep_dev_for_st2            
             input:
                 project: st2
                 version: <% $.version %>
@@ -51,7 +51,7 @@ st2cd.st2_prep_release:
             on-success:
                 - prep_st2docs
         prep_st2docs:
-            action: st2cd.st2_prep_release_for_st2docs
+            action: st2cd.st2_prep_dev_for_st2docs
             input:
                 project: st2docs
                 version: <% $.version %>
@@ -62,7 +62,7 @@ st2cd.st2_prep_release:
             on-success:
                 - prep_st2web
         prep_st2web:
-            action: st2cd.st2_prep_release_for_gui
+            action: st2cd.st2_prep_dev_for_gui
             input:
                 project: st2web
                 version: <% $.version %>
@@ -73,7 +73,7 @@ st2cd.st2_prep_release:
             on-success:
                 - prep_st2flow
         prep_st2flow:
-            action: st2cd.st2_prep_release_for_gui
+            action: st2cd.st2_prep_dev_for_gui
             input:
                 project: st2flow
                 version: <% $.version %>
@@ -84,7 +84,7 @@ st2cd.st2_prep_release:
             on-success:
                 - prep_st2chatops
         prep_st2chatops:
-            action: st2cd.st2_prep_release_for_gui
+            action: st2cd.st2_prep_dev_for_gui
             input:
                 project: st2chatops
                 version: <% $.version %>
@@ -93,20 +93,9 @@ st2cd.st2_prep_release:
                 hosts: <% $.host %>
                 cwd: <% $.cwd %>
             on-success:
-                - prep_st2_pkg
-        prep_st2_pkg:
-            action: st2cd.st2_prep_release_for_st2_pkg
-            input:
-                project: st2-packages
-                version: <% $.version %>
-                fork: <% $.fork %>
-                local_repo: <% 'st2_packages_' + $.local_repo_sfx %>
-                hosts: <% $.host %>
-                cwd: <% $.cwd %>
-            on-success:
                 - prep_st2enterprise_pkg
         prep_st2enterprise_pkg:
-            action: st2cd.st2_prep_release_for_enterprise_pkg
+            action: st2cd.st2_prep_dev_for_enterprise_pkg
             input:
                 project: st2enterprise-package
                 version: <% $.version %>
@@ -117,7 +106,7 @@ st2cd.st2_prep_release:
             on-success:
                 - prep_st2enterprise_ldap
         prep_st2enterprise_ldap:
-            action: st2cd.st2_prep_release_for_enterprise_ldap
+            action: st2cd.st2_prep_dev_for_enterprise_ldap
             input:
                 project: st2-enterprise-auth-backend-ldap
                 version: <% $.version %>

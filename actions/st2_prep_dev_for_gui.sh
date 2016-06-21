@@ -7,6 +7,7 @@ FORK=$3
 LOCAL_REPO=$4
 GIT_REPO="git@github.com:${FORK}/${PROJECT}.git"
 SHORT_VERSION=`echo ${VERSION} | cut -d "." -f1-2`
+DEV_VERSION="${SHORT_VERSION}dev"
 BRANCH="master"
 CWD=`pwd`
 
@@ -30,27 +31,25 @@ cd ${LOCAL_REPO}
 echo "Currently at directory `pwd`..."
 
 
-# SET NEW ST2 VERSION INFO
-VERSION_FILE="update-versions"
-VERSION_STR=`cat ${VERSION_FILE}`
-VERSION_ARRAY=(${VERSION_STR})
-OLD_DEV_VERSION=${VERSION_ARRAY[0]}
-OLD_VERSION_STR="${VERSION_STR}"
-NEW_VERSION_STR="${OLD_DEV_VERSION} ${SHORT_VERSION}"
+# SET DEV ST2 VERSION INFO
+VERSION_FILE="package.json"
+echo "Setting version in ${VERSION_FILE} to ${DEV_VERSION}..."
+sed -i -e "s/\(\"st2_version\":[ ]*\).*/\1\"${DEV_VERSION}\",/" ${VERSION_FILE}
 
-NEW_VERSION_STR_MATCH=`grep "${NEW_VERSION_STR}" ${VERSION_FILE} || true`
-if [[ -z "${NEW_VERSION_STR_MATCH}" ]]; then
-    sed -i "s/${OLD_VERSION_STR}/${NEW_VERSION_STR}/g" ${VERSION_FILE}
-    git add ${VERSION_FILE}
-    git commit -qm "Update version info for release - ${VERSION}"
-    git push origin ${BRANCH} -q
-fi
+NEW_VERSION_STR="\"st2_version\": \"${DEV_VERSION}\","
 
 NEW_VERSION_STR_MATCH=`grep "${NEW_VERSION_STR}" ${VERSION_FILE} || true`
 if [[ -z "${NEW_VERSION_STR_MATCH}" ]]; then
     >&2 echo "ERROR: Unable to update the st2 version in ${VERSION_FILE}."
     exit 1
 fi
+
+git add ${VERSION_FILE}
+git commit -qm "Update version info for development - ${DEV_VERSION}"
+
+
+# PUSH NEW BRANCH WITH COMMITS
+git push origin ${BRANCH} -q
 
 
 # CLEANUP

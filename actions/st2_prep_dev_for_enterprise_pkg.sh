@@ -7,6 +7,7 @@ FORK=$3
 LOCAL_REPO=$4
 GIT_REPO="git@github.com:${FORK}/${PROJECT}.git"
 SHORT_VERSION=`echo ${VERSION} | cut -d "." -f1-2`
+DEV_VERSION="${SHORT_VERSION}dev"
 BRANCH="master"
 CWD=`pwd`
 
@@ -34,15 +35,15 @@ echo "Currently at directory `pwd`..."
 VERSION_FILE="update-versions"
 VERSION_STR=`cat ${VERSION_FILE}`
 VERSION_ARRAY=(${VERSION_STR})
-OLD_DEV_VERSION=${VERSION_ARRAY[0]}
+STABLE_VERSION=${VERSION_ARRAY[1]}
 OLD_VERSION_STR="${VERSION_STR}"
-NEW_VERSION_STR="${OLD_DEV_VERSION} ${SHORT_VERSION}"
+NEW_VERSION_STR="${DEV_VERSION} ${STABLE_VERSION}"
 
 NEW_VERSION_STR_MATCH=`grep "${NEW_VERSION_STR}" ${VERSION_FILE} || true`
 if [[ -z "${NEW_VERSION_STR_MATCH}" ]]; then
     sed -i "s/${OLD_VERSION_STR}/${NEW_VERSION_STR}/g" ${VERSION_FILE}
     git add ${VERSION_FILE}
-    git commit -qm "Update version info for release - ${VERSION}"
+    git commit -qm "Update version info for development - ${DEV_VERSION}"
     git push origin ${BRANCH} -q
 fi
 

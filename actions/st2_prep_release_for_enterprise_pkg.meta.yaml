@@ -15,20 +15,15 @@ parameters:
         description: Version to use for the release. Should include the patch e.g. 0.1.0
         required: true
         position: 1
-    next_version:
-        type: string
-        description: Next version. No need to include the patch e.g. 0.1
-        required: true
-        position: 2
     fork:
         type: string
         description: Fork to use
         default: StackStorm
-        position: 3
+        position: 2
     local_repo:
         type: string
         description: Location where to clone the repo. Programmatically determined if not provided.
-        position: 4
+        position: 3
     dir:
         immutable: true
         default: /home/stanley/
