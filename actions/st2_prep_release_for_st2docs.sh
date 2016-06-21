@@ -64,9 +64,9 @@ echo "Creating new branch ${BRANCH}..."
 git checkout -b ${BRANCH} origin/master
 
 ST2DOCS_VERSION_FILE="version.txt"
-echo "${VERSION}" > ${ST2DOCS_VERSION_FILE}
+echo "${SHORT_VERSION}" > ${ST2DOCS_VERSION_FILE}
 
-grep ${VERSION} ${ST2DOCS_VERSION_FILE}
+grep ${SHORT_VERSION} ${ST2DOCS_VERSION_FILE}
 if [[ $? -ne 0 ]]; then
     >&2 echo "ERROR: Unable to update the st2 version in ${ST2DOCS_VERSION_FILE}."
     exit 1
