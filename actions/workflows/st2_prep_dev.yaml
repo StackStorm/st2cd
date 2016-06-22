@@ -49,6 +49,17 @@ st2cd.st2_prep_dev:
                 hosts: <% $.host %>
                 cwd: <% $.cwd %>
             on-success:
+                - prep_mistral
+        prep_mistral:
+            action: st2cd.st2_prep_dev_for_mistral
+            input:
+                project: mistral
+                version: <% $.version %>
+                fork: <% $.fork %>
+                local_repo: <% 'mistral_' + $.local_repo_sfx %>
+                hosts: <% $.host %>
+                cwd: <% $.cwd %>
+            on-success:
                 - prep_st2docs
         prep_st2docs:
             action: st2cd.st2_prep_dev_for_st2docs
