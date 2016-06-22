@@ -39,6 +39,16 @@ do
     fi
 done
 
+echo "Creating branch for mistralclient..."
+cd ${REPO_CLIENT}
+${GIT} checkout -b ${BRANCH}
+${GIT} push origin ${BRANCH} -q
+
+echo "Creating branch for st2mistral..."
+cd ${REPO_ACTION}
+${GIT} checkout -b ${BRANCH}
+${GIT} push origin ${BRANCH} -q
+
 echo "Creating branch for mistral..."
 cd ${REPO_MAIN}
 ${GIT} checkout -b ${BRANCH}
@@ -53,18 +63,9 @@ if [[ $(grep -c . <<< "${REQUIREMENTS}") > 1 ]]; then
     echo "Updating requirements.txt..."
     REQUIREMENTS=`echo "${REQUIREMENTS}" | sed '/https:\/\/github.com\/stackstorm/Id'`
     echo "${REQUIREMENTS}" > requirements.txt
+    grep -q 'python-mistralclient' requirements.txt || echo "git+https://github.com/StackStorm/python-mistralclient.git@${BRANCH}#egg=python-mistralclient" >> requirements.txt
     ${GIT} add requirements.txt
     ${GIT} diff --quiet --exit-code --cached || ${GIT} commit -m "Pin dependencies in requirements.txt"
 fi
 
-${GIT} push origin ${BRANCH} -q
-
-echo "Creating branch for mistralclient..."
-cd ${REPO_CLIENT}
-${GIT} checkout -b ${BRANCH}
-${GIT} push origin ${BRANCH} -q
-
-echo "Creating branch for st2mistral..."
-cd ${REPO_ACTION}
-${GIT} checkout -b ${BRANCH}
 ${GIT} push origin ${BRANCH} -q
