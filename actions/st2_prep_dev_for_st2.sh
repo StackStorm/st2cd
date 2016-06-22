@@ -13,7 +13,7 @@ CWD=`pwd`
 
 
 # GIT CLONE AND BRANCH
-if [[ -e ${LOCAL_REPO} ]]; then
+if [[ -z ${LOCAL_REPO} ]]; then
     CURRENT_TIMESTAMP=`date +'%s'`
     RANDOM_NUMBER=`awk -v min=100 -v max=999 'BEGIN{srand(); print int(min+rand()*(max-min+1))}'`
     LOCAL_REPO=${PROJECT}_${CURRENT_TIMESTAMP}_${RANDOM_NUMBER}
