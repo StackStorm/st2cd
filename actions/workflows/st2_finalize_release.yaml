@@ -104,12 +104,18 @@ stcd.st2_finalize_release:
             action: st2cd.mistral_tag_release
             input:
                 version: <% $.version %>
+            on-success:
+                - push_st2client
+        push_st2client:
+            action: st2cd.st2_pkg_st2client
+            input:
+                hosts: <% $.host %>
 
 
         cleanup_on_failure:
             action: core.remote
             input:
-                cmd: <% 'rm -rf ' + $.cwd + '/st2*' + $.local_repo_sfx %>
+                cmd: <% 'rm -rf ' + $.cwd + '/st2*' + $.local_repo_sfx + ' && rm -rf ~/.pypirc' %>
                 hosts: <% $.host %>
             on-complete:
                 - fail
