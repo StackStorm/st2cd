@@ -7,6 +7,7 @@ workflows:
     main:
         input:
             - version
+            - wait
             - test
             - projects:
                 - st2
@@ -36,7 +37,7 @@ workflows:
                     package_jobs: <% task(package_all).result.select(
                                     [$.result.reponame, $.result.build_num]) %>
                 on-success:
-                    - wait_for_packages
+                    - wait_for_packages: <% $.wait %>
             wait_for_packages:
                 with-items: package_job in <% $.package_jobs %>
                 workflow: wait_for_package

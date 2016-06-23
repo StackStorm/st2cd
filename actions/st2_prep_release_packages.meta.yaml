@@ -9,6 +9,10 @@ parameters:
         type: string
         description: Version to use for the release. Should include the patch e.g. 0.1.0
         required: true
+    wait:
+        type: boolean
+        description: If true, then wait until package jobs are completed.
+        default: true
     test:
         type: boolean
         description: If true, then run e2e tests after packages are built.
