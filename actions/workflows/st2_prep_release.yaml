@@ -125,17 +125,6 @@ st2cd.st2_prep_release:
                 local_repo: <% 'st2enterprise_auth_ldap_' + $.local_repo_sfx %>
                 hosts: <% $.host %>
                 cwd: <% $.cwd %>
-            on-success:
-                - make_st2docs
-        make_st2docs:
-            action: st2cd.st2_make_docs
-            input:
-                project: st2docs
-                branch: v<% $.version.substring(0, $.version.lastIndexOf('.')) %>
-                fork: <% $.fork %>
-                local_repo: <% 'st2docs_' + $.local_repo_sfx %>
-                hosts: <% $.host %>
-                cwd: <% $.cwd %>
 
 
         cleanup_on_failure:

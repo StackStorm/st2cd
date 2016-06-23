@@ -38,6 +38,28 @@ stcd.st2_finalize_release:
 
         finalize:
             on-complete:
+                - make_st2docs_stable
+        make_st2docs_stable:
+            action: st2cd.st2_make_docs
+            input:
+                project: st2docs
+                branch: v<% $.version.substring(0, $.version.lastIndexOf('.')) %>
+                fork: <% $.fork %>
+                local_repo: <% 'st2docs_' + $.local_repo_sfx %>
+                hosts: <% $.host %>
+                cwd: <% $.cwd %>
+            on-success:
+                - make_st2docs_latest
+        make_st2docs_latest:
+            action: st2cd.st2_make_docs
+            input:
+                project: st2docs
+                branch: master
+                fork: <% $.fork %>
+                local_repo: <% 'st2docs_' + $.local_repo_sfx %>
+                hosts: <% $.host %>
+                cwd: <% $.cwd %>
+            on-success:
                 - get_next_version
         get_next_version:
             action: core.local
