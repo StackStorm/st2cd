@@ -14,6 +14,6 @@ parameters:
         description: If true, then run e2e tests after packages are built.
         default: true
     workflow:
-        default: st2cd.st2_pkg_release.main
+        default: st2cd.st2_prep_release_packages.main
         immutable: true
         type: string
