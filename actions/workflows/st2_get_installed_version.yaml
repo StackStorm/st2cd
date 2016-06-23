@@ -33,7 +33,7 @@ st2cd.st2_get_installed_version:
             action: core.remote_sudo
             input:
                 hosts: <% $.host %>
-                cmd: "echo `yum info installed <% $.package %> | grep Version | awk '{print $3}'`-`yum info installed <% $.package %> | grep Release | awk '{print $3}'`"
+                cmd: "if [[ ! -z `yum info installed <% $.package %> -q -e 0 2>/dev/null` ]]; then echo `yum info installed <% $.package %> -q -e 0 2>/dev/null | grep Version | awk '{print $3}'`-`yum info installed <% $.package %> -q -e 0 2>/dev/null | grep Release | awk '{print $3}' || true`; fi"
             publish:
                 result: <% task(get_version_centos).result %>
 
@@ -43,7 +43,7 @@ st2cd.st2_get_installed_version:
             action: core.remote_sudo
             input:
                 hosts: <% $.host %>
-                cmd: "echo `yum info installed <% $.package %> | grep Version | awk '{print $3}'`-`yum info installed <% $.package %> | grep Release | awk '{print $3}'`"
+                cmd: "if [[ ! -z `yum info installed <% $.package %> -q -e 0 2>/dev/null` ]]; then echo `yum info installed <% $.package %> -q -e 0 2>/dev/null | grep Version | awk '{print $3}'`-`yum info installed <% $.package %> -q -e 0 2>/dev/null | grep Release | awk '{print $3}' || true`; fi"
             publish:
                 result: <% task(get_version_redhat).result %>
 
@@ -53,6 +53,6 @@ st2cd.st2_get_installed_version:
             action: core.remote_sudo
             input:
                 hosts: <% $.host %>
-                cmd: "apt-cache policy <% $.package %> | grep Installed: | grep -oE '[^ ]+$'"
+                cmd: "apt-cache policy <% $.package %> | grep Installed: | grep -oE '[^ ]+$' || true"
             publish:
                 result: <% task(get_version_ubuntu).result %>
