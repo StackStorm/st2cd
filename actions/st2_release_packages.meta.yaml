@@ -1,0 +1,6 @@
+---
+name: st2_release_packages
+runner_type: mistral-v2
+description: Release st2 packages to production
+enabled: true
+entry_point: workflows/st2_release_packages.yaml
