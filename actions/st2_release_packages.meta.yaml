@@ -4,3 +4,7 @@ runner_type: mistral-v2
 description: Release st2 packages to production
 enabled: true
 entry_point: workflows/st2_release_packages.yaml
+parameters:
+    keyfile:
+        type: string
+        default: /home/stanley/.ssh/stanley_rsa
