@@ -24,7 +24,7 @@ if [[ ${DISTRO} = \UBUNTU* ]]; then
 else
     curl -s https://${LICENSE_KEY}:@packagecloud.io/install/repositories/StackStorm/${REPO}/script.rpm.sh | sudo bash
     sudo yum install -y st2flow
-    sudo yum isntall -y st2-auth-ldap
+    sudo yum install -y st2-auth-ldap
 fi
 
 sudo st2ctl restart
