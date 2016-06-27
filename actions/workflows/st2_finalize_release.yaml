@@ -1,5 +1,5 @@
 version: '2.0'
-stcd.st2_finalize_release:
+st2cd.st2_finalize_release:
     description: Finalize st2 release
     input:
         - version
@@ -19,6 +19,7 @@ stcd.st2_finalize_release:
                 cmd: "echo `date +'%s'`_`awk -v min=100 -v max=999 'BEGIN{srand(); print int(min+rand()*(max-min+1))}'`"
             publish:
                 local_repo_sfx: <% task(init).result.stdout %>
+                next_patch_version: <% $.version.split('.')[0] + '.' + $.version.split('.')[1] + '.' + str(int($.version.split('.')[2]) + 1) %>
             on-success:
                 - get_host: <% $.host = null %>
                 - finalize: <% $.host != null %>
@@ -60,14 +61,6 @@ stcd.st2_finalize_release:
                 hosts: <% $.host %>
                 cwd: <% $.cwd %>
             on-success:
-                - get_next_version
-        get_next_version:
-            action: core.local
-            input:
-                cmd: "echo <% $.version %> | awk -F '[ .]' '{print $1\".\"$2\".\"$3+1}'"
-            publish:
-                next_patch_version: <% task(get_next_version).result.stdout.replace('\n', '') %>
-            on-success:
                 - st2_tag_release
         st2_tag_release:
             action: st2cd.st2_tag_release
@@ -92,6 +85,7 @@ stcd.st2_finalize_release:
                 - prep_st2_next_patch
         prep_st2_next_patch:
             action: st2cd.st2_prep_patch_release
+            input:
                 project: st2
                 version: <% $.next_patch_version %>
                 fork: <% $.fork %>
@@ -103,13 +97,19 @@ stcd.st2_finalize_release:
         mistral_tag_release:
             action: st2cd.mistral_tag_release
             input:
+                host: <% $.host %>
                 version: <% $.version %>
             on-success:
                 - push_st2client
         push_st2client:
-            action: st2cd.st2_pkg_st2client
+            action: st2cd.pypi_st2client
             input:
+                project: st2
+                version: <% $.version %>
+                fork: <% $.fork %>
+                local_repo: <% 'st2_' + $.local_repo_sfx %>
                 hosts: <% $.host %>
+                cwd: <% $.cwd %>
 
 
         cleanup_on_failure:

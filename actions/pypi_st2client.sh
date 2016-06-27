@@ -73,7 +73,7 @@ fi
 
 
 # Upload st2client to pypi
-cd ${LOCAL_REPO}/st2client
+cd st2client
 echo "Currently at directory `pwd`..."
 python setup.py sdist upload -r pypitest
 python setup.py sdist upload -r pypi
