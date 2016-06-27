@@ -38,6 +38,34 @@ git clone ${GIT_REPO} ${LOCAL_REPO}
 cd ${LOCAL_REPO}
 echo "Currently at directory `pwd`..."
 
+
+# SET VERSION AND DATE IN CHANGELOG
+DATE=`date +%s`
+RELEASE_DATE=`date +"%B %d, %Y"`
+CHANGELOG_FILE="CHANGELOG.rst"
+RELEASE_STRING="${VERSION} - ${RELEASE_DATE}"
+DASH_HEADER_CMD="printf '%.0s-' {1..${#RELEASE_STRING}}"
+DASH_HEADER=$(/bin/bash -c "${DASH_HEADER_CMD}")
+
+if [[ ! -e "${CHANGELOG_FILE}" ]]; then
+    >&2 echo "ERROR: Changelog ${CHANGELOG_FILE} does not exist."
+    exit 1
+fi
+
+CHANGELOG_VERSION_MATCH=`grep "${VERSION} - " ${CHANGELOG_FILE} || true`
+if [[ -z "${CHANGELOG_VERSION_MATCH}" ]]; then
+    echo "Setting version in ${CHANGELOG_FILE} to ${VERSION}..."
+    sed -i "s/in development/${RELEASE_STRING}/g" ${CHANGELOG_FILE}
+    sed -i "/${RELEASE_STRING}/!b;n;c${DASH_HEADER}" ${CHANGELOG_FILE}
+    sed -i "/${RELEASE_STRING}/i \in development\n--------------\n\n" ${CHANGELOG_FILE}
+
+    git add ${CHANGELOG_FILE}
+    git commit -qm "Update changelog info for release - ${VERSION}"
+    git push origin master -q
+fi
+
+
+# CREATE RELEASE BRANCH
 echo "Creating new branch ${BRANCH}..."
 git checkout -b ${BRANCH} origin/master
 
@@ -120,28 +148,6 @@ fi
 git add ${ST2_ACTION_IN_REQ_FILE}
 git add ${ST2_REQ_FILE}
 git commit -qm "Update mistralclient version - ${MISTRAL_VERSION}"
-
-
-# SET DATE IN CHANGELOG
-DATE=`date +%s`
-RELEASE_DATE=`date +"%B %d, %Y"`
-CHANGELOG_FILE="CHANGELOG.rst"
-RELEASE_STRING="${VERSION} - ${RELEASE_DATE}"
-DASH_HEADER_CMD="printf '%.0s-' {1..${#RELEASE_STRING}}"
-DASH_HEADER=$(/bin/bash -c "${DASH_HEADER_CMD}")
-
-if [[ ! -e "${CHANGELOG_FILE}" ]]; then
-    >&2 echo "ERROR: Changelog ${CHANGELOG_FILE} does not exist."
-    exit 1
-fi
-
-echo "Setting version in ${CHANGELOG_FILE} to ${VERSION}..."
-sed -i "s/in development/${RELEASE_STRING}/g" ${CHANGELOG_FILE}
-sed -i "/${RELEASE_STRING}/!b;n;c${DASH_HEADER}" ${CHANGELOG_FILE}
-sed -i "/${RELEASE_STRING}/i \in development\n--------------\n\n" ${CHANGELOG_FILE}
-
-git add ${CHANGELOG_FILE}
-git commit -qm "Update changelog info for release - ${VERSION}"
 
 
 # PUSH NEW BRANCH WITH COMMITS
