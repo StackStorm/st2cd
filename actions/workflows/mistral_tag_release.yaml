@@ -1,107 +1,74 @@
 version: '2.0'
-name: st2cd.mistral_tag_release
-description: Tag the release for Mistral.
+st2cd.mistral_tag_release:
+    description: Tag the release for Mistral.
+    input:
+        - version
+        - host
+        - repo_main
+        - repo_client
+        - repo_action
+        - repo_branch
+        - repo_dir
+        - debug
+        - tagged: False
+    tasks:
+        init:
+            action: core.local
+            input:
+                cmd: "echo `date +'%s'`_`awk -v min=100 -v max=999 'BEGIN{srand(); print int(min+rand()*(max-min+1))}'`"
+            publish:
+                local_repo_sfx: <% task(init).result.stdout %>
+            on-success:
+                - get_host: <% $.host = null %>
+                - clone_repos: <% $.host != null %>
 
-workflows:
+        get_host:
+            action: linux.dig
+            input:
+                hostname: st2-build-slave-ubuntu.service.consul
+                rand: true
+                count: 1
+            publish:
+                host: <% task(get_host).result.result[0] %>
+            on-success:
+                - clone_repos
 
-    main:
-        type: direct
-        input:
-            - version
-            - host
-            - repo_main
-            - repo_client
-            - repo_action
-            - repo_branch
-            - repo_dir
-            - debug
-        tasks:
-            get_hosts:
-                workflow: get_build_hosts
-                input:
-                    hosts: <% dict(build=>$.host) %>
-                publish:
-                    hosts: <% $.get_hosts.hosts %>
-                on-success:
-                    - clone_repos
-            clone_repos:
-                with-items:
-                    - proj in <% list(mistral, mistralclient, st2mistral) %>
-                    - repo in <% list($.repo_main, $.repo_client, $.repo_action) %>
-                action: st2cd.git_clone
-                input:
-                    hosts: <% $.hosts.get(build) %>
-                    repo: <% $.repo %>
-                    branch: <% $.repo_branch %>
-                    target: <% $.repo_dir %>/<% $.proj %>_<% $.repo_branch %>
-                publish:
-                    clone_paths: <%
-                        dict(mistral=>$.clone_repos[0].get($.hosts.get(build)).stdout,
-                             mistralclient=>$.clone_repos[1].get($.hosts.get(build)).stdout,
-                             st2mistral=>$.clone_repos[2].get($.hosts.get(build)).stdout) %>
-                on-success:
-                    - tag_release
-                on-error:
-                    - remove_repos
-                    - fail
-            tag_release:
-                action: st2cd.mistral_create_tag
-                input:
-                    hosts: <% $.hosts.get(build) %>
-                    version: <% $.version %>
-                    repo_main: <% $.clone_paths.get(mistral) %>
-                    repo_client: <% $.clone_paths.get(mistralclient) %>
-                    repo_action: <% $.clone_paths.get(st2mistral) %>
-                on-complete:
-                    - remove_repos
-            remove_repos:
-                with-items: repo in <% list($.clone_paths.get(mistral),
-                                            $.clone_paths.get(mistralclient),
-                                            $.clone_paths.get(st2mistral)) %>
-                action: st2cd.git_clean
-                input:
-                    hosts: <% $.hosts.get(build) %>
-                    repo: <% $.repo %>
+        clone_repos:
+            with-items:
+                - proj in <% list(mistral, mistralclient, st2mistral) %>
+                - repo in <% list($.repo_main, $.repo_client, $.repo_action) %>
+            action: st2cd.git_clone
+            input:
+                hosts: <% $.host %>
+                repo: <% $.repo %>
+                branch: <% $.repo_branch %>
+                target: <% $.repo_dir %>/<% $.proj %>_<% $.local_repo_sfx %>
+            publish:
+                clone_paths: <%
+                    dict(mistral=>task(clone_repos).result[0].get($.host).stdout,
+                         mistralclient=>task(clone_repos).result[1].get($.host).stdout,
+                         st2mistral=>task(clone_repos).result[2].get($.host).stdout) %>
+            on-success:
+                - tag_release
+            on-error:
+                - cleanup
+        tag_release:
+            action: st2cd.mistral_create_tag
+            input:
+                hosts: <% $.host %>
+                version: <% $.version %>
+                repo_main: <% $.clone_paths.get(mistral) %>
+                repo_client: <% $.clone_paths.get(mistralclient) %>
+                repo_action: <% $.clone_paths.get(st2mistral) %>
+            publish:
+                tagged: True
+            on-complete:
+                - cleanup
 
-
-    get_host:
-        type: direct
-        input:
-            - host
-            - type
-        output:
-            host: <% $.host %>
-        tasks:
-            has_host:
-                action: std.noop
-                on-success:
-                    - get_host: <% $.host = null or $.host = '' or $.host = 'None' %>
-                    - succeed: <% $.host != null and $.host != '' and $.host != 'None' %>
-            get_host:
-                action: linux.dig
-                input:
-                    hostname: <% $.type %>
-                    rand: true
-                    count: 1
-                publish:
-                    host: <% $.get_host.result[0] %>
-
-
-    get_build_hosts:
-        type: direct
-        input:
-            - hosts
-        output:
-            hosts: <% $.hosts %>
-        tasks:
-            get_build_host:
-                workflow: get_host
-                input:
-                    host: <% $.hosts.get(build) %>
-                    type: st2-build-slave-ubuntu.service.consul
-                on-success:
-                    - compose_hosts
-            compose_hosts:
-                action: std.noop
-                publish:
-                    hosts: <% dict(build=>$.get_build_host.host) %>
+        cleanup:
+            action: core.remote
+            input:
+                cmd: <% 'rm -rf ' + $.repo_dir + '/*mistral*' + $.local_repo_sfx + '*' %>
+                hosts: <% $.host %>
+            on-success:
+                - fail: <% not $.tagged %>
