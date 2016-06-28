@@ -50,20 +50,18 @@ NEW_VERSION_STR="\"st2_version\": \"${VERSION}\""
 
 NEW_VERSION_STR_MATCH=`grep "${NEW_VERSION_STR}" ${VERSION_FILE} || true`
 if [[ -z "${NEW_VERSION_STR_MATCH}" ]]; then
+    echo "Setting version in ${VERSION_FILE} to ${VERSION}..."
     sed -i "s/${OLD_VERSION_STR}/${NEW_VERSION_STR}/g" ${VERSION_FILE}
-fi
 
-NEW_VERSION_STR_MATCH=`grep "${NEW_VERSION_STR}" ${VERSION_FILE} || true`
-if [[ -z "${NEW_VERSION_STR_MATCH}" ]]; then
-    >&2 echo "ERROR: Unable to update the st2 version in ${VERSION_FILE}."
-    exit 1
+    NEW_VERSION_STR_MATCH=`grep "${NEW_VERSION_STR}" ${VERSION_FILE} || true`
+    if [[ -z "${NEW_VERSION_STR_MATCH}" ]]; then
+        >&2 echo "ERROR: Unable to update the st2 version in ${VERSION_FILE}."
+        exit 1
+    fi
 fi
 
 git add ${VERSION_FILE}
 git commit -qm "Update version info for release - ${VERSION}"
-
-
-# PUSH NEW BRANCH WITH COMMITS
 git push origin ${BRANCH} -q
 
 

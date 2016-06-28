@@ -39,7 +39,7 @@ cd ${LOCAL_REPO}
 echo "Currently at directory `pwd`..."
 
 
-# SET VERSION AND DATE IN CHANGELOG
+# SET VERSION AND DATE IN CHANGELOG ON MASTER
 DATE=`date +%s`
 RELEASE_DATE=`date +"%B %d, %Y"`
 CHANGELOG_FILE="CHANGELOG.rst"
@@ -58,19 +58,20 @@ if [[ -z "${CHANGELOG_VERSION_MATCH}" ]]; then
     sed -i "s/in development/${RELEASE_STRING}/g" ${CHANGELOG_FILE}
     sed -i "/${RELEASE_STRING}/!b;n;c${DASH_HEADER}" ${CHANGELOG_FILE}
     sed -i "/${RELEASE_STRING}/i \in development\n--------------\n\n" ${CHANGELOG_FILE}
+fi
 
+MODIFIED=`git status | grep modified || true`
+if [[ ! -z "${MODIFIED}" ]]; then
     git add ${CHANGELOG_FILE}
     git commit -qm "Update changelog info for release - ${VERSION}"
     git push origin master -q
 fi
 
 
-# CREATE RELEASE BRANCH
+# CREATE RELEASE BRANCH AND SET NEW ST2 VERSION INFO
 echo "Creating new branch ${BRANCH}..."
 git checkout -b ${BRANCH} origin/master
 
-
-# SET NEW ST2 VERSION INFO
 files=(
     "st2common/st2common/__init__.py"
     "st2client/st2client/__init__.py"
@@ -83,20 +84,27 @@ do
         exit 1
     fi
 
-    echo "Setting version in ${f} to ${VERSION}..."
-    sed -i -e "s/\(__version__ = \).*/\1'${VERSION}'/" ${f}
+    VERSION_STR="__version__ = '${VERSION}'"
 
-    VERSION_INFO="__version__ = '${VERSION}'"
-    grep "${VERSION_INFO}" ${f}
-    if [[ $? -ne 0 ]]; then
-        >&2 echo "ERROR: Unable to update the st2 version in ${f}."
-        exit 1
+    VERSION_STR_MATCH=`grep "${VERSION_STR}" ${f} || true`
+    if [[ -z "${VERSION_STR_MATCH}" ]]; then
+        echo "Setting version in ${f} to ${VERSION}..."
+        sed -i -e "s/\(__version__ = \).*/\1'${VERSION}'/" ${f}
+
+        VERSION_STR_MATCH=`grep "${VERSION_STR}" ${f} || true`
+        if [[ -z "${VERSION_STR_MATCH}" ]]; then
+            >&2 echo "ERROR: Unable to update the st2 version in ${f}."
+            exit 1
+        fi
     fi
-
-    git add ${f}
 done
 
-git commit -qm "Update version info for release - ${VERSION}"
+MODIFIED=`git status | grep modified || true`
+if [[ ! -z "${MODIFIED}" ]]; then
+    git add -A
+    git commit -qm "Update version info for release - ${VERSION}"
+    git push origin ${BRANCH} -q
+fi
 
 
 # SET NEW MISTRAL VERSION
@@ -122,12 +130,16 @@ if [[ ! -e "${ST2_ACTION_IN_REQ_FILE}" ]]; then
     exit 1
 fi  
 
-sed -i "s/${OLD_REQUIREMENT}/${NEW_REQUIREMENT}/g" ${ST2_ACTION_IN_REQ_FILE}
+NEW_REQUIREMENT_STR_MATCH=`grep "${NEW_REQUIREMENT}" ${ST2_ACTION_IN_REQ_FILE} || true`
+if [[ -z "${NEW_REQUIREMENT_STR_MATCH}" ]]; then
+    echo "Updating requirement in ${ST2_ACTION_IN_REQ_FILE} to \"${NEW_REQUIREMENT}\"..."
+    sed -i "s/${OLD_REQUIREMENT}/${NEW_REQUIREMENT}/g" ${ST2_ACTION_IN_REQ_FILE}
 
-grep ${NEW_REQUIREMENT} ${ST2_ACTION_IN_REQ_FILE}
-if [[ $? -ne 0 ]]; then
-    >&2 echo "ERROR: Unable to update the mistralclient version in ${ST2_ACTION_IN_REQ_FILE}."
-    exit 1
+    NEW_REQUIREMENT_STR_MATCH=`grep "${NEW_REQUIREMENT}" ${ST2_ACTION_IN_REQ_FILE} || true`
+    if [[ -z "${NEW_REQUIREMENT_STR_MATCH}" ]]; then
+        >&2 echo "ERROR: Unable to update the mistralclient version in ${ST2_ACTION_IN_REQ_FILE}."
+        exit 1
+    fi
 fi
 
 ST2_REQ_FILE="requirements.txt"
@@ -137,21 +149,24 @@ if [[ ! -e "${ST2_REQ_FILE}" ]]; then
     exit 1
 fi
 
-sed -i "s/${OLD_REQUIREMENT}/${NEW_REQUIREMENT}/g" ${ST2_REQ_FILE}
+NEW_REQUIREMENT_STR_MATCH=`grep "${NEW_REQUIREMENT}" ${ST2_REQ_FILE} || true`
+if [[ -z "${NEW_REQUIREMENT_STR_MATCH}" ]]; then
+    echo "Updating requirement in ${ST2_REQ_FILE} to \"${NEW_REQUIREMENT}\"..."
+    sed -i "s/${OLD_REQUIREMENT}/${NEW_REQUIREMENT}/g" ${ST2_REQ_FILE}
 
-grep ${NEW_REQUIREMENT} ${ST2_REQ_FILE}
-if [[ $? -ne 0 ]]; then
-    >&2 echo "ERROR: Unable to update the mistralclient version in ${ST2_REQ_FILE}."
-    exit 1
+    NEW_REQUIREMENT_STR_MATCH=`grep "${NEW_REQUIREMENT}" ${ST2_REQ_FILE} || true`
+    if [[ -z "${NEW_REQUIREMENT_STR_MATCH}" ]]; then
+        >&2 echo "ERROR: Unable to update the mistralclient version in ${ST2_REQ_FILE}."
+        exit 1
+    fi
 fi
 
-git add ${ST2_ACTION_IN_REQ_FILE}
-git add ${ST2_REQ_FILE}
-git commit -qm "Update mistralclient version - ${MISTRAL_VERSION}"
-
-
-# PUSH NEW BRANCH WITH COMMITS
-git push origin ${BRANCH} -q
+MODIFIED=`git status | grep modified || true`
+if [[ ! -z "${MODIFIED}" ]]; then
+    git add -A
+    git commit -qm "Update mistralclient version - ${MISTRAL_VERSION}"
+    git push origin ${BRANCH} -q
+fi
 
 
 # CLEANUP
