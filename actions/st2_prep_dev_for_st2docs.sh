@@ -33,20 +33,25 @@ echo "Currently at directory `pwd`..."
 
 # SET DEV ST2 VERSION INFO
 ST2DOCS_VERSION_FILE="version.txt"
-echo "${DEV_VERSION}" > ${ST2DOCS_VERSION_FILE}
+VERSION_STR="${DEV_VERSION}"
 
-grep ${DEV_VERSION} ${ST2DOCS_VERSION_FILE}
-if [[ $? -ne 0 ]]; then
-    >&2 echo "ERROR: Unable to update the st2 version in ${ST2DOCS_VERSION_FILE}."
-    exit 1
+VERSION_STR_MATCH=`grep "${DEV_VERSION}" ${ST2DOCS_VERSION_FILE} || true`
+if [[ -z "${VERSION_STR_MATCH}" ]]; then
+    echo "${DEV_VERSION}" > ${ST2DOCS_VERSION_FILE}
+
+    VERSION_STR_MATCH=`grep "${DEV_VERSION}" ${ST2DOCS_VERSION_FILE} || true`
+    if [[ -z "${VERSION_STR_MATCH}" ]]; then
+        >&2 echo "ERROR: Unable to update the st2 version in ${ST2DOCS_VERSION_FILE}."
+        exit 1
+    fi
 fi
 
-git add ${ST2DOCS_VERSION_FILE}
-git commit -qm "Update version info for development - ${DEV_VERSION}"
-
-
-# PUSH NEW BRANCH WITH COMMITS
-git push origin ${BRANCH} -q
+MODIFIED=`git status | grep modified || true`
+if [[ ! -z "${MODIFIED}" ]]; then
+    git add ${ST2DOCS_VERSION_FILE}
+    git commit -qm "Update version info for development - ${DEV_VERSION}"
+    git push origin ${BRANCH} -q
+fi
 
 
 # CLEANUP

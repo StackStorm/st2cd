@@ -33,23 +33,26 @@ echo "Currently at directory `pwd`..."
 
 # SET DEV ST2 VERSION INFO
 VERSION_FILE="package.json"
-echo "Setting version in ${VERSION_FILE} to ${DEV_VERSION}..."
-sed -i -e "s/\(\"st2_version\":[ ]*\).*/\1\"${DEV_VERSION}\",/" ${VERSION_FILE}
+VERSION_STR="\"st2_version\": \"${DEV_VERSION}\","
 
-NEW_VERSION_STR="\"st2_version\": \"${DEV_VERSION}\","
+VERSION_STR_MATCH=`grep "${VERSION_STR}" ${VERSION_FILE} || true`
+if [[ -z "${VERSION_STR_MATCH}" ]]; then
+    echo "Setting version in ${VERSION_FILE} to ${DEV_VERSION}..."
+    sed -i -e "s/\(\"st2_version\":[ ]*\).*/\1\"${DEV_VERSION}\",/" ${VERSION_FILE}
 
-NEW_VERSION_STR_MATCH=`grep "${NEW_VERSION_STR}" ${VERSION_FILE} || true`
-if [[ -z "${NEW_VERSION_STR_MATCH}" ]]; then
-    >&2 echo "ERROR: Unable to update the st2 version in ${VERSION_FILE}."
-    exit 1
+    VERSION_STR_MATCH=`grep "${VERSION_STR}" ${VERSION_FILE} || true`
+    if [[ -z "${VERSION_STR_MATCH}" ]]; then
+        >&2 echo "ERROR: Unable to update the st2 version in ${VERSION_FILE}."
+        exit 1
+    fi
 fi
 
-git add ${VERSION_FILE}
-git commit -qm "Update version info for development - ${DEV_VERSION}"
-
-
-# PUSH NEW BRANCH WITH COMMITS
-git push origin ${BRANCH} -q
+MODIFIED=`git status | grep modified || true`
+if [[ ! -z "${MODIFIED}" ]]; then
+    git add ${VERSION_FILE}
+    git commit -qm "Update version info for development - ${DEV_VERSION}"
+    git push origin ${BRANCH} -q
+fi
 
 
 # CLEANUP

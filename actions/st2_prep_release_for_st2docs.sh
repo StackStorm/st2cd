@@ -46,16 +46,21 @@ NEW_VERSION_LIST="release_versions = \['${SHORT_VERSION}', "
 
 NEW_VERSION_LIST_MATCH=`grep "${NEW_VERSION_LIST}" ${ST2DOCS_CONF_PY} || true`
 if [[ -z "${NEW_VERSION_LIST_MATCH}" ]]; then
+    echo "Setting version in ${ST2DOCS_CONF_PY} to ${SHORT_VERSION}..."
     sed -i "s/${OLD_VERSION_LIST}/${NEW_VERSION_LIST}/g" ${ST2DOCS_CONF_PY}
+
+    NEW_VERSION_LIST_MATCH=`grep "${NEW_VERSION_LIST}" ${ST2DOCS_CONF_PY} || true`
+    if [[ -z "${NEW_VERSION_LIST_MATCH}" ]]; then
+        >&2 echo "ERROR: Unable to update the st2 version in ${ST2DOCS_CONF_PY}."
+        exit 1
+    fi
+fi
+
+MODIFIED=`git status | grep modified || true`
+if [[ ! -z "${MODIFIED}" ]]; then
     git add ${ST2DOCS_CONF_PY}
     git commit -qm "Update version info for release - ${VERSION}"
     git push origin master -q
-fi
-
-NEW_VERSION_LIST_MATCH=`grep "${NEW_VERSION_LIST}" ${ST2DOCS_CONF_PY} || true`
-if [[ -z "${NEW_VERSION_LIST_MATCH}" ]]; then
-    >&2 echo "ERROR: Unable to update the st2 version in ${ST2DOCS_CONF_PY}."
-    exit 1
 fi
 
 
@@ -64,12 +69,18 @@ echo "Creating new branch ${BRANCH}..."
 git checkout -b ${BRANCH} origin/master
 
 ST2DOCS_VERSION_FILE="version.txt"
-echo "${SHORT_VERSION}" > ${ST2DOCS_VERSION_FILE}
+ST2DOCS_VERSION_STR="${SHORT_VERSION}"
 
-grep ${SHORT_VERSION} ${ST2DOCS_VERSION_FILE}
-if [[ $? -ne 0 ]]; then
-    >&2 echo "ERROR: Unable to update the st2 version in ${ST2DOCS_VERSION_FILE}."
-    exit 1
+ST2DOCS_VERSION_STR_MATCH=`grep "${SHORT_VERSION}" ${ST2DOCS_VERSION_FILE} || true`
+if [[ -z "${ST2DOCS_VERSION_STR_MATCH}" ]]; then
+    echo "Setting version in ${ST2DOCS_VERSION_FILE} to ${SHORT_VERSION}..."
+    echo "${SHORT_VERSION}" > ${ST2DOCS_VERSION_FILE}
+
+    ST2DOCS_VERSION_STR_MATCH=`grep "${SHORT_VERSION}" ${ST2DOCS_VERSION_FILE} || true`
+    if [[ -z "${ST2DOCS_VERSION_STR_MATCH}" ]]; then
+        >&2 echo "ERROR: Unable to update the st2 version in ${ST2DOCS_VERSION_FILE}."
+        exit 1
+    fi
 fi
 
 git add ${ST2DOCS_VERSION_FILE}

@@ -44,24 +44,27 @@ do
         exit 1
     fi
 
-    echo "Setting version in ${f} to ${DEV_VERSION}..."
-    sed -i -e "s/\(__version__ = \).*/\1'${DEV_VERSION}'/" ${f}
+    VERSION_STR="__version__ = '${DEV_VERSION}'"
 
-    VERSION_INFO="__version__ = '${DEV_VERSION}'"
-    grep "${VERSION_INFO}" ${f}
-    if [[ $? -ne 0 ]]; then
-        >&2 echo "ERROR: Unable to update the st2 version in ${f}."
-        exit 1
+    VERSION_STR_MATCH=`grep "${VERSION_STR}" ${f} || true`
+    if [[ -z "${VERSION_STR_MATCH}" ]]; then
+        echo "Setting version in ${f} to ${DEV_VERSION}..."
+        sed -i -e "s/\(__version__ = \).*/\1'${DEV_VERSION}'/" ${f}
+
+        VERSION_STR_MATCH=`grep "${VERSION_STR}" ${f} || true`
+        if [[ -z "${VERSION_STR_MATCH}" ]]; then
+            >&2 echo "ERROR: Unable to update the st2 version in ${f}."
+            exit 1
+        fi
     fi
-
-    git add ${f}
 done
 
-git commit -qm "Update version info for development - ${DEV_VERSION}"
-
-
-# PUSH NEW BRANCH WITH COMMITS
-git push origin ${BRANCH} -q
+MODIFIED=`git status | grep modified || true`
+if [[ ! -z "${MODIFIED}" ]]; then
+    git add -A
+    git commit -qm "Update version info for development - ${DEV_VERSION}"
+    git push origin ${BRANCH} -q
+fi
 
 
 # CLEANUP
