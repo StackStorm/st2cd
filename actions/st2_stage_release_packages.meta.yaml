@@ -1,9 +1,9 @@
 ---
-name: st2_prep_release_packages
+name: st2_stage_release_packages
 runner_type: mistral-v2
-description: Prepare and test st2 packages for release
+description: Stage and test st2 packages for release
 enabled: true
-entry_point: workflows/st2_prep_release_packages.yaml
+entry_point: workflows/st2_stage_release_packages.yaml
 parameters:
     version:
         type: string
@@ -18,6 +18,6 @@ parameters:
         description: If true, then run e2e tests after packages are built.
         default: true
     workflow:
-        default: st2cd.st2_prep_release_packages.main
+        default: st2cd.st2_stage_release_packages.main
         immutable: true
         type: string

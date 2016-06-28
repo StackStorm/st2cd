@@ -1,6 +1,6 @@
 version: '2.0'
-name: st2cd.st2_prep_release_packages
-description: Prepare and test st2 packages for release.
+name: st2cd.st2_stage_release_packages
+description: Stage and test st2 packages for release.
 
 workflows:
 
