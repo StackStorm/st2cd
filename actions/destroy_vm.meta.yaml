@@ -13,6 +13,9 @@ parameters:
         type: string
         description: Route53 DNS zone where the VM is deployed
         default: uswest2.stackstorm.net
+    instance_id:
+        type: string
+        description: Provider specific instance ID for the VM. If hostname not found, then ID is used to find the VM.
     skip_notify:
         immutable: true
         default:
