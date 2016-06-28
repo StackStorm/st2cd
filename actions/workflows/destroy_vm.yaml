@@ -6,6 +6,9 @@ st2cd.destroy_vm:
     input:
         - hostname
         - dns_zone
+        - instance_id
+        - used_dns: False
+        - used_id: False
     tasks:
         get_instance_dns:
             action: linux.dig
@@ -13,28 +16,48 @@ st2cd.destroy_vm:
                 hostname: <% $.hostname %>.<% $.dns_zone %>
                 count: 1
             on-success:
-                - get_instances: <% len(task(get_instance_dns).result.result) > 0 %>
-                - noop: <% len(task(get_instance_dns).result.result) <= 0 %>
-        get_instances:
+                - get_instances_by_dns: <% len(task(get_instance_dns).result.result) > 0 %>
+                - get_instances_by_id: <% len(task(get_instance_dns).result.result) <= 0 and $.instance_id != null %>
+                - noop: <% len(task(get_instance_dns).result.result) <= 0 and $.instance_id = null %>
+        get_instances_by_dns:
             action: aws.ec2_get_only_instances
             publish:
+                used_dns: True
                 instances: <%
-                        task(get_instances).result.result.where(
+                        task(get_instances_by_dns).result.result.where(
                             $.private_dns_name + '.' = task(get_instance_dns).result.result[0] or
                             $.private_ip_address = task(get_instance_dns).result.result[0]
                         ).select($.id)
                     %>
             on-success:
-                - deregister_monitor: <% len($.instances) = 1 %>
+                - destroy: <% len($.instances) = 1 %>
+                - notify_multiple_instances_failure: <% len($.instances) > 1 and $.instance_id = null %>
+                - noop: <% len($.instances) < 1 and $.instance_id = null %>
+                - get_instances_by_id: <% len($.instances) != 1 and $.instance_id != null %>
+        get_instances_by_id:
+            action: aws.ec2_get_only_instances
+            publish:
+                used_dns: False
+                used_id: True
+                instances: <%
+                    task(get_instances_by_id).result.result.where(
+                        $.id = execution().input.instance_id).select($.id)
+                    %>
+            on-success:
+                - destroy: <% len($.instances) = 1 %>
                 - notify_multiple_instances_failure: <% len($.instances) > 1 %>
                 - noop: <% len($.instances) < 1 %>
 
 
+        destroy:
+            on-complete:
+                - deregister_monitor: <% $.used_dns %>
+                - get_volumes: <% $.used_id %>
         deregister_monitor:
             action: sensu.client_delete client=<% $.hostname %>.<% $.dns_zone %>
             on-error:
                 - notify_deregister_monitor_failure
-            on-success:
+            on-complete:
                 - get_volumes
         get_volumes:
             action: aws.ec2_get_instance_attribute
@@ -43,10 +66,9 @@ st2cd.destroy_vm:
                 instance_id: <% $.instances[0] %>
             publish:
                 volumes: <%
-                        task(get_volumes).result.result.first().get(
-                            blockDeviceMapping, {}).values().where(
-                                not $.get(delete_on_termination, True)).select($.volume_id)
-                    %>
+                    task(get_volumes).result.result.first().get(
+                        blockDeviceMapping, {}).values().where(
+                            not $.get(delete_on_termination, True)).select($.volume_id) %>
             on-error:
                 - notify_destroy_instance_failure
             on-success:
@@ -68,7 +90,7 @@ st2cd.destroy_vm:
                 name: <% $.hostname %>.<% $.dns_zone %> 
             on-error:
                 - notify_delete_cname_failure
-            on-success:
+            on-complete:
                 - delete_volumes
         delete_volumes:
             with-items: volume in <% $.volumes %>
@@ -104,8 +126,6 @@ st2cd.destroy_vm:
             input:
                 channel: "#opstown"
                 message: "[FAILED] Unable to deregister monitoring for <% $.hostname %>"
-            on-complete:
-                - fail
 
         notify_destroy_instance_failure:
             action: slack.post_message
@@ -120,8 +140,6 @@ st2cd.destroy_vm:
             input:
                 channel: "#opstown"
                 message: "[FAILED] <% $.hostname %> was destroyed but CNAME was not deleted"
-            on-complete:
-                - fail
 
         notify_delete_volumes_failure:
             action: slack.post_message
