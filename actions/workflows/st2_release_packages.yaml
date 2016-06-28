@@ -1,26 +1,13 @@
 version: '2.0'
 st2cd.st2_release_packages:
-    description: Release st2 packages to production
     input:
-        - keyfile
-        - distros:
-            - RHEL6
-            - RHEL7
-            - UBUNTU14
+        - distros
+        - version
     tasks:
-        release_community:
+        promote_all_distros:
             with-items: distro in <% $.distros %>
-            action: st2ci.st2_pkg_test_and_promote
+            action: st2ci.st2_pkg_promote_all
             input:
                 distro: <% $.distro %>
                 release: stable
-                keyfile: <% $.keyfile %>
-            on-success:
-                - release_enterprise
-        release_enterprise:
-            with-items: distro in <% $.distros %>
-            action: st2ci.st2_pkg_test_and_promote_enterprise
-            input:
-                distro: <% $.distro %>
-                release: stable
-                keyfile: <% $.keyfile %>
+                version: <% $.version %>

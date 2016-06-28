@@ -1,10 +1,18 @@
 ---
 name: st2_release_packages
-runner_type: mistral-v2
-description: Release st2 packages to production
+pack: st2cd
+description: Promote all stable st2 packages from staging to production for all supported distros
 enabled: true
+runner_type: mistral-v2
 entry_point: workflows/st2_release_packages.yaml
 parameters:
-    keyfile:
+    distros:
+        type: array
+        immutable: true
+        default:
+            - RHEL6
+            - RHEL7
+            - UBUNTU14
+    version:
         type: string
-        default: /home/stanley/.ssh/stanley_rsa
+        required: true
