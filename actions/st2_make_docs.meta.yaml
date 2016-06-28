@@ -1,0 +1,45 @@
+---
+name: st2_make_docs
+description: Make st2 docs and upload to website.
+enabled: true
+runner_type: remote-shell-script
+entry_point: st2_make_docs.sh
+parameters:
+    project:
+        type: string
+        description: Project name for the doc source
+        default: st2docs
+        position: 0
+    branch:
+        type: string
+        description: Name of the branch to use
+        required: true
+        position: 1
+    fork:
+        type: string
+        description: Fork to use
+        default: StackStorm
+        position: 2
+    local_repo:
+        type: string
+        description: Location where to clone the repo. Programmatically determined if not provided.
+        position: 3
+    docs_url:
+        type: string
+        description: URL of the docs website
+        default: docs.stackstorm.com
+        position: 4
+    dir:
+        immutable: true
+        default: /home/stanley/
+    sudo:
+        immutable: true
+        default: false
+    cmd:
+        immutable: true
+        default: ""
+    kwarg_op:
+        immutable: true
+        default: "--"
+    timeout:
+        default: 900

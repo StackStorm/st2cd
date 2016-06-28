@@ -8,7 +8,6 @@ parameters:
   host:
     type: string
     description: The name of the hosts where the build process will run.
-    required: true
   version:
     type: string
     description: The release version major.minor.patch.
@@ -35,7 +34,3 @@ parameters:
   debug:
     type: boolean
     default: false
-  workflow:
-    default: st2cd.mistral_branch_candidate.main
-    immutable: true
-    type: string

@@ -1,0 +1,23 @@
+---
+name: st2_pkg_test_stable_rhel7_enterprise
+pack: st2cd
+description: Test stable packages
+enabled: true
+
+trigger:
+  parameters:
+    delta: 24
+    unit: hours
+  type: core.st2.IntervalTimer
+
+criteria: {}
+
+action:
+  ref: st2ci.st2_pkg_e2e_test
+  parameters:
+    hostname: st2-ent-pkg-stable-el7
+    distro: RHEL7
+    pkg_env: production
+    release: stable
+    enterprise: true
+    enterprise_key: "{{system.enterprise_key_prd_stable}}"

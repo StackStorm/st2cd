@@ -31,7 +31,3 @@ parameters:
   debug:
     type: boolean
     default: false
-  workflow:
-    default: st2cd.mistral_tag_release.main
-    immutable: true
-    type: string

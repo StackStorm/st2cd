@@ -1,0 +1,13 @@
+version: '2.0'
+st2cd.st2_release_packages:
+    input:
+        - distros
+        - version
+    tasks:
+        promote_all_distros:
+            with-items: distro in <% $.distros %>
+            action: st2ci.st2_pkg_promote_all
+            input:
+                distro: <% $.distro %>
+                release: stable
+                version: <% $.version %>

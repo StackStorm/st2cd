@@ -5,11 +5,10 @@ PROJECT=$1
 VERSION=$2
 FORK=$3
 LOCAL_REPO=$4
-PYPI_USERNAME=$5
-PYPI_PASSWORD=$6
 GIT_REPO="git@github.com:${FORK}/${PROJECT}.git"
 SHORT_VERSION=`echo ${VERSION} | cut -d "." -f1-2`
 BRANCH="v${SHORT_VERSION}"
+TAGGED_VERSION="v${VERSION}"
 CWD=`pwd`
 
 
@@ -39,47 +38,15 @@ git clone ${GIT_REPO} ${LOCAL_REPO}
 
 cd ${LOCAL_REPO}
 echo "Currently at directory `pwd`..."
-echo "Checkout out branch ${BRANCH}..."
 git checkout -b ${BRANCH} origin/${BRANCH}
 
 
-# WRITE PYPIRC
-PYPIRC=~/.pypirc
-
-if [ -e "${PYPIRC}" ]; then
-    rm -rf ${PYPIRC}
-fi
-
-touch ${PYPIRC}
-cat <<pypirc >${PYPIRC}
-[distutils]
-index-servers =
-    pypi
-    pypitest
-[pypi]
-repository: https://pypi.python.org/pypi
-username: ${PYPI_USERNAME}
-password: ${PYPI_PASSWORD}
-[pypitest]
-repository: https://testpypi.python.org/pypi
-username: ${PYPI_USERNAME}
-password: ${PYPI_PASSWORD}
-pypirc
-
-if [ ! -e "${PYPIRC}" ]; then
-    >&2 echo "ERROR: Unable to write file ${PYPIRC}"
-    exit 1
-fi
-
-
-# Upload st2client to pypi
-cd st2client
-echo "Currently at directory `pwd`..."
-python setup.py sdist upload -r pypitest
-python setup.py sdist upload -r pypi
+# TAG RELEASE
+echo "Tagging release ${TAGGED_VERSION} for ${PROJECT}..."
+git tag -a ${TAGGED_VERSION} -m "Creating tag ${TAGGED_VERSION} for branch ${BRANCH}"
+git push origin ${TAGGED_VERSION} -q
 
 
 # CLEANUP
 cd ${CWD}
 rm -rf ${LOCAL_REPO}
-rm -rf ${PYPIRC}

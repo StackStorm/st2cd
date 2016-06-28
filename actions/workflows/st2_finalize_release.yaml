@@ -1,105 +1,121 @@
----
-  chain:
-    -
-      name: "get_build_server"
-      ref: "linux.dig"
-      params:
-        hostname: "st2-build-slave-ubuntu.service.consul"
-        rand: true
-        count: 1
-      publish:
-        build_server: "{{get_build_server.result[0]}}"
-      on-success: "clone_repo"
-      on-failure: "slack_failure"
-    -
-      name: "clone_repo"
-      ref: "st2cd.git_clone"
-      params:
-        hosts: "{{build_server}}"
-        repo: "{{st2_repo}}"
-        branch: "{{branch}}"
-        target: "{{st2_repo_target}}"
-      publish:
-        repo: "{{clone_repo[build_server].stdout}}"
-      on-success: "tag_st2_branch"
-      on-failure: "clean_repo_failure"
-    -
-      name: "tag_st2_branch"
-      ref: "st2cd.tag_branch"
-      params:
-        hosts: "{{build_server}}"
-        repo: "{{repo}}"
-        branch: "{{branch}}"
-        timeout: 600
-      publish:
-        tagged_version: "{{tag_st2_branch[build_server].stdout | replace('v', '')}}"
-      on-success: "remove_patch_branch"
-      on-failure: "clean_repo_failure"
-    -
-      name: "remove_patch_branch"
-      ref: "st2cd.git_branch_remove"
-      params:
-        hosts: "{{build_server}}"
-        repo: "{{repo}}"
-        branch: "v{{tagged_version}}"
-        timeout: 600
-      on-success: "tag_mistral_branch"
-      on-failure: "clean_repo_failure"
-    -
-      name: "tag_mistral_branch"
-      ref: "st2cd.mistral_tag_release"
-      params:
-        version: "{{tagged_version}}"
-      on-success: "get_next_version"
-      on-failure: "clean_repo_failure"
-    -
-      name: "get_next_version"
-      ref: "core.local"
-      params:
-        cmd: "echo {{tagged_version}} | awk -F '[ .]' '{print $1\".\"$2\".\"$3+1}'"
-      publish:
-        next_version: "{{get_next_version.stdout | replace('\n', '')}}"
-      on-success: "create_next_patch_branch"
-      on-failure: "clean_repo_failure"
-    -
-      name: "create_next_patch_branch"
-      ref: "st2cd.git_branch"
-      params:
-        hosts: "{{build_server}}"
-        repo: "{{repo}}"
-        version: "{{next_version}}"
-        branch: "v{{next_version}}"
-        base_branch: "{{branch}}"
-        timeout: 600
-      on-success: "clean_repo_success"
-      on-failure: "clean_repo_failure"
-    -
-      name: "clean_repo_success"
-      ref: "st2cd.git_clean"
-      params:
-        hosts: "{{build_server}}"
-        repo: "{{repo}}"
-      on-success: "slack_success"
-      on-failure: "slack_failure"
-    -
-      name: "clean_repo_failure"
-      ref: "st2cd.git_clean"
-      params:
-        hosts: "{{build_server}}"
-        repo: "{{repo}}"
-      on-success: "slack_failure"
-      on-failure: "slack_failure"
-    -
-      name: "slack_success"
-      ref: "slack.post_message"
-      params:
-        channel: "#releasemgmt"
-        message: "```[FINALIZE_RELEASE]\n STATUS: SUCCESS\n VERSION: {{tagged_version}}```"
-    -
-      name: "slack_failure"
-      ref: "slack.post_message"
-      params:
-        channel: "#releasemgmt"
-        message: "```[FINALIZE_RELEASE]\n STATUS: FAILURE\n BRANCH: {{branch}}```"
+version: '2.0'
+st2cd.st2_finalize_release:
+    description: Finalize st2 release
+    input:
+        - version
+        - fork
+        - host
+        - cwd
+        - local_repo_sfx: null
 
-  default: "get_build_server"
+    task-defaults:
+        on-error:
+            - cleanup_on_failure: <% $.local_repo_sfx != null %>
+
+    tasks:
+        init:
+            action: core.local
+            input:
+                cmd: "echo `date +'%s'`_`awk -v min=100 -v max=999 'BEGIN{srand(); print int(min+rand()*(max-min+1))}'`"
+            publish:
+                local_repo_sfx: <% task(init).result.stdout %>
+                next_patch_version: <% $.version.split('.')[0] + '.' + $.version.split('.')[1] + '.' + str(int($.version.split('.')[2]) + 1) %>
+            on-success:
+                - get_host: <% $.host = null %>
+                - finalize: <% $.host != null %>
+
+
+        get_host:
+            action: linux.dig
+            input:
+                hostname: st2-build-slave-ubuntu.service.consul
+                rand: true
+                count: 1
+            publish:
+                host: <% task(get_host).result.result[0] %>
+            on-success:
+                - finalize
+
+
+        finalize:
+            on-complete:
+                - make_st2docs_stable
+        make_st2docs_stable:
+            action: st2cd.st2_make_docs
+            input:
+                project: st2docs
+                branch: v<% $.version.substring(0, $.version.lastIndexOf('.')) %>
+                fork: <% $.fork %>
+                local_repo: <% 'st2docs_' + $.local_repo_sfx %>
+                hosts: <% $.host %>
+                cwd: <% $.cwd %>
+            on-success:
+                - make_st2docs_latest
+        make_st2docs_latest:
+            action: st2cd.st2_make_docs
+            input:
+                project: st2docs
+                branch: master
+                fork: <% $.fork %>
+                local_repo: <% 'st2docs_' + $.local_repo_sfx %>
+                hosts: <% $.host %>
+                cwd: <% $.cwd %>
+            on-success:
+                - st2_tag_release
+        st2_tag_release:
+            action: st2cd.st2_tag_release
+            input:
+                project: st2
+                version: <% $.version %>
+                fork: <% $.fork %>
+                local_repo: <% 'st2_' + $.local_repo_sfx %>
+                hosts: <% $.host %>
+                cwd: <% $.cwd %>
+            on-success:
+                - st2_remove_patch_branch
+        st2_remove_patch_branch:
+            action: st2cd.git_delete_branch
+            input:
+                project: st2
+                branch: <% $.version %>
+                fork: <% $.fork %>
+                hosts: <% $.host %>
+                cwd: <% $.cwd %>
+            on-success:
+                - prep_st2_next_patch
+        prep_st2_next_patch:
+            action: st2cd.st2_prep_patch_release
+            input:
+                project: st2
+                version: <% $.next_patch_version %>
+                fork: <% $.fork %>
+                local_repo: <% 'st2_' + $.local_repo_sfx %>
+                hosts: <% $.host %>
+                cwd: <% $.cwd %>
+            on-success:
+                - mistral_tag_release
+        mistral_tag_release:
+            action: st2cd.mistral_tag_release
+            input:
+                host: <% $.host %>
+                version: <% $.version %>
+            on-success:
+                - push_st2client
+        push_st2client:
+            action: st2cd.pypi_st2client
+            input:
+                project: st2
+                version: <% $.version %>
+                fork: <% $.fork %>
+                local_repo: <% 'st2_' + $.local_repo_sfx %>
+                hosts: <% $.host %>
+                cwd: <% $.cwd %>
+
+
+        cleanup_on_failure:
+            action: core.remote
+            input:
+                cmd: <% 'rm -rf ' + $.cwd + '/st2*' + $.local_repo_sfx + ' && rm -rf ~/.pypirc' %>
+                hosts: <% $.host %>
+            on-complete:
+                - fail

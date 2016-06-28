@@ -7,7 +7,8 @@ workflows:
     main:
         type: direct
         input:
-            - host
+            - host_ip
+            - host_fqdn
             - protocol
             - st2_username
             - st2_password
@@ -17,15 +18,15 @@ workflows:
                 action: std.noop
                 publish:
                     st2_cli_env:
-                        ST2_BASE_URL: <% $.protocol %>://<% $.host %>
-                        ST2_AUTH_URL: <% $.protocol %>://<% $.host %>:9100
-                        ST2_API_URL: <% $.protocol %>://<% $.host %>:9101
+                        ST2_BASE_URL: <% $.protocol %>://<% $.host_fqdn %>
+                        ST2_AUTH_URL: <% $.protocol %>://<% $.host_fqdn %>:9100
+                        ST2_API_URL: <% $.protocol %>://<% $.host_fqdn %>:9101
                 on-success:
                     - get_st2_token
             get_st2_token:
                 action: st2cd.get_st2_token
                 input:
-                    hosts: <% $.host %>
+                    hosts: <% $.host_ip %>
                     env: <% $.st2_cli_env %>
                     st2_username: <% $.st2_username %>
                     st2_password: <% $.st2_password %>
@@ -33,13 +34,13 @@ workflows:
                 publish:
                     st2_cli_env: <% $.st2_cli_env.set(
                                         ST2_AUTH_TOKEN,
-                                        task(get_st2_token).result.get($.host).stdout.get(token)) %>
+                                        task(get_st2_token).result.get($.host_ip).stdout.get(token)) %>
                 on-success:
                     - setup_e2e_tests
             setup_e2e_tests:
                 action: st2cd.setup_e2e_tests
                 input:
-                    hosts: <% $.host %>
+                    hosts: <% $.host_ip %>
                     env: <% $.st2_cli_env %>
                     timeout: 180
                 on-success:
@@ -47,14 +48,14 @@ workflows:
             run_basic_tests:
                 workflow: test_basic
                 input:
-                    host: <% $.host %>
+                    host: <% $.host_ip %>
                     env: <% $.st2_cli_env %>
                 on-success:
                     - run_quickstart_tests
             run_quickstart_tests:
                 workflow: test_quickstart
                 input:
-                    host: <% $.host %>
+                    host: <% $.host_ip %>
                     env: <% $.st2_cli_env %>
                     protocol: <% $.protocol %>
                 on-success:
@@ -62,14 +63,14 @@ workflows:
             run_mistral_tests:
                 workflow: test_mistral
                 input:
-                    host: <% $.host %>
+                    host: <% $.host_ip %>
                     env: <% $.st2_cli_env %>
                 on-success:
                     - robot_docs_tests
             robot_docs_tests:
                 action: core.remote
                 input:
-                    hosts: <% $.host %>
+                    hosts: <% $.host_ip %>
                     env: <% $.st2_cli_env %>
                     cmd: cd /tmp/st2tests && source venv/bin/activate && pybot robotfm_tests/docs/
                     timeout: 300

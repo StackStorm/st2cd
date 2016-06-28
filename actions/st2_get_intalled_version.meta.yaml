@@ -13,6 +13,8 @@ parameters:
         type: array
         required: true
         default:
+            - st2-auth-ldap
+            - st2flow
             - st2web
             - st2mistral
             - st2chatops
