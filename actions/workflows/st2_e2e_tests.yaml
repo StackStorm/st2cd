@@ -210,7 +210,27 @@ workflows:
                     env: <% $.env %>
                     cmd: st2 run tests.test_quickstart_python_actions <% $.st2_cli_args %>
                     timeout: 600
-
+            test_quickstart_key_triggers:
+                action: core.remote
+                input:
+                    hosts: <% $.host %>
+                    env: <% $.env %>
+                    cmd: st2 run tests.test_key_triggers <% $.st2_cli_args %>
+                    timeout: 600
+            test_quickstart_trace:
+                action: core.remote
+                input:
+                    hosts: <% $.host %>
+                    env: <% $.env %>
+                    cmd: st2 run tests.test_quickstart_trace <% $.st2_cli_args %>
+                    timeout: 600
+            test_quickstart_timer_rules:
+                action: core.remote
+                input:
+                    hosts: <% $.host %>
+                    env: <% $.env %>
+                    cmd: st2 run tests.test_timer_rule <% $.st2_cli_args %>
+                    timeout: 600
 
     test_mistral:
         type: direct
