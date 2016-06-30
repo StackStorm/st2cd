@@ -73,7 +73,7 @@ workflows:
                     hosts: <% $.host_ip %>
                     env: <% $.st2_cli_env %>
                     cmd: cd /tmp/st2tests && source venv/bin/activate && pybot robotfm_tests/docs/
-                    timeout: 300
+                    timeout: 500
                 on-success:
                     - robot_mistral_tests
             robot_mistral_tests:
@@ -209,6 +209,33 @@ workflows:
                     hosts: <% $.host %>
                     env: <% $.env %>
                     cmd: st2 run tests.test_quickstart_python_actions <% $.st2_cli_args %>
+                    timeout: 600
+                on-success:
+                    - test_quickstart_key_triggers
+            test_quickstart_key_triggers:
+                action: core.remote
+                input:
+                    hosts: <% $.host %>
+                    env: <% $.env %>
+                    cmd: st2 run tests.test_key_triggers <% $.st2_cli_args %>
+                    timeout: 600
+                on-success:
+                    - test_quickstart_trace
+            test_quickstart_trace:
+                action: core.remote
+                input:
+                    hosts: <% $.host %>
+                    env: <% $.env %>
+                    cmd: st2 run tests.test_quickstart_trace <% $.st2_cli_args %>
+                    timeout: 600
+                on-success:
+                    - test_quickstart_timer_rules
+            test_quickstart_timer_rules:
+                action: core.remote
+                input:
+                    hosts: <% $.host %>
+                    env: <% $.env %>
+                    cmd: st2 run tests.test_timer_rule <% $.st2_cli_args %>
                     timeout: 600
 
 
