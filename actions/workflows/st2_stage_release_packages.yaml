@@ -14,6 +14,7 @@ workflows:
                 - st2chatops
                 - st2flow
                 - st2-packages
+                - st2-enterprise-auth-backend-ldap
             - distros:
                 RHEL6: el6
                 RHEL7: el7
