@@ -5,10 +5,12 @@ description: Test stable packages
 enabled: true
 
 trigger:
+  type: core.st2.CronTimer
   parameters:
-    delta: 24
-    unit: hours
-  type: core.st2.IntervalTimer
+    timezone: US/Pacific
+    hour: 6
+    minute: 0 
+    second: 0
 
 criteria: {}
 
