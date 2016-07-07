@@ -31,12 +31,32 @@ parameters:
             - production
         default: production
         position: 3
+    ldap_host:
+        type: string
+        default: "{{system.enterprise_ad_host}}"
+        position: 4
+    ldap_bind_dn:
+        type: string
+        default: "{{system.enterprise_ad_bind_dn}}"
+        position: 5
+    ldap_bind_passwd:
+        type: string
+        default: "{{system.enterprise_ad_bind_passwd}}"
+        position: 6
+    ldap_base_ou:
+        type: string
+        default: "{{system.enterprise_ad_base_ou}}"
+        position: 7
+    ldap_group_dn:
+        type: string
+        default: "{{system.enterprise_ad_group_dn}}"
+        position: 8
     dir:
         immutable: true
         default: /home/stanley/
     sudo:
         immutable: true
-        default: false
+        default: true
     cmd:
         immutable: true
         default: ""
