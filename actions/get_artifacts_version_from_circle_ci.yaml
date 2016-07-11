@@ -1,0 +1,28 @@
+name: get_artifacts_version_from_circle_ci
+runner_type: run-python
+description: Get artifacts info from circle ci.
+enabled: true
+entry_point: get_artifacts_version_from_circle_ci.py
+parameters:
+  build_number:
+    type: string
+    description: Circle CI build number.
+    required: true
+  project:
+    type: string
+    description: Name of project in circle ci.
+    required: true
+  artifacts_path:
+    type: string
+    description: "Path to artifacts info file"
+    required: false
+    default: "0/home/ubuntu/packages/payload.json"
+  distro:
+    type: string
+    description: "Distro wheezy, trusty, ..."
+    required: true
+  circle_token:
+    type: string
+    description: "Circle CI auth token"
+    required: true
+    secret: true
