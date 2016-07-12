@@ -69,16 +69,17 @@ VERSION=`cat version.txt`
 LOCAL_DOCS_DIR="docs/build/html"
 cd ${LOCAL_DOCS_DIR}
 
-DOCS_PATHS=("${VERSION}")
 if [ "${BRANCH}" = "master" ]; then
-    DOCS_PATHS=("latest" "${VERSION}")
+    DOCS_PATHS=("/${VERSION}/" "/latest/")
+else
+    DOCS_PATHS=("/${VERSION}/" "/")
 fi
 
 for DOCS_PATH in "${DOCS_PATHS[@]}"
 do
-    S3_URL="s3://${DOCS_URL}/${DOCS_PATH}/"
+    S3_URL="s3://${DOCS_URL}${DOCS_PATH}"
     echo "Uploading docs to ${S3_URL}..."
-    s3cmd put --guess-mime-type --recursive * ${S3_URL}
+    s3cmd put --no-mime-magic --guess-mime-type --recursive * ${S3_URL}
 done
 
 
