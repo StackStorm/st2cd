@@ -41,11 +41,16 @@ echo "Currently at directory `pwd`..."
 git checkout -b ${BRANCH} origin/${BRANCH}
 
 
-# TAG RELEASE
-echo "Tagging release ${TAGGED_VERSION} for ${PROJECT}..."
-git tag -a ${TAGGED_VERSION} -m "Creating tag ${TAGGED_VERSION} for branch ${BRANCH}"
-git push origin ${TAGGED_VERSION} -q
-
+# CHECK IF TAG EXISTS
+TAGGED=`git tag -l ${TAGGED_VERSION} || true`
+if [[ -z "${TAGGED}" ]]; then
+    # TAG RELEASE
+    echo "Tagging release ${TAGGED_VERSION} for ${PROJECT}..."
+    git tag -a ${TAGGED_VERSION} -m "Creating tag ${TAGGED_VERSION} for branch ${BRANCH}"
+    git push origin ${TAGGED_VERSION} -q
+else
+    echo "Tag ${TAGGED_VERSION} already exists."
+fi
 
 # CLEANUP
 cd ${CWD}
