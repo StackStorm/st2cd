@@ -1,6 +1,21 @@
 #!/bin/bash
 set -e
 
+# Install OS specific pre-reqs (Better moved to puppet at some point.)
+DEBTEST=`lsb_release -a 2> /dev/null | grep Distributor | awk '{print $3}'`
+RHTEST=`cat /etc/redhat-release 2> /dev/null | sed -e "s~\(.*\)release.*~\1~g"`
+
+if [[ -n "$RHTEST" ]]; then
+  echo "*** Detected Distro is ${RHTEST} ***"
+  sudo yum install -y bc
+elif [[ -n "$DEBTEST" ]]; then
+  echo "*** Detected Distro is ${DEBTEST} ***"
+  sudo apt-get install -y bc
+else
+  echo "Unknown Operating System."
+  exit 2
+fi
+
 # Setup crypto key file
 ST2_CONF="/etc/st2/st2.conf"
 CRYPTO_BASE="/etc/st2/keys"
