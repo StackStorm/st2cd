@@ -77,7 +77,7 @@ st2cd.st2_finalize_release:
             action: st2cd.git_delete_branch
             input:
                 project: st2
-                branch: <% $.version %>
+                branch: <% 'v' + $.version %>
                 fork: <% $.fork %>
                 hosts: <% $.host %>
                 cwd: <% $.cwd %>

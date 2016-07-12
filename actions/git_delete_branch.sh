@@ -34,7 +34,7 @@ cd ${LOCAL_REPO}
 
 
 # DELETE REMOTE BRANCH
-git push origin :${BRANCH}
+git push origin :refs/heads/${BRANCH}
 
 
 # CLEANUP
