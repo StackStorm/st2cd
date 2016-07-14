@@ -1,0 +1,15 @@
+---
+name: st2_perform_migrations
+runner_type: remote-shell-script
+description: Perform data model migrations on a box with st2 installed
+enabled: true
+entry_point: st2_perform_migrations.sh
+parameters:
+    from:
+        type: string
+        description: Version from which you are upgrading
+        required: true
+    to:
+        type: string
+        description: Version to which you are upgrading
+        required: true
