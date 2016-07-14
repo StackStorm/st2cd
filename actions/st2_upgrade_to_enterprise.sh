@@ -13,6 +13,10 @@ LDAP_BASE_OU=$9
 LDAP_GROUP_DN=${10}
 REPO=enterprise
 
+if [[ $VERSION="None" ]]; then
+    VERSION=''
+fi
+
 if [ "${PKG_ENV}" = "staging" ]; then
     REPO="${PKG_ENV}-${REPO}"
 fi
