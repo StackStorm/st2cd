@@ -1,6 +1,6 @@
 ---
   name: "create_vm_role"
-  runner_type: "action-chain"
+  runner_type: "mistral-v2"
   description: "Create a VM, add DNS, bootstrap puppet"
   enabled: true
   entry_point: "workflows/create_vm_role.yaml"

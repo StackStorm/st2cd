@@ -1,100 +1,127 @@
----
-  chain:
-    -
-      name: "get_subnet_id"
-      ref: "st2.kv.get"
-      params:
-        key: "{{environment}}_subnet"
-      on-success: "get_ami"
-    -
-      name: "get_ami"
-      ref: "st2.kv.get"
-      params:
-        key: "ami_{{distro}}"
-      on-success: "run_instance"
-    -
-      name: "run_instance"
-      ref: "aws.ec2_run_instances"
-      params:
-        image_id: "{{get_ami.result}}"
-        instance_type: "{{instance_type}}"
-        subnet_id: "{{get_subnet_id.result}}"
-        key_name: "{{key_name}}"
-      publish:
-        ec2_instance_id: "{{run_instance.result[0].id}}"
-        ec2_instance_private_ip: "{{run_instance.result[0].private_ip_address}}"
-        ec2_instance_private_dns: "{{run_instance.result[0].private_dns_name}}"
-      on-success: "wait_for_instance"
-    -
-      name: "wait_for_instance"
-      ref: "aws.ec2_wait_for_state"
-      params:
-        instance_id: "{{ec2_instance_id}}"
-        state: "running"
-      on-success: "wait_for_ssh"
-    -
-      name: "wait_for_ssh"
-      ref: "linux.wait_for_ssh"
-      params:
-        hostname: "{{ec2_instance_private_ip}}"
-        username: "stanley"
-        keyfile: "{{keyfile}}"
-        ssh_timeout: 20
-        retries: 30
-      on-success: "add_tags"
-    -
-      name: "add_tags"
-      ref: "aws.ec2_create_tags"
-      params:
-        resource_ids: "{{ec2_instance_id}}"
-        tags: "Name={{hostname}},Creator={{creator}},Role={{role}}{% if purpose %},Purpose={{purpose[0]|upper}}{{purpose[1:]}}{% endif %}"
-      on-success: "add_cname"
-    -
-      name: "add_cname"
-      ref: "aws.r53_zone_add_cname"
-      params:
-        name: "{{hostname}}.{{dns_zone}}"
-        value: "{{ec2_instance_private_dns}}"
-        zone: "{{dns_zone}}"
-      publish:
-        cname: "{{hostname}}.{{dns_zone}}"
-      on-success: "get_distro"
-    -
-      name: "get_distro"
-      ref: "st2cd.get_distro"
-      params:
-        hosts: "{{ec2_instance_private_ip}}"
-      on-success: "set_hostname"
-    -
-      name: "set_hostname"
-      ref: "st2cd.set_hostname"
-      params:
-        hosts: "{{ec2_instance_private_ip}}"
-        hostname: "{{hostname}}.{{dns_zone}}"
-        distro: "{{get_distro[ec2_instance_private_ip].stdout}}"
-        timeout: 300
-      on-success: "reboot"
-    -
-      name: "reboot"
-      ref: "core.remote_sudo"
-      params:
-        hosts: "{{ec2_instance_private_ip}}"
-        cmd: "shutdown -r +1 &"
-      on-success: "wait_for_ssh_post_reboot"
-    -
-      name: "wait_for_ssh_post_reboot"
-      ref: "linux.wait_for_ssh"
-      params:
-        hostname: "{{ec2_instance_private_ip}}"
-        username: "stanley"
-        keyfile: "{{keyfile}}"
-        ssh_timeout: 30
-        retries: 10
-      on-success: "puppet_bootstrap"
-    -
-      name: "puppet_bootstrap"
-      ref: "st2cd.puppet_bootstrap"
-      params:
-        hosts: "{{ec2_instance_private_ip}}"
-        role: "{{role}}"
-  default: "get_subnet_id"
+version: '2.0'
+
+st2cd.create_vm_role:
+    description: Create VM role on AWS
+    type: direct
+    input:
+        - instance_type
+        - environment
+        - key_name
+        - keyfile
+        - hostname
+        - dns_zone
+        - role
+        - creator
+        - purpose
+        - distro
+        - instance_id
+    tasks:
+        get_subnet_id:
+            action: st2.kv.get
+            input:
+                key: <% $.environment %>_subnet
+            on-success:
+                - get_ami
+
+        get_ami:
+            action: st2.kv.get
+            input:
+                key: ami_<% $.distro %>
+            on-success:
+                - run_instance
+
+        run_instance:
+            action: aws.ec2_run_instances
+            input:
+                image_id: <% task(get_ami).result.result %>
+                instance_type: <% $.instance_type %>
+                subnet_id: <% task(get_subnet_id).result %>
+                key_name: <% $.key_name %>
+            publish:
+                ec2_instance_id: <% task(run_instance).result.result..id %>
+                ec2_instance_private_ip: <% task(run_instance).result.result.private_ip_address %>
+                ec2_instance_private_dns: <% task(run_instance).result.result.private_dns_name %>
+            on-success:
+                - wait_for_instance
+
+        wait_for_instance:
+            action: aws.ec2_wait_for_state
+            input:
+                instance_id: <% $.ec2_instance_id %>
+                state: running
+            on-success:
+                - wait_for_ssh
+
+        wait_for_ssh:
+            action: linux.wait_for_ssh
+            input:
+                hostname: <% $.ec2_instance_private_ip %>
+                username: stanley
+                keyfile: <% $.keyfile %>
+                ssh_timeout: 20
+                retries: 30
+            on-success:
+                - add_tags
+
+        add_tags:
+            action: aws.ec2_create_tags
+            input:
+                resource_ids: <% $.ec2_instance_id %>
+                tags: Name=<% $.hostname %>,Creator=<% $.creator %>,Role=<% $.role %>Purpose=<% switch(isEmpty($.purpose) => "No Description", $.purpose => $.purpose) %>
+                # <% $.purpose[0]|upper %><% $.purpose[1:] %>
+            on-success:
+                - add_cname
+
+        add_cname:
+            action: aws.r53_zone_add_cname
+            input:
+                name: <% $.hostname %>.<% $.dns_zone %>
+                value: <% $.ec2_instance_private_dns %>
+                zone: <% $.dns_zone %>
+            publish:
+                cname: <% $.hostname %>.<% $.dns_zone %>
+            on-success:
+                - get_distro
+
+        get_distro:
+            action: st2cd.get_distro
+            input:
+                hosts: <% $.ec2_instance_private_ip %>
+            on-success:
+                - set_hostname
+
+        set_hostname:
+            action: st2cd.set_hostname
+            input:
+                hosts: <% $.ec2_instance_private_ip %>
+                hostname: <% $.hostname %>.<% $.dns_zone %>
+                distro: <% $.get_distro[ec2_instance_private_ip].stdout %>
+                timeout: 300
+            on-success:
+                - reboot
+
+        reboot:
+            action: core.remote_sudo
+            input:
+                hosts: <% $.ec2_instance_private_ip %>
+                cmd: shutdown -r +1 &
+            on-success:
+                - wait_for_ssh_post_reboot
+
+        wait_for_ssh_post_reboot:
+            action: linux.wait_for_ssh
+            input:
+                hostname: <% $.ec2_instance_private_ip %>
+                username: stanley
+                keyfile: <% $.keyfile %>
+                ssh_timeout: 30
+                retries: 10
+            on-success:
+                - puppet_bootstrap
+
+        puppet_bootstrap:
+            action: st2cd.puppet_bootstrap
+            input:
+                hosts: <% $.ec2_instance_private_ip %>
+                role: <% $.role %>
+        # default: "get_subnet_id"
