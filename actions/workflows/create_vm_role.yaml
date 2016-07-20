@@ -35,8 +35,8 @@ st2cd.create_vm_role:
                 name: <% $.hostname %>.<% $.dns_zone %>
                 zone: <% $.dns_zone %>
             on-success:
-                - run_instance: <% task(check_cname).result.result[0] = null %>
-                - fail: <% task(check_cname).result.result[0] != null %>
+                - run_instance: <% task(check_cname_if_it_already_exists).result.result[0] = null %>
+                - fail: <% task(check_cname_if_it_already_exists).result.result[0] != null %>
 
         run_instance:
             action: aws.ec2_run_instances
