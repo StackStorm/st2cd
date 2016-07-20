@@ -14,7 +14,6 @@ st2cd.create_vm_role:
         - creator
         - purpose
         - distro
-        - instance_id
     tasks:
         get_subnet_id:
             action: st2.kv.get
@@ -35,12 +34,12 @@ st2cd.create_vm_role:
             input:
                 image_id: <% task(get_ami).result.result %>
                 instance_type: <% $.instance_type %>
-                subnet_id: <% task(get_subnet_id).result %>
+                subnet_id: <% task(get_subnet_id).result.result %>
                 key_name: <% $.key_name %>
             publish:
-                ec2_instance_id: <% task(run_instance).result.result..id %>
-                ec2_instance_private_ip: <% task(run_instance).result.result.private_ip_address %>
-                ec2_instance_private_dns: <% task(run_instance).result.result.private_dns_name %>
+                ec2_instance_id: <% task(run_instance).result.result[0].id %>
+                ec2_instance_private_ip: <% task(run_instance).result.result[0].private_ip_address %>
+                ec2_instance_private_dns: <% task(run_instance).result.result[0].private_dns_name %>
             on-success:
                 - wait_for_instance
 
@@ -67,7 +66,7 @@ st2cd.create_vm_role:
             action: aws.ec2_create_tags
             input:
                 resource_ids: <% $.ec2_instance_id %>
-                tags: Name=<% $.hostname %>,Creator=<% $.creator %>,Role=<% $.role %>Purpose=<% switch(isEmpty($.purpose) => "No Description", $.purpose => $.purpose) %>
+                tags: Name=<% $.hostname %>,Creator=<% $.creator %>,Role=<% $.role %>,Purpose=<% switch(isEmpty($.purpose) => "No Description", $.purpose => $.purpose) %>
                 # <% $.purpose[0]|upper %><% $.purpose[1:] %>
             on-success:
                 - add_cname
@@ -94,8 +93,8 @@ st2cd.create_vm_role:
             action: st2cd.set_hostname
             input:
                 hosts: <% $.ec2_instance_private_ip %>
-                hostname: <% $.hostname %>.<% $.dns_zone %>
-                distro: <% $.get_distro[ec2_instance_private_ip].stdout %>
+                hostname: <% $.cname %>
+                distro: <% task(get_distro).result.get($.ec2_instance_private_ip).stdout %>
                 timeout: 300
             on-success:
                 - reboot
