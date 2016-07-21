@@ -14,6 +14,7 @@ st2cd.create_vm_role:
         - creator
         - purpose
         - distro
+
     tasks:
         get_subnet_id:
             action: st2.kv.get
@@ -80,6 +81,8 @@ st2cd.create_vm_role:
                 tags: Name=<% $.hostname %>,Creator=<% $.creator %>,Role=<% $.role %>,Purpose=<% switch(isEmpty($.purpose) => "No Description", $.purpose => $.purpose) %>
             on-success:
                 - add_cname
+            on-error:
+                - destroy_vm_on_failure
 
         add_cname:
             action: aws.r53_zone_add_cname
@@ -91,6 +94,8 @@ st2cd.create_vm_role:
                 cname: <% $.hostname %>.<% $.dns_zone %>
             on-success:
                 - get_distro
+            on-error:
+                - destroy_vm_on_failure
 
         get_distro:
             action: st2cd.get_distro
