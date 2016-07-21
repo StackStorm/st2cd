@@ -1,6 +1,6 @@
 ---
   name: "create_vm_role"
-  runner_type: "action-chain"
+  runner_type: "mistral-v2"
   description: "Create a VM, add DNS, bootstrap puppet"
   enabled: true
   entry_point: "workflows/create_vm_role.yaml"
@@ -60,16 +60,6 @@
         - "ubuntu"
         - "centos6"
         - "centos7"
-    notification_channel:
-      type: "string"
-      description: "used by rule with actiontrigger"
-      immutable: true
-      default: "#opstown"
-    notification:
-      type: "string"
-      description: "used by rule with actiontrigger"
-      immutable: true
-      default: "slack"
     skip_notify:
       default:
         - get_subnet_id
