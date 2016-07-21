@@ -19,9 +19,11 @@ if [[ ! ${SUPPORTED_DISTROS[@]} =~ (^| )${DISTRO_LCASE}($| ) ]]; then
 fi
 
 if [[ ${DISTRO_LCASE} = "ubuntu" ]]; then
-    sed -i -e "s/\(preserve_hostname: \)false/\1true/" /etc/cloud/cloud.cfg && echo "${HOSTNAME}" > /etc/hostname && hostname ${HOSTNAME} && echo "127.0.0.1 ${HOSTNAME}" >> /etc/hosts
+    sed -i -e "s/\(preserve_hostname: \)false/\1true/" /etc/cloud/cloud.cfg && echo "${HOSTNAME}" > /etc/hostname && hostname ${HOSTNAME}
 elif [[ ${DISTRO_LCASE} = "redhat" || ${DISTRO_LCASE} = "centos" ]]; then
-    sed -i -e "s/\(HOSTNAME=\).*/\1${HOSTNAME}/" /etc/sysconfig/network && hostname ${HOSTNAME} && echo "127.0.0.1 ${HOSTNAME}" >> /etc/hosts
+    sed -i -e "s/\(HOSTNAME=\).*/\1${HOSTNAME}/" /etc/sysconfig/network && hostname ${HOSTNAME}
 elif [[ ${DISTRO_LCASE} = "fedora" ]]; then
-    echo -e "HOSTNAME=${HOSTNAME}" >> /etc/sysconfig/network && hostname ${HOSTNAME} && echo "127.0.0.1 ${HOSTNAME}" >> /etc/hosts
+    echo -e "HOSTNAME=${HOSTNAME}" >> /etc/sysconfig/network && hostname ${HOSTNAME}
 fi
+
+sed -i "/127\.0\.0\.1/ s/$/ ${HOSTNAME}/" /etc/hosts
