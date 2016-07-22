@@ -1,7 +1,7 @@
 version: '2.0'
 
 st2cd.create_vm_role:
-    description: Create VM role on AWS
+    description: Create VM with specific role in AWS
     type: direct
     input:
         - instance_type
@@ -14,6 +14,17 @@ st2cd.create_vm_role:
         - creator
         - purpose
         - distro
+
+    vars:
+        ec2_instance_id: null
+
+    output:
+        vm_info: <% task(run_instance).result.result[0] %>
+
+    task-defaults:
+        on-error:
+            - destroy_vm_on_failure: <% $.ec2_instance_id != null %>
+            - fail: <% $.ec2_instance_id = null %>
 
     tasks:
         get_subnet_id:
@@ -28,16 +39,16 @@ st2cd.create_vm_role:
             input:
                 key: ami_<% $.distro %>
             on-success:
-                - check_cname_if_it_already_exists
+                - check_cname
 
-        check_cname_if_it_already_exists:
+        check_cname:
             action: aws.r53_zone_get_cname
             input:
                 name: <% $.hostname %>.<% $.dns_zone %>
                 zone: <% $.dns_zone %>
             on-success:
-                - run_instance: <% task(check_cname_if_it_already_exists).result.result[0] = null %>
-                - fail: <% task(check_cname_if_it_already_exists).result.result[0] != null %>
+                - run_instance: <% task(check_cname).result.result[0] = null %>
+                - fail: <% task(check_cname).result.result[0] != null %>
 
         run_instance:
             action: aws.ec2_run_instances
@@ -71,8 +82,6 @@ st2cd.create_vm_role:
                 retries: 30
             on-success:
                 - add_tags
-            on-error:
-                - destroy_vm_on_failure
 
         add_tags:
             action: aws.ec2_create_tags
@@ -81,8 +90,6 @@ st2cd.create_vm_role:
                 tags: Name=<% $.hostname %>,Creator=<% $.creator %>,Role=<% $.role %>,Purpose=<% switch(isEmpty($.purpose) => "No Description", $.purpose => $.purpose) %>
             on-success:
                 - add_cname
-            on-error:
-                - destroy_vm_on_failure
 
         add_cname:
             action: aws.r53_zone_add_cname
@@ -94,8 +101,6 @@ st2cd.create_vm_role:
                 cname: <% $.hostname %>.<% $.dns_zone %>
             on-success:
                 - get_distro
-            on-error:
-                - destroy_vm_on_failure
 
         get_distro:
             action: st2cd.get_distro
@@ -103,8 +108,6 @@ st2cd.create_vm_role:
                 hosts: <% $.ec2_instance_private_ip %>
             on-success:
                 - set_hostname
-            on-error:
-                - destroy_vm_on_failure
 
         set_hostname:
             action: st2cd.set_hostname
@@ -115,8 +118,6 @@ st2cd.create_vm_role:
                 timeout: 300
             on-success:
                 - reboot
-            on-error:
-                - destroy_vm_on_failure
 
         reboot:
             action: core.remote_sudo
@@ -125,8 +126,6 @@ st2cd.create_vm_role:
                 cmd: shutdown -r +1 &
             on-success:
                 - wait_for_ssh_post_reboot
-            on-error:
-                - destroy_vm_on_failure
 
         wait_for_ssh_post_reboot:
             action: linux.wait_for_ssh
@@ -138,16 +137,13 @@ st2cd.create_vm_role:
                 retries: 10
             on-success:
                 - puppet_bootstrap
-            on-error:
-                - destroy_vm_on_failure
 
         puppet_bootstrap:
             action: st2cd.puppet_bootstrap
             input:
                 hosts: <% $.ec2_instance_private_ip %>
                 role: <% $.role %>
-            on-error:
-                - destroy_vm_on_failure
+
 
 
         destroy_vm_on_failure:
@@ -155,3 +151,5 @@ st2cd.create_vm_role:
             input:
                 hostname: <% $.hostname %>
                 instance_id: <% $.ec2_instance_id %>
+            on-complete:
+                - fail
