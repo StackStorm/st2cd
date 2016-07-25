@@ -17,18 +17,13 @@ st2cd.mistral_release_candidate:
         - notify_failure_channels:
             - "#thunderdome"
             - "#stackstorm"
+        - webui_base_url: "https://st2-build"
 
     task-defaults:
         on-error:
             - notify_failure
 
     tasks:
-        init_vars:
-            action: core.local cmd="hostname"
-            publish:
-                webui_base_url: http://<% task(init_vars).result.stdout %>:8080
-            on-success:
-                - test
         test:
             action: st2ci.mistral
             input:

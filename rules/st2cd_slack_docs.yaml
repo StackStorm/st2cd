@@ -28,6 +28,6 @@
                 {% endif %}
                 BRANCH: {{trigger.parameters.branch}}
                 ````
-                http://st2build002:8080/#/history/{{trigger.execution_id}}/general
+                https://st2-build/#/history/{{trigger.execution_id}}/general
 
 
