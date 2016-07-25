@@ -26,7 +26,7 @@ st2cd.mistral_release_candidate:
         init_vars:
             action: core.local cmd="hostname"
             publish:
-                webui_base_url: http://<% task(init_vars).result.stdout %>:8080
+                webui_base_url: https://<% task(init_vars).result.stdout %>
             on-success:
                 - test
         test:
