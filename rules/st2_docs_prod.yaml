@@ -20,3 +20,4 @@
             author: "{{trigger.body.head_commit.author.username}}"
             environment: "production"
             docs_url: "{{system.s3_bucket_docs_production}}"
+    pack: "st2cd"

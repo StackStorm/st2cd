@@ -17,3 +17,4 @@
             branch: "master"
             revision: "{{trigger.body.head_commit.id}}"
             author: "{{trigger.body.head_commit.author.username}}"
+    pack: "st2cd"

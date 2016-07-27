@@ -15,3 +15,4 @@
         ref: "slack.post_message"
         parameters:
             message: "```[GITHUB - {{trigger.body.repository.full_name}}: {{trigger.body.ref.split('/')[-1]}}]\n    PUSHER: {{trigger.body.pusher.name}}\n    MSG: {{trigger.body.head_commit.message}}```"
+    pack: "st2cd"

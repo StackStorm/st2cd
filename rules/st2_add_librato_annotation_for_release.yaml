@@ -15,3 +15,4 @@
         ref: "st2cd.st2_add_annotation_for_release"
         parameters:
             branch: "{{trigger.body.ref | replace('refs/heads/', '')}}"
+    pack: "st2cd"
