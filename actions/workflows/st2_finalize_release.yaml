@@ -20,6 +20,7 @@ st2cd.st2_finalize_release:
             publish:
                 local_repo_sfx: <% task(init).result.stdout %>
                 next_patch_version: <% $.version.split('.')[0] + '.' + $.version.split('.')[1] + '.' + str(int($.version.split('.')[2]) + 1) %>
+                major_minor_version: <% $.version.split('.')[0] + '.' + $.version.split('.')[1] %>
             on-success:
                 - get_host: <% $.host = null %>
                 - finalize: <% $.host != null %>
@@ -39,7 +40,17 @@ st2cd.st2_finalize_release:
 
         finalize:
             on-complete:
+                - set_stable_version_datastore
+
+        set_stable_version_datastore:
+            action: st2cd.kvstore
+            input:
+                action: "update"
+                key: "st2_stable_version"
+                value: <% $.major_minor_version %>
+            on-success:
                 - make_st2docs_stable
+
         make_st2docs_stable:
             action: st2cd.st2_make_docs
             input:
