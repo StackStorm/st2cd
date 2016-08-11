@@ -17,6 +17,7 @@
         - "production"
         - "staging"
         - "sandbox"
+        - "public"  # Use this if you want node to be available on public internet. Set up Elastic IP manually.
     key_name:
       type: "string"
       description: "SSH key to use during intial instance creation"
