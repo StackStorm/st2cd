@@ -66,7 +66,7 @@ def main(args):
         'description': 'Run docs build on each commit to branch.',
         'enabled': True,
         'trigger': {
-            'type': 'GitHubWebhook.github_event'
+            'type': 'githubwebhook.github_event'
         },
         'criteria': {
             'trigger.body.ref': {
