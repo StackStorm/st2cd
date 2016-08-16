@@ -3,7 +3,7 @@
     description: "Build st2 docs for StackStorm v1.5"
     enabled: true
     trigger:
-        type: "GitHubWebhook.github_event"
+        type: "githubwebhook.github_event"
     criteria:
         trigger.body.ref:
             pattern: "refs/heads/v1.5"

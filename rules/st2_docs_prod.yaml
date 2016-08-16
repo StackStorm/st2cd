@@ -3,7 +3,7 @@
     description: "Build st2 packages after tests succeed and push them to staging"
     enabled: true
     trigger:
-        type: "GitHubWebhook.github_event"
+        type: "githubwebhook.github_event"
     criteria:
         trigger.body.ref:
             pattern: "refs/heads/master"
