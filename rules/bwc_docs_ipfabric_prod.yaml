@@ -1,5 +1,6 @@
 ---
     name: "bwc_docs_ipfabric_prod"
+    pack: "st2cd"
     description: "Build BWC docs and push to s3"
     enabled: true
     trigger:
@@ -14,7 +15,7 @@
     action:
         ref: "st2cd.bwc_docs"
         parameters:
-            repo: "{{trigger.body.repository.clone_url}}"
+            repo: "https://github.com/StackStorm/st2docs.git"
             branch: "master"
             revision: "{{trigger.body.head_commit.id}}"
             author: "{{trigger.body.head_commit.author.username}}"

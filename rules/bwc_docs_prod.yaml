@@ -1,5 +1,6 @@
 ---
     name: "bwc_docs_prod"
+    pack: "st2cd"
     description: "Build BWC docs and push to s3"
     enabled: true
     trigger:
