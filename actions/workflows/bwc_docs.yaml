@@ -35,7 +35,7 @@
       ref: "core.remote"
       params:
         hosts: "{{build_server}}"
-        timeout: 1000
+        timeout: 2000
         cmd: "cd {{repodir}} && make bwcdocs"
       on-success: "s3cmd_docs"
     -
