@@ -1,6 +1,6 @@
 version: '2.0'
-name: st2cd.st2_stage_release_packages
-description: Stage st2 packages for release.
+name: st2cd.bwc_stage_release_packages
+description: Stage bwc (st2 enterprise) packages for release.
 
 workflows:
 
@@ -10,11 +10,13 @@ workflows:
             - wait
             - test
             - projects:
-                - st2
-                - st2chatops
-                - st2web
-                - st2flow
-                - st2-packages
+                - bwc-enterprise-packages
+                - st2-enterprise-auth-backend-ldap
+                - bwc-ipfabric-suite-packages
+                - bwc-ipfabric-packs
+                - bwc-topology
+                - bwc-cli
+                - bwc-ui
             - distros:
                 RHEL6: el6
                 RHEL7: el7
@@ -45,17 +47,6 @@ workflows:
                 input:
                     project: stackstorm/<% $.package_job[0] %>
                     build_number: <% str($.package_job[1]) %>
-                on-success:
-                    - test_all: <% $.test %>
-            test_all:
-                with-items: distro in <% $.distros.items() %>
-                action: st2ci.st2_pkg_e2e_test
-                input:
-                    hostname: st2-pkg-staging-stable-<% $.distro[1] %>
-                    distro: <% $.distro[0] %>
-                    pkg_env: staging
-                    release: stable
-
 
     wait_for_package:
         input:

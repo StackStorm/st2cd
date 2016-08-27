@@ -1,14 +1,14 @@
 ---
-name: st2_prep_release_for_enterprise_pkg
-description: Prepare the st2 enterprise packaging repo for release
+name: bwc_prep_release_for_bwc_cli
+description: Prepare the bwc cli repo for release
 enabled: true
 runner_type: remote-shell-script
-entry_point: st2_prep_release_for_enterprise_pkg.sh
+entry_point: bwc_prep_release_for_bwc_cli.sh
 parameters:
     project:
         type: string
-        description: Project name for st2 enterprise packaging
-        default: st2enterprise-package
+        description: Project name for bwc cli
+        default: bwc-cli
         position: 0
     version:
         type: string
