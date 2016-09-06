@@ -1,0 +1,38 @@
+---
+name: bwc_prep_dev_for_bwc_cli
+description: Prepare the bwc cli repo for next iteration of development
+enabled: true
+runner_type: remote-shell-script
+entry_point: bwc_prep_dev_for_bwc_cli.sh
+parameters:
+    project:
+        type: string
+        description: Project name for bwc cli
+        default: bwc-cli
+        position: 0
+    version:
+        type: string
+        description: Version to use for the next release. Should include the patch e.g. 0.1.0
+        required: true
+        position: 1
+    fork:
+        type: string
+        description: Fork to use
+        default: StackStorm
+        position: 2
+    local_repo:
+        type: string
+        description: Location where to clone the repo. Programmatically determined if not provided.
+        position: 3
+    dir:
+        immutable: true
+        default: /home/stanley/
+    sudo:
+        immutable: true
+        default: false
+    cmd:
+        immutable: true
+        default: ""
+    kwarg_op:
+        immutable: true
+        default: "--"

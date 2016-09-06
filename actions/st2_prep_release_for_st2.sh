@@ -55,7 +55,7 @@ fi
 CHANGELOG_VERSION_MATCH=`grep "${VERSION} - " ${CHANGELOG_FILE} || true`
 if [[ -z "${CHANGELOG_VERSION_MATCH}" ]]; then
     echo "Setting version in ${CHANGELOG_FILE} to ${VERSION}..."
-    sed -i "s/in development/${RELEASE_STRING}/g" ${CHANGELOG_FILE}
+    sed -i "s/^in development/${RELEASE_STRING}/Ig" ${CHANGELOG_FILE}
     sed -i "/${RELEASE_STRING}/!b;n;c${DASH_HEADER}" ${CHANGELOG_FILE}
     sed -i "/${RELEASE_STRING}/i \in development\n--------------\n\n" ${CHANGELOG_FILE}
 fi

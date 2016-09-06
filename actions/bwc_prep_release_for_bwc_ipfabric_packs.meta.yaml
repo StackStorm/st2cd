@@ -1,14 +1,14 @@
 ---
-name: pypi_st2client
-description: Upload st2client to pypi
+name: bwc_prep_release_for_bwc_ipfabric_packs
+description: Prepare the bwc ip fabric packs repo for release
 enabled: true
 runner_type: remote-shell-script
-entry_point: pypi_st2client.sh
+entry_point: bwc_prep_release_for_bwc_ipfabric_packs.sh
 parameters:
     project:
         type: string
-        description: Project name for st2
-        default: st2
+        description: Project name for bwc ip fabric packs
+        default: bwc-ipfabric-packs
         position: 0
     version:
         type: string
@@ -24,16 +24,6 @@ parameters:
         type: string
         description: Location where to clone the repo. Programmatically determined if not provided.
         position: 3
-    pypi_username:
-        type: string
-        description: Username to login to pypi
-        default: "{{system.st2_pypi_username}}"
-        position: 4
-    pypi_password:
-        type: string
-        description: Password for the pypi account
-        default: "{{system.st2_pypi_password}}"
-        position: 5
     dir:
         immutable: true
         default: /home/stanley/

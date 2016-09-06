@@ -11,6 +11,7 @@ cd $REPO
 
 if [ "$#" -gt 0 ]; then
     for LOCATION in $@; do
+        echo "Writing to location \"${LOCATION}\"..."
         s3cmd put --no-mime-magic --guess-mime-type --recursive * s3://${BUCKET}${LOCATION}
     done
 

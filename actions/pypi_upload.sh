@@ -1,13 +1,14 @@
 #!/bin/bash
 set -e
 
-PROJECT=$1
-VERSION=$2
-FORK=$3
-LOCAL_REPO=$4
-PYPI_USERNAME=$5
-PYPI_PASSWORD=$6
-GIT_REPO="git@github.com:${FORK}/${PROJECT}.git"
+REPO=$1
+PROJECT=$2
+VERSION=$3
+FORK=$4
+LOCAL_REPO=$5
+PYPI_USERNAME=$6
+PYPI_PASSWORD=$7
+GIT_REPO="git@github.com:${FORK}/${REPO}.git"
 SHORT_VERSION=`echo ${VERSION} | cut -d "." -f1-2`
 BRANCH="v${SHORT_VERSION}"
 CWD=`pwd`
@@ -26,7 +27,7 @@ fi
 if [[ -z ${LOCAL_REPO} ]]; then
     CURRENT_TIMESTAMP=`date +'%s'`
     RANDOM_NUMBER=`awk -v min=100 -v max=999 'BEGIN{srand(); print int(min+rand()*(max-min+1))}'`
-    LOCAL_REPO=${PROJECT}_${CURRENT_TIMESTAMP}_${RANDOM_NUMBER}
+    LOCAL_REPO=${REPO}_${CURRENT_TIMESTAMP}_${RANDOM_NUMBER}
 fi
 
 echo "Cloning ${GIT_REPO} to ${LOCAL_REPO}..."
@@ -73,7 +74,7 @@ fi
 
 
 # Upload st2client to pypi
-cd st2client
+cd ./${PROJECT}
 echo "Currently at directory `pwd`..."
 python setup.py sdist upload -r pypitest
 python setup.py sdist upload -r pypi

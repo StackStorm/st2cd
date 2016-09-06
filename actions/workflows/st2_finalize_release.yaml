@@ -113,9 +113,10 @@ st2cd.st2_finalize_release:
             on-success:
                 - push_st2client
         push_st2client:
-            action: st2cd.pypi_st2client
+            action: st2cd.pypi_upload
             input:
-                project: st2
+                repo: st2
+                project: st2client
                 version: <% $.version %>
                 fork: <% $.fork %>
                 local_repo: <% 'st2_' + $.local_repo_sfx %>

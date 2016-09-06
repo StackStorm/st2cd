@@ -40,7 +40,7 @@ echo "Currently at directory `pwd`..."
 
 
 # UPDATE DOCS URL
-CONF_FILE="docs/source/conf.py"
+CONF_FILE="docs/source/info.py"
 DOCS_URL_MATCH=`grep "${DOCS_URL}" ${CONF_FILE} || true`
 if [[ -z "${DOCS_URL_MATCH}" ]]; then
     sed -i -e "s/${DEFAULT_DOCS_URL}/${DOCS_URL}/g" ${CONF_FILE}

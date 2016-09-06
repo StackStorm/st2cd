@@ -1,6 +1,6 @@
 version: '2.0'
-st2cd.st2_prep_release:
-    description: Prepare st2 for release.
+st2cd.bwc_prep_dev:
+    description: Prepare bwc for next iteration of development.
     input:
         - version
         - fork
@@ -38,69 +38,65 @@ st2cd.st2_prep_release:
 
         prep:
             on-complete:
-                - prep_st2
-        prep_st2:
-            action: st2cd.st2_prep_release_for_st2            
+                - prep_bwc_enterprise_pkg
+        prep_bwc_enterprise_pkg:
+            action: st2cd.bwc_prep_dev_for_enterprise_pkg
             input:
-                project: st2
+                project: bwc-enterprise-package
                 version: <% $.version %>
                 fork: <% $.fork %>
-                local_repo: <% 'st2_' + $.local_repo_sfx %>
+                local_repo: <% 'bwc_enterprise_package_' + $.local_repo_sfx %>
                 hosts: <% $.host %>
                 cwd: <% $.cwd %>
             on-success:
-                - prep_st2docs
-        prep_st2docs:
-            action: st2cd.st2_prep_release_for_st2docs
+                - prep_st2enterprise_ldap
+        prep_st2enterprise_ldap:
+            action: st2cd.st2_prep_dev_for_enterprise_ldap
             input:
-                project: st2docs
+                project: st2-enterprise-auth-backend-ldap
                 version: <% $.version %>
                 fork: <% $.fork %>
-                local_repo: <% 'st2docs_' + $.local_repo_sfx %>
+                local_repo: <% 'st2enterprise_auth_ldap_' + $.local_repo_sfx %>
                 hosts: <% $.host %>
                 cwd: <% $.cwd %>
             on-success:
-                - prep_st2web
-        prep_st2web:
-            action: st2cd.st2_prep_release_for_gui
+                - prep_bwc_ipfabric_suite
+        prep_bwc_ipfabric_suite:
+            action: st2cd.bwc_prep_dev_for_bwc_ipfabric_suite
             input:
-                project: st2web
                 version: <% $.version %>
                 fork: <% $.fork %>
-                local_repo: <% 'st2web_' + $.local_repo_sfx %>
+                local_repo: <% 'bwc_ipfabric_suite_' + $.local_repo_sfx %>
                 hosts: <% $.host %>
                 cwd: <% $.cwd %>
             on-success:
-                - prep_st2chatops
-        prep_st2chatops:
-            action: st2cd.st2_prep_release_for_gui
+                - prep_bwc_ipfabric_packs
+        prep_bwc_ipfabric_packs:
+            action: st2cd.bwc_prep_dev_for_bwc_ipfabric_packs
             input:
-                project: st2chatops
                 version: <% $.version %>
                 fork: <% $.fork %>
-                local_repo: <% 'st2chatops_' + $.local_repo_sfx %>
+                local_repo: <% 'bwc_ipfabric_packs_' + $.local_repo_sfx %>
                 hosts: <% $.host %>
                 cwd: <% $.cwd %>
             on-success:
-                - prep_st2flow
-        prep_st2flow:
-            action: st2cd.st2_prep_release_for_gui
+                - prep_bwc_topology
+        prep_bwc_topology:
+            action: st2cd.bwc_prep_dev_for_bwc_topology
             input:
-                project: st2flow
                 version: <% $.version %>
                 fork: <% $.fork %>
-                local_repo: <% 'st2flow_' + $.local_repo_sfx %>
+                local_repo: <% 'bwc_topology_' + $.local_repo_sfx %>
                 hosts: <% $.host %>
                 cwd: <% $.cwd %>
             on-success:
-                - prep_st2_pkg
-        prep_st2_pkg:
-            action: st2cd.st2_prep_release_for_st2_pkg
+                - prep_bwc_cli
+        prep_bwc_cli:
+            action: st2cd.bwc_prep_dev_for_bwc_cli
             input:
-                project: st2-packages
                 version: <% $.version %>
                 fork: <% $.fork %>
-                local_repo: <% 'st2_packages_' + $.local_repo_sfx %>
+                local_repo: <% 'bwc_cli_' + $.local_repo_sfx %>
                 hosts: <% $.host %>
                 cwd: <% $.cwd %>
 
@@ -108,7 +104,7 @@ st2cd.st2_prep_release:
         cleanup_on_failure:
             action: core.remote
             input:
-                cmd: <% 'rm -rf ' + $.cwd + '/st2*' + $.local_repo_sfx %>
+                cmd: <% 'rm -rf ' + $.cwd + '/st2*' + $.local_repo_sfx + ' ' + $.cwd + '/bwc*' + $.local_repo_sfx %>
                 hosts: <% $.host %>
             on-complete:
                 - fail

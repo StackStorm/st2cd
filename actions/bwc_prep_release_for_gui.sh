@@ -43,18 +43,18 @@ echo "Creating new branch ${BRANCH}..."
 git checkout -b ${BRANCH} origin/master
 
 
-# SET NEW ST2 VERSION INFO
-VERSION_FILE="package.json"
-VERSION_STR="\"st2_version\": \"${VERSION}\""
+# SET NEW BWC VERSION INFO
+VERSION_FILE="circle.yml"
+VERSION_STR="git clone -b ${BRANCH} https:\/\/github.com"
 
 VERSION_STR_MATCH=`grep "${VERSION_STR}" ${VERSION_FILE} || true`
 if [[ -z "${VERSION_STR_MATCH}" ]]; then
     echo "Setting version in ${VERSION_FILE} to ${VERSION}..."
-    sed -i -e "s/\(^  \"st2_version\": \"\).*\(\"\)/\1${VERSION}\2/" ${VERSION_FILE}
+    sed -i -e "s/git clone https:\/\/github.com/${VERSION_STR}/g" ${VERSION_FILE}
 
     VERSION_STR_MATCH=`grep "${VERSION_STR}" ${VERSION_FILE} || true`
     if [[ -z "${VERSION_STR_MATCH}" ]]; then
-        >&2 echo "ERROR: Unable to update the st2 version in ${VERSION_FILE}."
+        >&2 echo "ERROR: Unable to update the bwc version in ${VERSION_FILE}."
         exit 1
     fi
 fi
