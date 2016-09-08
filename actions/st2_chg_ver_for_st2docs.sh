@@ -4,13 +4,19 @@ set -e
 PROJECT=$1
 VERSION=$2
 FORK=$3
-LOCAL_REPO=$4
+BRANCH=$4
+LOCAL_REPO=$5
 GIT_REPO="git@github.com:${FORK}/${PROJECT}.git"
-SHORT_VERSION=`echo ${VERSION} | cut -d "." -f1-2`
-DEV_VERSION="${SHORT_VERSION}dev"
-BRANCH="master"
 CWD=`pwd`
 
+
+# CHECK IF BRANCH EXISTS
+BRANCH_EXISTS=`git ls-remote --heads ${GIT_REPO} | grep refs/heads/${BRANCH} || true`
+
+if [[ -z "${BRANCH_EXISTS}" ]]; then
+    >&2 echo "ERROR: Branch ${BRANCH} does not exist in ${GIT_REPO}."
+    exit 1
+fi
 
 # GIT CLONE AND BRANCH
 if [[ -z ${LOCAL_REPO} ]]; then
@@ -25,31 +31,31 @@ if [ -d "${LOCAL_REPO}" ]; then
     rm -rf ${LOCAL_REPO}
 fi
 
-git clone ${GIT_REPO} ${LOCAL_REPO}
+git clone -b ${BRANCH} --single-branch ${GIT_REPO} ${LOCAL_REPO}
 
 cd ${LOCAL_REPO}
 echo "Currently at directory `pwd`..."
 
 
-# SET DEV ST2 VERSION INFO
-ST2DOCS_VERSION_FILE="version.txt"
-VERSION_STR="${DEV_VERSION}"
+# SET ST2 VERSION INFO
+VERSION_FILE="version.txt"
+VERSION_STR="${VERSION}"
 
-VERSION_STR_MATCH=`grep "${DEV_VERSION}" ${ST2DOCS_VERSION_FILE} || true`
+VERSION_STR_MATCH=`grep "${VERSION_STR}" ${VERSION_FILE} || true`
 if [[ -z "${VERSION_STR_MATCH}" ]]; then
-    echo "${DEV_VERSION}" > ${ST2DOCS_VERSION_FILE}
+    echo "${VERSION}" > ${VERSION_FILE}
 
-    VERSION_STR_MATCH=`grep "${DEV_VERSION}" ${ST2DOCS_VERSION_FILE} || true`
+    VERSION_STR_MATCH=`grep "${VERSION_STR}" ${VERSION_FILE} || true`
     if [[ -z "${VERSION_STR_MATCH}" ]]; then
-        >&2 echo "ERROR: Unable to update the st2 version in ${ST2DOCS_VERSION_FILE}."
+        >&2 echo "ERROR: Unable to update the version in ${VERSION_FILE}."
         exit 1
     fi
 fi
 
 MODIFIED=`git status | grep modified || true`
 if [[ ! -z "${MODIFIED}" ]]; then
-    git add ${ST2DOCS_VERSION_FILE}
-    git commit -qm "Update version info for development - ${DEV_VERSION}"
+    git add -A
+    git commit -qm "Update version to ${VERSION}"
     git push origin ${BRANCH} -q
 fi
 

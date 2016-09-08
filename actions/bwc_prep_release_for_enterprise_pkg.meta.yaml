@@ -3,7 +3,7 @@ name: bwc_prep_release_for_enterprise_pkg
 description: Prepare the bwc (st2 enterprise) packaging repo for release
 enabled: true
 runner_type: remote-shell-script
-entry_point: bwc_prep_release_for_enterprise_pkg.sh
+entry_point: bwc_prep_release_for_pkg_suite.sh
 parameters:
     project:
         type: string

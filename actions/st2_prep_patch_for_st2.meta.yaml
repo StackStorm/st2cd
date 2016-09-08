@@ -1,6 +1,6 @@
 ---
-name: st2_prep_dev_for_st2
-description: Prepare the st2 repo for next iteration of development
+name: st2_prep_patch_for_st2
+description: Prepare the st2 repo for patch release
 enabled: true
 runner_type: remote-shell-script
 entry_point: st2_chg_ver_for_st2.sh
@@ -12,7 +12,7 @@ parameters:
         position: 0
     version:
         type: string
-        description: Version to use for the next release. Should include the patch e.g. 0.1.0
+        description: Version for the patch release. Should include the patch e.g. 0.1.0
         required: true
         position: 1
     fork:
@@ -23,12 +23,22 @@ parameters:
     branch:
         type: string
         description: Branch to update
-        default: master
+        default: v{{version.split('.')[0]}}.{{version.split('.')[1]}}
         position: 3
+    update_mistral:
+        type: boolean
+        description: If true, update mistralclient version in requirements.txt.
+        default: false
+        position: 4
+    update_changelog:
+        type: boolean
+        description: If true, update version in changelog.
+        default: false
+        position: 5
     local_repo:
         type: string
         description: Location where to clone the repo. Programmatically determined if not provided.
-        position: 4
+        position: 6
     dir:
         immutable: true
         default: /home/stanley/

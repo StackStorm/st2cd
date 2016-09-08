@@ -1,7 +1,7 @@
 ---
 name: bwc_stage_release_packages
 runner_type: mistral-v2
-description: Stage bwc packages for release
+description: Stage bwc packages for release. Run this only if circleci doesn't build automatically.
 enabled: true
 entry_point: workflows/bwc_stage_release_packages.yaml
 parameters:
@@ -9,15 +9,25 @@ parameters:
         type: string
         description: Version to use for the release. Should include the patch e.g. 0.1.0
         required: true
+    projects:
+        type: array
+        items:
+            type: string
+            enum:
+                - bwc-cli
+                - bwc-enterprise-package
+                - bwc-ipfabric-packs
+                - bwc-ipfabric-suite-packages
+                - bwc-topology
+                - bwc-ui
+                - st2-enterprise-auth-backend-ldap
+        description: The list of projects to stage release.
+        required: true
     wait:
         type: boolean
         description: If true, then wait until package jobs are completed.
-        default: true
-    test:
-        type: boolean
-        description: If true, then run e2e tests after packages are built.
         default: false
     workflow:
-        default: st2cd.bwc_stage_release_packages.main
+        default: st2cd.st2_stage_release_packages.main
         immutable: true
         type: string

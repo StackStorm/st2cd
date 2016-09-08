@@ -1,6 +1,6 @@
 version: '2.0'
-st2cd.bwc_prep_dev:
-    description: Prepare bwc for next iteration of development.
+st2cd.bwc_prep_patch:
+    description: Prepare bwc for patch release.
     input:
         - version
         - fork
@@ -8,7 +8,6 @@ st2cd.bwc_prep_dev:
         - cwd
 
     vars:
-        dev_version: <% $.version.split('.')[0] + '.' + $.version.split('.')[1] + 'dev' %>
         local_repo_sfx: null
 
     task-defaults:
@@ -41,43 +40,22 @@ st2cd.bwc_prep_dev:
 
         prep:
             on-complete:
-                - prep_bwc_enterprise_pkg
-        prep_bwc_enterprise_pkg:
-            action: st2cd.bwc_prep_dev_for_enterprise_pkg
-            input:
-                project: bwc-enterprise-package
-                version: <% $.dev_version %>
-                fork: <% $.fork %>
-                local_repo: <% 'bwc_enterprise_package_' + $.local_repo_sfx %>
-                hosts: <% $.host %>
-                cwd: <% $.cwd %>
-            on-success:
                 - prep_st2enterprise_ldap
         prep_st2enterprise_ldap:
-            action: st2cd.st2_prep_dev_for_enterprise_ldap
+            action: st2cd.st2_prep_patch_for_enterprise_ldap
             input:
                 project: st2-enterprise-auth-backend-ldap
-                version: <% $.dev_version %>
+                version: <% $.version %>
                 fork: <% $.fork %>
                 local_repo: <% 'st2enterprise_auth_ldap_' + $.local_repo_sfx %>
                 hosts: <% $.host %>
                 cwd: <% $.cwd %>
             on-success:
-                - prep_bwc_ipfabric_suite
-        prep_bwc_ipfabric_suite:
-            action: st2cd.bwc_prep_dev_for_bwc_ipfabric_suite
-            input:
-                version: <% $.dev_version %>
-                fork: <% $.fork %>
-                local_repo: <% 'bwc_ipfabric_suite_' + $.local_repo_sfx %>
-                hosts: <% $.host %>
-                cwd: <% $.cwd %>
-            on-success:
                 - prep_bwc_ipfabric_packs
         prep_bwc_ipfabric_packs:
-            action: st2cd.bwc_prep_dev_for_bwc_ipfabric_packs
+            action: st2cd.bwc_prep_patch_for_bwc_ipfabric_packs
             input:
-                version: <% $.dev_version %>
+                version: <% $.version %>
                 fork: <% $.fork %>
                 local_repo: <% 'bwc_ipfabric_packs_' + $.local_repo_sfx %>
                 hosts: <% $.host %>
@@ -85,9 +63,9 @@ st2cd.bwc_prep_dev:
             on-success:
                 - prep_bwc_topology
         prep_bwc_topology:
-            action: st2cd.bwc_prep_dev_for_bwc_topology
+            action: st2cd.bwc_prep_patch_for_bwc_topology
             input:
-                version: <% $.dev_version %>
+                version: <% $.version %>
                 fork: <% $.fork %>
                 local_repo: <% 'bwc_topology_' + $.local_repo_sfx %>
                 hosts: <% $.host %>
@@ -95,9 +73,9 @@ st2cd.bwc_prep_dev:
             on-success:
                 - prep_bwc_cli
         prep_bwc_cli:
-            action: st2cd.bwc_prep_dev_for_bwc_cli
+            action: st2cd.bwc_prep_patch_for_bwc_cli
             input:
-                version: <% $.dev_version %>
+                version: <% $.version %>
                 fork: <% $.fork %>
                 local_repo: <% 'bwc_cli_' + $.local_repo_sfx %>
                 hosts: <% $.host %>

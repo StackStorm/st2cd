@@ -1,18 +1,18 @@
 ---
-name: st2_prep_dev_for_st2
-description: Prepare the st2 repo for next iteration of development
+name: bwc_prep_release_for_pkg_suite
+description: Prepare any bwc packaging suite repo for release
 enabled: true
 runner_type: remote-shell-script
-entry_point: st2_chg_ver_for_st2.sh
+entry_point: bwc_prep_release_for_pkg_suite.sh
 parameters:
     project:
         type: string
-        description: Project name for st2
-        default: st2
+        description: Project name for the package suite
+        required: true
         position: 0
     version:
         type: string
-        description: Version to use for the next release. Should include the patch e.g. 0.1.0
+        description: Version to use for the release. Should include the patch e.g. 0.1.0
         required: true
         position: 1
     fork:
@@ -20,15 +20,10 @@ parameters:
         description: Fork to use
         default: StackStorm
         position: 2
-    branch:
-        type: string
-        description: Branch to update
-        default: master
-        position: 3
     local_repo:
         type: string
         description: Location where to clone the repo. Programmatically determined if not provided.
-        position: 4
+        position: 3
     dir:
         immutable: true
         default: /home/stanley/

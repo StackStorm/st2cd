@@ -1,14 +1,14 @@
 ---
-name: st2_prep_dev_for_st2
-description: Prepare the st2 repo for next iteration of development
+name: bwc_chg_ver_for_bwc_cli
+description: Change the version for the bwc cli repo
 enabled: true
 runner_type: remote-shell-script
-entry_point: st2_chg_ver_for_st2.sh
+entry_point: bwc_chg_ver_for_bwc_cli.sh
 parameters:
     project:
         type: string
-        description: Project name for st2
-        default: st2
+        description: Project name for bwc cli
+        default: bwc-cli
         position: 0
     version:
         type: string

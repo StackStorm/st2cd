@@ -45,7 +45,7 @@ if [[ -z "${NEW_VERSION_STR_MATCH}" ]]; then
 
     NEW_VERSION_STR_MATCH=`grep "${NEW_VERSION_STR}" ${VERSION_FILE} || true`
     if [[ -z "${NEW_VERSION_STR_MATCH}" ]]; then
-        >&2 echo "ERROR: Unable to update the st2 version in ${VERSION_FILE}."
+        >&2 echo "ERROR: Unable to update the version in ${VERSION_FILE}."
         exit 1
     fi
 fi
@@ -53,7 +53,7 @@ fi
 MODIFIED=`git status | grep modified || true`
 if [[ ! -z "${MODIFIED}" ]]; then
     git add ${VERSION_FILE}
-    git commit -qm "Update version info for release - ${VERSION}"
+    git commit -qm "Update version to ${VERSION}"
     git push origin ${BRANCH} -q
 fi
 
