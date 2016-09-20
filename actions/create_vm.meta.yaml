@@ -47,6 +47,7 @@
         - "F20"
         - "F21"
         - "UBUNTU14"
+        - "UBUNTU16"
     notification_channel:
       type: "string"
       description: "used by rule with actiontrigger"

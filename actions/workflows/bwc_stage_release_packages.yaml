@@ -21,6 +21,7 @@ workflows:
                 RHEL6: el6
                 RHEL7: el7
                 UBUNTU14: u14
+                UBUNTU16: u16
         tasks:
             init:
                 action: core.local
