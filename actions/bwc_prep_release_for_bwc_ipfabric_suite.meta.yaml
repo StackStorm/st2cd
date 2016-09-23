@@ -3,7 +3,7 @@ name: bwc_prep_release_for_bwc_ipfabric_suite
 description: Prepare the bwc ip fabric suite repo for release
 enabled: true
 runner_type: remote-shell-script
-entry_point: bwc_prep_release_for_bwc_ipfabric_suite.sh
+entry_point: bwc_prep_release_for_pkg_suite.sh
 parameters:
     project:
         type: string

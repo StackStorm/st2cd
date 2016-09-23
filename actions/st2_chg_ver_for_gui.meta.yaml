@@ -1,18 +1,22 @@
 ---
-name: st2_prep_dev_for_st2
-description: Prepare the st2 repo for next iteration of development
+name: st2_chg_ver_for_gui
+description: Change the version for the GUI repo
 enabled: true
 runner_type: remote-shell-script
-entry_point: st2_chg_ver_for_st2.sh
+entry_point: st2_chg_ver_for_gui.sh
 parameters:
     project:
         type: string
         description: Project name for st2
-        default: st2
+        required: true
+        enum:
+            - st2chatops
+            - st2flow
+            - st2web
         position: 0
     version:
         type: string
-        description: Version to use for the next release. Should include the patch e.g. 0.1.0
+        description: Version to update to. Should include the patch e.g. 0.1.0
         required: true
         position: 1
     fork:

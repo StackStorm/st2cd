@@ -4,13 +4,19 @@ set -e
 PROJECT=$1
 VERSION=$2
 FORK=$3
-LOCAL_REPO=$4
+BRANCH=$4
+LOCAL_REPO=$5
 GIT_REPO="git@github.com:${FORK}/${PROJECT}.git"
-SHORT_VERSION=`echo ${VERSION} | cut -d "." -f1-2`
-DEV_VERSION="${SHORT_VERSION}dev"
-BRANCH="master"
 CWD=`pwd`
 
+
+# CHECK IF BRANCH EXISTS
+BRANCH_EXISTS=`git ls-remote --heads ${GIT_REPO} | grep refs/heads/${BRANCH} || true`
+
+if [[ -z "${BRANCH_EXISTS}" ]]; then
+    >&2 echo "ERROR: Branch ${BRANCH} does not exist in ${GIT_REPO}."
+    exit 1
+fi
 
 # GIT CLONE AND BRANCH
 if [[ -z ${LOCAL_REPO} ]]; then
@@ -25,24 +31,24 @@ if [ -d "${LOCAL_REPO}" ]; then
     rm -rf ${LOCAL_REPO}
 fi
 
-git clone ${GIT_REPO} ${LOCAL_REPO}
+git clone -b ${BRANCH} --single-branch ${GIT_REPO} ${LOCAL_REPO}
 
 cd ${LOCAL_REPO}
 echo "Currently at directory `pwd`..."
 
 
-# SET DEV ST2 VERSION INFO
-VERSION_FILE="st2auth_enterprise_ldap_backend/__init__.py"
-VERSION_STR="__version__ = '${DEV_VERSION}'"
+# SET ST2 VERSION INFO
+VERSION_FILE="package.json"
+VERSION_STR="\"st2_version\": \"${VERSION}\","
 
 VERSION_STR_MATCH=`grep "${VERSION_STR}" ${VERSION_FILE} || true`
 if [[ -z "${VERSION_STR_MATCH}" ]]; then
-    echo "Setting version in ${VERSION_FILE} to ${DEV_VERSION}..."
-    sed -i -e "s/\(__version__ = \).*/\1'${DEV_VERSION}'/" ${VERSION_FILE}
+    echo "Setting version in ${VERSION_FILE} to ${VERSION}..."
+    sed -i -e "s/\(\"st2_version\":[ ]*\).*/\1\"${VERSION}\",/" ${VERSION_FILE}
 
     VERSION_STR_MATCH=`grep "${VERSION_STR}" ${VERSION_FILE} || true`
     if [[ -z "${VERSION_STR_MATCH}" ]]; then
-        >&2 echo "ERROR: Unable to update the st2 version in ${VERSION_FILE}."
+        >&2 echo "ERROR: Unable to update the version in ${VERSION_FILE}."
         exit 1
     fi
 fi
@@ -50,7 +56,7 @@ fi
 MODIFIED=`git status | grep modified || true`
 if [[ ! -z "${MODIFIED}" ]]; then
     git add ${VERSION_FILE}
-    git commit -qm "Update version info for development - ${DEV_VERSION}"
+    git commit -qm "Update version to ${VERSION}"
     git push origin ${BRANCH} -q
 fi
 

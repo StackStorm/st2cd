@@ -3,7 +3,7 @@ name: bwc_prep_dev_for_bwc_ipfabric_suite
 description: Prepare the bwc ip fabric suite repo for next iteration of development
 enabled: true
 runner_type: remote-shell-script
-entry_point: bwc_prep_dev_for_bwc_ipfabric_suite.sh
+entry_point: bwc_prep_dev_for_pkg_suite.sh
 parameters:
     project:
         type: string

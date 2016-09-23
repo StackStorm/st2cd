@@ -1,0 +1,22 @@
+---
+name: st2_prep_patch
+runner_type: mistral-v2
+description: Prepare st2 for patch release
+enabled: true
+entry_point: workflows/st2_prep_patch.yaml
+parameters:
+    version:
+        type: string
+        description: Version to use for the patch release. Should include the patch e.g. 0.1.0
+        required: true
+    fork:
+        type: string
+        description: Fork to use
+        default: StackStorm    
+    host:
+        type: string
+        description: Host where to run the release process.
+    cwd:
+        type: string
+        description: Working directory where remote shell scripts use
+        default: /home/stanley

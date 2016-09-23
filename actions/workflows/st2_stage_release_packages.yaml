@@ -7,14 +7,8 @@ workflows:
     main:
         input:
             - version
+            - projects
             - wait
-            - test
-            - projects:
-                - st2
-                - st2chatops
-                - st2web
-                - st2flow
-                - st2-packages
             - distros:
                 RHEL6: el6
                 RHEL7: el7
@@ -45,16 +39,6 @@ workflows:
                 input:
                     project: stackstorm/<% $.package_job[0] %>
                     build_number: <% str($.package_job[1]) %>
-                on-success:
-                    - test_all: <% $.test %>
-            test_all:
-                with-items: distro in <% $.distros.items() %>
-                action: st2ci.st2_pkg_e2e_test
-                input:
-                    hostname: st2-pkg-staging-stable-<% $.distro[1] %>
-                    distro: <% $.distro[0] %>
-                    pkg_env: staging
-                    release: stable
 
 
     wait_for_package:

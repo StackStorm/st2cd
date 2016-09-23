@@ -5,7 +5,7 @@
   enabled: true
   entry_point: "create_docs_test_rule.py"
   parameters:
-    st2-base-url:
+    st2_base_url:
       type: "string"
       description: "st2 base url."
       default: "http://localhost:9101/v1/"
