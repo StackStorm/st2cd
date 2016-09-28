@@ -1,9 +1,9 @@
 ---
-name: bwc_prep_release_for_enterprise_pkg
-description: Prepare the bwc (st2 enterprise) packaging repo for release
+name: bwc_prep_patch_for_enterprise_pkg
+description: Prepare the bwc (st2 enterprise) packaging repo for patch release
 enabled: true
 runner_type: remote-shell-script
-entry_point: bwc_prep_release_for_pkg_suite.sh
+entry_point: bwc_chg_ver_for_pkg_suite.sh
 parameters:
     project:
         type: string
@@ -12,7 +12,7 @@ parameters:
         position: 0
     version:
         type: string
-        description: Version to use for the release. Should include the patch e.g. 0.1.0
+        description: Version to use for the patch release. Should include the patch e.g. 0.1.0
         required: true
         position: 1
     fork:
@@ -20,10 +20,15 @@ parameters:
         description: Fork to use
         default: StackStorm
         position: 2
+    branch:
+        type: string
+        description: Branch to update
+        default: master
+        position: 3
     local_repo:
         type: string
         description: Location where to clone the repo. Programmatically determined if not provided.
-        position: 3
+        position: 4
     dir:
         immutable: true
         default: /home/stanley/
