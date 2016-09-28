@@ -4,12 +4,19 @@ set -e
 PROJECT=$1
 VERSION=$2
 FORK=$3
-LOCAL_REPO=$4
+BRANCH=$4
+LOCAL_REPO=$5
 GIT_REPO="git@github.com:${FORK}/${PROJECT}.git"
-SHORT_VERSION=`echo ${VERSION} | cut -d "." -f1-2`
-BRANCH="master"
 CWD=`pwd`
 
+
+# CHECK IF BRANCH EXISTS
+BRANCH_EXISTS=`git ls-remote --heads ${GIT_REPO} | grep refs/heads/${BRANCH} || true`
+
+if [[ -z "${BRANCH_EXISTS}" ]]; then
+    >&2 echo "ERROR: Branch ${BRANCH} does not exist in ${GIT_REPO}."
+    exit 1
+fi
 
 # GIT CLONE AND BRANCH
 if [[ -z ${LOCAL_REPO} ]]; then
@@ -24,7 +31,7 @@ if [ -d "${LOCAL_REPO}" ]; then
     rm -rf ${LOCAL_REPO}
 fi
 
-git clone ${GIT_REPO} ${LOCAL_REPO}
+git clone -b ${BRANCH} --single-branch ${GIT_REPO} ${LOCAL_REPO}
 
 cd ${LOCAL_REPO}
 echo "Currently at directory `pwd`..."
@@ -34,9 +41,9 @@ echo "Currently at directory `pwd`..."
 VERSION_FILE="update-versions"
 VERSION_STR=`cat ${VERSION_FILE}`
 VERSION_ARRAY=(${VERSION_STR})
-OLD_DEV_VERSION=${VERSION_ARRAY[0]}
+DEV_VERSION=${VERSION_ARRAY[0]}
 OLD_VERSION_STR="${VERSION_STR}"
-NEW_VERSION_STR="${OLD_DEV_VERSION} ${VERSION}"
+NEW_VERSION_STR="${DEV_VERSION} ${VERSION}"
 
 NEW_VERSION_STR_MATCH=`grep "${NEW_VERSION_STR}" ${VERSION_FILE} || true`
 if [[ -z "${NEW_VERSION_STR_MATCH}" ]]; then

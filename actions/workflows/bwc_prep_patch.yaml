@@ -40,6 +40,17 @@ st2cd.bwc_prep_patch:
 
         prep:
             on-complete:
+                - prep_bwc_enterprise_pkg
+        prep_bwc_enterprise_pkg:
+            action: st2cd.bwc_prep_patch_for_enterprise_pkg
+            input:
+                project: bwc-enterprise-package
+                version: <% $.version %>
+                fork: <% $.fork %>
+                local_repo: <% 'bwc_enterprise_package_' + $.local_repo_sfx %>
+                hosts: <% $.host %>
+                cwd: <% $.cwd %>
+            on-success:
                 - prep_st2enterprise_ldap
         prep_st2enterprise_ldap:
             action: st2cd.st2_prep_patch_for_enterprise_ldap
@@ -48,6 +59,16 @@ st2cd.bwc_prep_patch:
                 version: <% $.version %>
                 fork: <% $.fork %>
                 local_repo: <% 'st2enterprise_auth_ldap_' + $.local_repo_sfx %>
+                hosts: <% $.host %>
+                cwd: <% $.cwd %>
+            on-success:
+                - prep_bwc_ipfabric_suite
+        prep_bwc_ipfabric_suite:
+            action: st2cd.bwc_prep_patch_for_bwc_ipfabric_suite
+            input:
+                version: <% $.version %>
+                fork: <% $.fork %>
+                local_repo: <% 'bwc_ipfabric_suite_' + $.local_repo_sfx %>
                 hosts: <% $.host %>
                 cwd: <% $.cwd %>
             on-success:
