@@ -101,6 +101,14 @@ st2cd.bwc_prep_patch:
                 local_repo: <% 'bwc_cli_' + $.local_repo_sfx %>
                 hosts: <% $.host %>
                 cwd: <% $.cwd %>
+            on-success:
+                - prep_bwc_ui
+        prep_bwc_ui:
+            action: st2cd.bwc_stage_release_packages
+            input:
+                version: <% $.version %>
+                projects:
+                    - bwc-ui
 
 
         cleanup_on_failure:
