@@ -93,17 +93,6 @@ st2cd.st2_finalize_release:
                 hosts: <% $.host %>
                 cwd: <% $.cwd %>
             on-success:
-                - prep_st2_next_patch
-        prep_st2_next_patch:
-            action: st2cd.st2_prep_patch_release
-            input:
-                project: st2
-                version: <% $.next_patch_version %>
-                fork: <% $.fork %>
-                local_repo: <% 'st2_' + $.local_repo_sfx %>
-                hosts: <% $.host %>
-                cwd: <% $.cwd %>
-            on-success:
                 - mistral_tag_release
         mistral_tag_release:
             action: st2cd.mistral_tag_release
