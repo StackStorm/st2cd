@@ -9,7 +9,7 @@ trigger:
   parameters:
     timezone: US/Pacific
     hour: 9
-    minute: 0
+    minute: 0 
     second: 0
 
 criteria: {}

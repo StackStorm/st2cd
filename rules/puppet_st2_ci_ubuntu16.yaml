@@ -18,3 +18,4 @@
             revision: "{{trigger.body.head_commit.id}}"
             hostname: "st2wp-u16-{{trigger.body.head_commit.id | truncate(8, False, '')}}"
             distro: "UBUNTU16"
+            

@@ -4,12 +4,12 @@
   description: "Upgrades an existing st2 installation"
   enabled: true
   entry_point: "workflows/st2_upgrade_ubuntu16.yaml"
-  parameters:
-    hostname:
+  parameters: 
+    hostname: 
       type: "string"
       description: "Host to upgrade st2 on"
       required: true
-    action:
+    action: 
       type: "string"
       description: "Action to run after upgrade"
       default: "core.local"
