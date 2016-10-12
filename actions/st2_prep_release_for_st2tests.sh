@@ -43,7 +43,6 @@ echo "Currently at directory `pwd`..."
 echo "Creating new branch ${BRANCH}..."
 git checkout -b ${BRANCH} origin/master
 
-
 ST2TESTS_VERSION_FILE="version.txt"
 ST2TESTS_VERSION_STR="${SHORT_VERSION}"
 
@@ -62,8 +61,6 @@ fi
 git add ${ST2TESTS_VERSION_FILE}
 git commit -qm "Update version info for release - ${VERSION}"
 git push origin ${BRANCH} -q
-
-
 
 
 # CLEANUP
