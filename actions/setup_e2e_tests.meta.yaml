@@ -5,10 +5,10 @@ enabled: true
 runner_type: remote-shell-script
 entry_point: setup_e2e_tests.sh
 parameters:
-  version:
+  branch:
     type: string
     default: "master"
-    description: Version used for the release. Should include the patch e.g. 0.1.0
+    description: Branch used for the release. Should include the patch e.g. 0.1.0
     required: true
     position: 0
   sudo:
