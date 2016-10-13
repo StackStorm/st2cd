@@ -24,7 +24,7 @@ parameters:
     st2_password:
         type: string
         description: Password to authenticate to the st2 server
-    Version:
+    version:
         type: string
         description: Version used for the release. Should include the patch e.g. 0.1.0
         required: true
