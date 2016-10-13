@@ -1,7 +1,8 @@
 #!/bin/bash
 set -e
 
-VERSION=$1
+BRANCH=$1
+SHORT_BRANCH=`echo ${BRANCH} | cut -d "." -f1-2`
 
 # Install OS specific pre-reqs (Better moved to puppet at some point.)
 DEBTEST=`lsb_release -a 2> /dev/null | grep Distributor | awk '{print $3}'`
@@ -32,16 +33,16 @@ sudo bash -c "cat <<keyvalue_options >>${ST2_CONF}
 encryption_key_path=${CRYPTO_KEY_FILE}
 keyvalue_options"
 
-if [[ ${VERSION} == "master" ]]; then
-    echo "Installing st2tests from '${VERSION}' branch at location: `pwd`..."
-    git clone -b ${VERSION} --depth 1 https://github.com/StackStorm/st2tests.git
+if [[ ${SHORT_BRANCH} == "master" ]]; then
+    echo "Installing st2tests from '${SHORT_BRANCH}' branch at location: `pwd`..."
+    git clone -b ${SHORT_BRANCH} --depth 1 https://github.com/StackStorm/st2tests.git
     echo "Installing Packs: tests, asserts, fixtures, webui..."
-    st2 run packs.install subtree=true branch=${VERSION} repo_url=StackStorm/st2tests packs=tests,asserts,fixtures,webui
+    st2 run packs.install subtree=true branch=${SHORT_BRANCH} repo_url=StackStorm/st2tests packs=tests,asserts,fixtures,webui
 else
-   echo "Installing st2tests from 'v${VERSION}' branch at location: `pwd`"
-   git clone -b v${VERSION} --depth 1 https://github.com/StackStorm/st2tests.git
+   echo "Installing st2tests from 'v${SHORT_BRANCH}' branch at location: `pwd`"
+   git clone -b v${SHORT_BRANCH} --depth 1 https://github.com/StackStorm/st2tests.git
     echo "Installing Packs: tests, asserts, fixtures, webui..."
-   st2 run packs.install subtree=true branch=v${VERSION} repo_url=StackStorm/st2tests packs=tests,asserts,fixtures,webui
+   st2 run packs.install subtree=true branch=v${SHORT_BRANCH} repo_url=StackStorm/st2tests packs=tests,asserts,fixtures,webui
 fi
 
 sudo cp -R /usr/share/doc/st2/examples /opt/stackstorm/packs/
