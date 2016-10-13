@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+VERSION=$1
+
 # Install OS specific pre-reqs (Better moved to puppet at some point.)
 DEBTEST=`lsb_release -a 2> /dev/null | grep Distributor | awk '{print $3}'`
 RHTEST=`cat /etc/redhat-release 2> /dev/null | sed -e "s~\(.*\)release.*~\1~g"`
@@ -30,11 +32,23 @@ sudo bash -c "cat <<keyvalue_options >>${ST2_CONF}
 encryption_key_path=${CRYPTO_KEY_FILE}
 keyvalue_options"
 
-st2 run packs.install subtree=true repo_url=StackStorm/st2tests packs=tests,asserts,fixtures,webui
+if [[ ${VERSION} == "master" ]]; then
+    echo "Installing st2tests from '${VERSION}' branch at location: `pwd`..."
+    git clone -b ${VERSION} --depth 1 https://github.com/StackStorm/st2tests.git
+    echo "Installing Packs: tests, asserts, fixtures, webui..."
+    st2 run packs.install subtree=true branch=${VERSION} repo_url=StackStorm/st2tests packs=tests,asserts,fixtures,webui
+else
+   echo "Installing st2tests from 'v${VERSION}' branch at location: `pwd`"
+   git clone -b v${VERSION} --depth 1 https://github.com/StackStorm/st2tests.git
+    echo "Installing Packs: tests, asserts, fixtures, webui..."
+   st2 run packs.install subtree=true branch=v${VERSION} repo_url=StackStorm/st2tests packs=tests,asserts,fixtures,webui
+fi
+
 sudo cp -R /usr/share/doc/st2/examples /opt/stackstorm/packs/
 st2 run packs.setup_virtualenv packs=examples
 st2ctl reload
-git clone https://github.com/StackStorm/st2tests.git
+
+# Robotframework requirements
 cd st2tests
 virtualenv venv
 . venv/bin/activate
