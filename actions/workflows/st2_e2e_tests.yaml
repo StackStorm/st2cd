@@ -12,7 +12,7 @@ workflows:
             - protocol
             - st2_username
             - st2_password
-            - branch
+            - version
 
         tasks:
             init:
@@ -43,7 +43,7 @@ workflows:
                 input:
                     hosts: <% $.host_ip %>
                     env: <% $.st2_cli_env %>
-                    branch: <% $.branch %>
+                    version: <% $.version %>
                     timeout: 180
                 on-success:
                     - run_basic_tests
