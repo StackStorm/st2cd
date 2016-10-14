@@ -9,7 +9,7 @@ trigger:
   parameters:
     timezone: US/Pacific
     hour: 9
-    minute: 0 
+    minute: 0
     second: 0
 
 criteria: {}
@@ -21,5 +21,6 @@ action:
     distro: UBUNTU14
     pkg_env: production
     release: stable
+    version: "2.0"
     enterprise: true
     enterprise_key: "{{system.enterprise_key_prd_stable}}"

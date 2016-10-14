@@ -9,7 +9,7 @@ trigger:
   parameters:
     timezone: US/Pacific
     hour: 6
-    minute: 0 
+    minute: 0
     second: 0
 
 criteria: {}
@@ -21,3 +21,4 @@ action:
     distro: RHEL7
     pkg_env: production
     release: stable
+    version: "2.0"
