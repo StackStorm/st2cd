@@ -40,7 +40,7 @@ st2cd.st2_prep_release:
             on-complete:
                 - prep_st2
         prep_st2:
-            action: st2cd.st2_prep_release_for_st2            
+            action: st2cd.st2_prep_release_for_st2
             input:
                 project: st2
                 version: <% $.version %>
@@ -57,6 +57,17 @@ st2cd.st2_prep_release:
                 version: <% $.version %>
                 fork: <% $.fork %>
                 local_repo: <% 'st2docs_' + $.local_repo_sfx %>
+                hosts: <% $.host %>
+                cwd: <% $.cwd %>
+            on-success:
+                - prep_st2tests
+        prep_st2tests:
+            action: st2cd.st2_prep_release_for_st2tests
+            input:
+                project: st2tests
+                version: <% $.version %>
+                fork: <% $.fork %>
+                local_repo: <% 'st2tests_' + $.local_repo_sfx %>
                 hosts: <% $.host %>
                 cwd: <% $.cwd %>
             on-success:

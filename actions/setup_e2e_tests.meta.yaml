@@ -5,6 +5,11 @@ enabled: true
 runner_type: remote-shell-script
 entry_point: setup_e2e_tests.sh
 parameters:
+  version:
+    type: string
+    default: "master"
+    description: Version used for the release. Should include the patch e.g. 0.1.0
+    position: 0
   sudo:
     immutable: true
     default: false
