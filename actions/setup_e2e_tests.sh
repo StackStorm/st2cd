@@ -50,6 +50,7 @@ st2 run packs.setup_virtualenv packs=examples
 st2ctl reload
 
 # Robotframework requirements
+pip install virtualenv
 cd st2tests
 virtualenv venv
 . venv/bin/activate
