@@ -48,7 +48,6 @@ st2 run packs.setup_virtualenv packs=examples,tests,asserts,fixtures,webui
 st2ctl reload --register-all
 
 # Robotframework requirements
-pip install virtualenv
 cd st2tests
 virtualenv venv
 . venv/bin/activate
