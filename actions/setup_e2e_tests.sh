@@ -36,18 +36,16 @@ keyvalue_options"
 if [[ ${BRANCH} == "master" ]]; then
     echo "Installing st2tests from '${BRANCH}' branch at location: `pwd`..."
     git clone -b ${BRANCH} --depth 1 https://github.com/StackStorm/st2tests.git
-    echo "Installing Packs: tests, asserts, fixtures, webui..."
-    st2 run packs.install subtree=true branch=${BRANCH} repo_url=StackStorm/st2tests packs=tests,asserts,fixtures,webui
 else
    echo "Installing st2tests from 'v${BRANCH}' branch at location: `pwd`"
    git clone -b v${BRANCH} --depth 1 https://github.com/StackStorm/st2tests.git
-    echo "Installing Packs: tests, asserts, fixtures, webui..."
-   st2 run packs.install subtree=true branch=v${BRANCH} repo_url=StackStorm/st2tests packs=tests,asserts,fixtures,webui
 fi
+echo "Installing Packs: tests, asserts, fixtures, webui..."
+sudo cp -R st2tests/packs/* /opt/stackstorm/packs/
 
 sudo cp -R /usr/share/doc/st2/examples /opt/stackstorm/packs/
-st2 run packs.setup_virtualenv packs=examples
-st2ctl reload
+st2 run packs.setup_virtualenv packs=examples,tests,asserts,fixtures,webui
+st2ctl reload --register-all
 
 # Robotframework requirements
 pip install virtualenv
