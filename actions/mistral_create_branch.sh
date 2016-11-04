@@ -39,15 +39,33 @@ do
     fi
 done
 
+
+
 echo "Creating branch for mistralclient..."
 cd ${REPO_CLIENT}
 ${GIT} checkout -b ${BRANCH}
+
+VERSION_FILE="mistralclient/__init__.py"
+echo "Setting version in ${VERSION_FILE} to ${VERSION}..."
+echo "__version__ = '${VERSION}'" > ${VERSION_FILE}
+${GIT} add ${VERSION_FILE}
+
+VERSION_FILE="setup.cfg"
+echo "Setting version in ${VERSION_FILE} to ${VERSION}..."
+sed -i "s/^name = python-mistralclient/name = python-mistralclient\nversion = ${VERSION}/g" ${VERSION_FILE}
+${GIT} add ${VERSION_FILE}
+
+${GIT} commit -qm "Update version info for release - ${VERSION}"
 ${GIT} push origin ${BRANCH} -q
+
+
 
 echo "Creating branch for st2mistral..."
 cd ${REPO_ACTION}
 ${GIT} checkout -b ${BRANCH}
 ${GIT} push origin ${BRANCH} -q
+
+
 
 echo "Creating branch for mistral..."
 cd ${REPO_MAIN}
