@@ -64,6 +64,17 @@ st2cd.st2_prep_patch:
                 hosts: <% $.host %>
                 cwd: <% $.cwd %>
             on-success:
+                - prep_mistralclient
+        prep_mistralclient:
+            action: st2cd.st2_prep_patch_for_mistralclient
+            input:
+                project: python-mistralclient
+                version: <% $.version %>
+                fork: <% $.fork %>
+                local_repo: <% 'mistralclient_' + $.local_repo_sfx %>
+                hosts: <% $.host %>
+                cwd: <% $.cwd %>
+            on-success:
                 - prep_st2docs
         prep_st2docs:
             action: st2cd.st2_prep_patch_for_st2docs
