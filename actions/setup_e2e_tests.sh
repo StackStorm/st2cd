@@ -49,6 +49,9 @@ st2ctl reload --register-all
 
 # Robotframework requirements
 cd st2tests
+sudo apt-get -q -y install python-pip python-dev build-essential
+sudo pip install --upgrade pip
+sudo pip install --upgrade virtualenv
 virtualenv venv
 . venv/bin/activate
 pip install -r robotfm_tests/test-requirements.txt
