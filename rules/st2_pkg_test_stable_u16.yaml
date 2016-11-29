@@ -1,0 +1,23 @@
+---
+name: st2_pkg_test_stable_u16
+pack: st2cd
+description: Test stable packages
+enabled: true
+
+trigger:
+  type: core.st2.CronTimer
+  parameters:
+    timezone: US/Pacific
+    hour: 6
+    minute: 0
+    second: 0
+
+criteria: {}
+
+action:
+  ref: st2ci.st2_pkg_e2e_test
+  parameters:
+    hostname: st2-pkg-stable-u16
+    distro: UBUNTU16
+    pkg_env: production
+    release: stable
