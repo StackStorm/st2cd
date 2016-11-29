@@ -67,24 +67,24 @@ workflows:
                 input:
                     host: <% $.host_ip %>
                     env: <% $.st2_cli_env %>
-                on-success:
-                    - robot_docs_tests
-            robot_docs_tests:
-                action: core.remote
-                input:
-                    hosts: <% $.host_ip %>
-                    env: <% $.st2_cli_env %>
-                    cmd: cd /tmp/st2tests && source venv/bin/activate && pybot robotfm_tests/docs/
-                    timeout: 500
-                on-success:
-                    - robot_mistral_tests
-            robot_mistral_tests:
-                action: core.remote
-                input:
-                    hosts: <% $.host_ip %>
-                    env: <% $.st2_cli_env %>
-                    cmd: cd /tmp/st2tests && source venv/bin/activate && pybot robotfm_tests/mistral/
-                    timeout: 300
+                # on-success:
+                #    - robot_docs_tests
+            # robot_docs_tests:
+                # action: core.remote
+                # input:
+                #     hosts: <% $.host_ip %>
+                #     env: <% $.st2_cli_env %>
+                #     cmd: cd /tmp/st2tests && source venv/bin/activate && pybot robotfm_tests/docs/
+                #     timeout: 500
+                # on-success:
+                #     - robot_mistral_tests
+            # robot_mistral_tests:
+                # action: core.remote
+                # input:
+                #     hosts: <% $.host_ip %>
+                #     env: <% $.st2_cli_env %>
+                #     cmd: cd /tmp/st2tests && source venv/bin/activate && pybot robotfm_tests/mistral/
+                #     timeout: 300
                 on-success:
                     - robot_chatopsCI_tests
             robot_chatopsCI_tests:
