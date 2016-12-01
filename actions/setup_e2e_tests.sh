@@ -58,8 +58,8 @@ virtualenv venv
 pip install -r robotfm_tests/test-requirements.txt
 
 # Add Slack Tokens
-echo 'xoxb-45889459620-YlodGSa0fsPqOnqVBkPGKyxG' > /opt/stackstorm/chatops/slackcat-abe.token
-echo 'xoxb-45631117332-JrjKkahcN3QKEJYMHvsCeCjv' > /opt/stackstorm/chatops/slack-grobgobglobgrod.token
+echo 'xoxb-45889459620-YlodGSa0fsPqOnqVBkPGKyxG' | sudo tee /opt/stackstorm/chatops/slackcat-abe.token
+echo 'xoxb-45631117332-JrjKkahcN3QKEJYMHvsCeCjv' | sudo tee /opt/stackstorm/chatops/slack-grobgobglobgrod.token
 
 # Restart st2 primarily reload the keyvalue configuration
 sudo st2ctl restart
