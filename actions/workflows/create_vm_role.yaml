@@ -135,14 +135,6 @@ st2cd.create_vm_role:
                 keyfile: <% $.keyfile %>
                 ssh_timeout: 30
                 retries: 10
-            on-success:
-                - puppet_bootstrap
-
-        puppet_bootstrap:
-            action: st2cd.puppet_bootstrap
-            input:
-                hosts: <% $.ec2_instance_private_ip %>
-                role: <% $.role %>
 
 
 
