@@ -11,10 +11,10 @@ RHTEST=`cat /etc/redhat-release 2> /dev/null | sed -e "s~\(.*\)release.*~\1~g"`
 if [[ -n "$RHTEST" ]]; then
   echo "*** Detected Distro is ${RHTEST} ***"
   sudo yum install -y bc
-  sudo yum install -y python-pip
+  sudo yum install -y python-pip wget
 elif [[ -n "$DEBTEST" ]]; then
   echo "*** Detected Distro is ${DEBTEST} ***"
-  sudo apt-get install -y bc
+  sudo apt-get install -y bc wget
   sudo apt-get -q -y install python-pip python-dev build-essential
 else
   echo "Unknown Operating System."
@@ -56,6 +56,7 @@ sudo pip install --upgrade virtualenv
 virtualenv venv
 . venv/bin/activate
 pip install -r robotfm_tests/test-requirements.txt
+
 
 # Restart st2 primarily reload the keyvalue configuration
 sudo st2ctl restart
