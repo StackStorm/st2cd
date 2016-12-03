@@ -35,6 +35,10 @@ sudo bash -c "cat <<keyvalue_options >>${ST2_CONF}
 encryption_key_path=${CRYPTO_KEY_FILE}
 keyvalue_options"
 
+# Reload required for testing st2 upgrade
+st2ctl reload --register-all
+
+# Install packs for testing
 if [[ ${BRANCH} == "master" ]]; then
     echo "Installing st2tests from '${BRANCH}' branch at location: `pwd`..."
     git clone -b ${BRANCH} --depth 1 https://github.com/StackStorm/st2tests.git
