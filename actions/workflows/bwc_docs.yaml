@@ -30,6 +30,7 @@
       publish:
         version: "{{version[build_server].stdout | replace('\n', '')}}"
       on-success: "make_bwcdocs"
+      on-failure: "clean_repo"
     -
       name: "make_bwcdocs"
       ref: "core.remote"
@@ -38,6 +39,7 @@
         timeout: 2000
         cmd: "cd {{repodir}} && make bwcdocs"
       on-success: "s3cmd_docs"
+      on-failure: "clean_repo"
     -
       name: "s3cmd_docs"
       ref: "st2cd.s3_docs"
@@ -48,6 +50,7 @@
         bucket: "{{docs_url}}"
         version: "/{{version}}/"
       on-success: "clean_repo"
+      on-failure: "clean_repo"
     -
       name: "clean_repo"
       ref: "st2cd.git_clean"
