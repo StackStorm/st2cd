@@ -73,8 +73,12 @@ if [ ! -e "${PYPIRC}" ]; then
 fi
 
 
-# Upload st2client to pypi
-cd ./${PROJECT}
+# Hack for cases where a git repo has multiple projects (i.e. st2/st2client)
+if [ "${REPO}" != "${PROJECT}" ]; then
+    cd ./${PROJECT}
+fi
+
+ 
 echo "Currently at directory `pwd`..."
 python setup.py sdist upload -r pypitest
 python setup.py sdist upload -r pypi
