@@ -73,8 +73,8 @@ if [ ! -e "${PYPIRC}" ]; then
 fi
 
 
-# Upload st2client to pypi
-cd ./${PROJECT}
+# Upload artifacts to pypi
+cd ./${LOCAL_REPO}
 echo "Currently at directory `pwd`..."
 python setup.py sdist upload -r pypitest
 python setup.py sdist upload -r pypi
