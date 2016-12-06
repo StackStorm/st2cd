@@ -14,7 +14,7 @@ parameters:
         items:
             type: string
             enum:
-                - bwc-cli
+                - bwc_cli
                 - bwc-enterprise-package
                 - bwc-ipfabric-packs
                 - bwc-ipfabric-suite-packages

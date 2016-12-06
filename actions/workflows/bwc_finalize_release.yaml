@@ -55,7 +55,7 @@ st2cd.bwc_finalize_release:
         push_bwc_client:
             action: st2cd.pypi_upload
             input:
-                repo: bwc-cli
+                repo: bwc_cli
                 version: <% $.version %>
                 fork: <% $.fork %>
                 local_repo: <% 'bwc_cli_' + $.local_repo_sfx %>

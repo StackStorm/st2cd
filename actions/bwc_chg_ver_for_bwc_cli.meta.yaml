@@ -8,7 +8,7 @@ parameters:
     project:
         type: string
         description: Project name for bwc cli
-        default: bwc-cli
+        default: bwc_cli
         position: 0
     version:
         type: string
