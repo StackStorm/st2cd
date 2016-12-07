@@ -46,7 +46,7 @@ st2cd.bwc_prep_dev:
             action: st2cd.bwc_prep_dev_for_enterprise_pkg
             input:
                 project: bwc-enterprise-package
-                version: <% $.dev_version %>
+                version: <% $.version %>
                 fork: <% $.fork %>
                 local_repo: <% 'bwc_enterprise_package_' + $.local_repo_sfx %>
                 hosts: <% $.host %>
@@ -67,7 +67,7 @@ st2cd.bwc_prep_dev:
         prep_bwc_ipfabric_suite:
             action: st2cd.bwc_prep_dev_for_bwc_ipfabric_suite
             input:
-                version: <% $.dev_version %>
+                version: <% $.version %>
                 fork: <% $.fork %>
                 local_repo: <% 'bwc_ipfabric_suite_' + $.local_repo_sfx %>
                 hosts: <% $.host %>
