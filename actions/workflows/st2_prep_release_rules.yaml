@@ -7,6 +7,9 @@ st2cd.st2_prep_release_rules:
         - host
         - cwd
 
+    vars:
+        local_repo_sfx: null
+
     task-defaults:
         on-error:
             - cleanup_on_failure: <% $.local_repo_sfx != null %>
