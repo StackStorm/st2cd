@@ -27,7 +27,6 @@ function git_repo {
         LOCAL_REPO=${PROJECT}_${CURRENT_TIMESTAMP}_${RANDOM_NUMBER}
     fi
 
-    ST2CI_BRANCH="feat/${LOCAL_REPO}_add_release_rules"
     echo "Cloning ${GIT_REPO} to ${LOCAL_REPO}..."
 
     if [ -d "${LOCAL_REPO}" ]; then
@@ -38,10 +37,6 @@ function git_repo {
 
     cd ${LOCAL_REPO}
     echo "Currently at directory `pwd`..."
-
-
-    git checkout -b ${ST2CI_BRANCH}
-    
 }
 
 function create_new_rules {
@@ -55,7 +50,7 @@ function update_new_rules {
 function git_finish {
     git add ./rules
     git commit -m "Adding/Updating rules for $VERSION release"
-    git push -u origin ${ST2CI_BRANCH}
+    git push
 }
 
 function clean_up {

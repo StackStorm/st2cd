@@ -7,11 +7,7 @@
 # bwc_docs_prod_{{version}}.yaml
 # st2_pkg_test_stable_{{os}}.yaml
 # st2_pkg_test_stable_{{os}}_enterprise.yaml
-
-# st2ci
-############################################
-# st2_pkg_build_{{version}}_on_pytest.yaml
-# set -e
+set -e
 
 PROJECT=$1
 FORK=$2
@@ -38,7 +34,6 @@ function git_repo {
         LOCAL_REPO=${PROJECT}_${CURRENT_TIMESTAMP}_${RANDOM_NUMBER}
     fi
 
-    ST2CD_BRANCH="feat/${LOCAL_REPO}_add_release_rules"
     echo "Cloning ${GIT_REPO} to ${LOCAL_REPO}..."
 
     if [ -d "${LOCAL_REPO}" ]; then
@@ -49,10 +44,6 @@ function git_repo {
 
     cd ${LOCAL_REPO}
     echo "Currently at directory `pwd`..."
-
-
-    git checkout -b ${ST2CD_BRANCH}
-    
 }
 
 function create_new_rules {
@@ -81,7 +72,7 @@ function update_existing_rules {
 function git_finish {
     git add ./rules
     git commit -m "Adding/Updating rules for $VERSION release"
-    git push -u origin ${ST2CD_BRANCH}
+    git push
 }
 
 function clean_up {
