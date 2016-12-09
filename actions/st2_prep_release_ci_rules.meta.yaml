@@ -1,9 +1,9 @@
 ---
-  name: "st2_prep_release_rules"
+  name: "st2_prep_release_ci_rules"
   runner_type: "run-remote-script"
   description: "Create and update rules for st2cd."
   enabled: true
-  entry_point: "st2_prep_release_rules.sh"
+  entry_point: "st2_prep_release_ci_rules.sh"
   parameters:
     project:
         type: string
@@ -25,16 +25,10 @@
         description: Previous version being upgraded from. Should include the patch e.g. 0.1.0
         required: true
         position: 3
-    oses:
-        type: string
-        description: "Space seperated list of operating systems supported by st2 e.g. 'rhel6 rhel7 u14 u16'"
-        required: true
-        position: 4
-        default: rhel6 rhel7 u14 u16
     local_repo:
         type: string
         description: Location where to clone the repo. Programmatically determined if not provided.
-        position: 5
+        position: 4
     dir:
         immutable: true
         default: /home/stanley/
