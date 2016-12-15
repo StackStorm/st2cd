@@ -62,8 +62,8 @@ st2cd.bwc_prep_dev:
                 local_repo: <% 'st2enterprise_auth_ldap_' + $.local_repo_sfx %>
                 hosts: <% $.host %>
                 cwd: <% $.cwd %>
-            on-success:
-                - prep_bwc_ipfabric_suite
+        #    on-success:
+        #        - prep_bwc_ipfabric_suite
         # prep_bwc_ipfabric_suite:
         #     action: st2cd.bwc_prep_dev_for_bwc_ipfabric_suite
         #     input:
@@ -94,14 +94,14 @@ st2cd.bwc_prep_dev:
         #         cwd: <% $.cwd %>
         #     on-success:
         #         - prep_bwc_cli
-        prep_bwc_cli:
-            action: st2cd.bwc_prep_dev_for_bwc_cli
-            input:
-                version: <% $.dev_version %>
-                fork: <% $.fork %>
-                local_repo: <% 'bwc_cli_' + $.local_repo_sfx %>
-                hosts: <% $.host %>
-                cwd: <% $.cwd %>
+        # prep_bwc_cli:
+        #     action: st2cd.bwc_prep_dev_for_bwc_cli
+        #     input:
+        #         version: <% $.dev_version %>
+        #         fork: <% $.fork %>
+        #         local_repo: <% 'bwc_cli_' + $.local_repo_sfx %>
+        #         hosts: <% $.host %>
+        #         cwd: <% $.cwd %>
 
 
         cleanup_on_failure:
