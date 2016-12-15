@@ -60,7 +60,8 @@ st2cd.bwc_prep_release:
                 hosts: <% $.host %>
                 cwd: <% $.cwd %>
             on-success:
-                - prep_bwc_ipfabric_suite
+        #        - prep_bwc_ipfabric_suite
+                - prep_bwc_ui
         # prep_bwc_ipfabric_suite:
         #     action: st2cd.bwc_prep_release_for_bwc_ipfabric_suite
         #     input:
