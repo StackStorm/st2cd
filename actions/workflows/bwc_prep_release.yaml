@@ -61,46 +61,46 @@ st2cd.bwc_prep_release:
                 cwd: <% $.cwd %>
             on-success:
                 - prep_bwc_ipfabric_suite
-        prep_bwc_ipfabric_suite:
-            action: st2cd.bwc_prep_release_for_bwc_ipfabric_suite
-            input:
-                version: <% $.version %>
-                fork: <% $.fork %>
-                local_repo: <% 'bwc_ipfabric_suite_' + $.local_repo_sfx %>
-                hosts: <% $.host %>
-                cwd: <% $.cwd %>
-            on-success:
-                - prep_bwc_ipfabric_packs
-        prep_bwc_ipfabric_packs:
-            action: st2cd.bwc_prep_release_for_bwc_ipfabric_packs
-            input:
-                version: <% $.version %>
-                fork: <% $.fork %>
-                local_repo: <% 'bwc_ipfabric_packs_' + $.local_repo_sfx %>
-                hosts: <% $.host %>
-                cwd: <% $.cwd %>
-            on-success:
-                - prep_bwc_topology
-        prep_bwc_topology:
-            action: st2cd.bwc_prep_release_for_bwc_topology
-            input:
-                version: <% $.version %>
-                fork: <% $.fork %>
-                local_repo: <% 'bwc_topology_' + $.local_repo_sfx %>
-                hosts: <% $.host %>
-                cwd: <% $.cwd %>
-            on-success:
-                - prep_bwc_cli
-        prep_bwc_cli:
-            action: st2cd.bwc_prep_release_for_bwc_cli
-            input:
-                version: <% $.version %>
-                fork: <% $.fork %>
-                local_repo: <% 'bwc_cli_' + $.local_repo_sfx %>
-                hosts: <% $.host %>
-                cwd: <% $.cwd %>
-            on-success:
-                - prep_bwc_ui
+        # prep_bwc_ipfabric_suite:
+        #     action: st2cd.bwc_prep_release_for_bwc_ipfabric_suite
+        #     input:
+        #         version: <% $.version %>
+        #         fork: <% $.fork %>
+        #         local_repo: <% 'bwc_ipfabric_suite_' + $.local_repo_sfx %>
+        #         hosts: <% $.host %>
+        #         cwd: <% $.cwd %>
+        #     on-success:
+        #         - prep_bwc_ipfabric_packs
+        # prep_bwc_ipfabric_packs:
+        #     action: st2cd.bwc_prep_release_for_bwc_ipfabric_packs
+        #     input:
+        #         version: <% $.version %>
+        #         fork: <% $.fork %>
+        #         local_repo: <% 'bwc_ipfabric_packs_' + $.local_repo_sfx %>
+        #         hosts: <% $.host %>
+        #         cwd: <% $.cwd %>
+        #     on-success:
+        #         - prep_bwc_topology
+        # prep_bwc_topology:
+        #     action: st2cd.bwc_prep_release_for_bwc_topology
+        #     input:
+        #         version: <% $.version %>
+        #         fork: <% $.fork %>
+        #         local_repo: <% 'bwc_topology_' + $.local_repo_sfx %>
+        #         hosts: <% $.host %>
+        #         cwd: <% $.cwd %>
+        #     on-success:
+        #         - prep_bwc_cli
+        # prep_bwc_cli:
+        #     action: st2cd.bwc_prep_release_for_bwc_cli
+        #     input:
+        #         version: <% $.version %>
+        #         fork: <% $.fork %>
+        #         local_repo: <% 'bwc_cli_' + $.local_repo_sfx %>
+        #         hosts: <% $.host %>
+        #         cwd: <% $.cwd %>
+        #     on-success:
+        #         - prep_bwc_ui
         prep_bwc_ui:
             action: st2cd.bwc_prep_release_for_gui
             input:
