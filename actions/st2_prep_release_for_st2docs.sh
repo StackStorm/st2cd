@@ -33,7 +33,7 @@ if [ -d "${LOCAL_REPO}" ]; then
     rm -rf ${LOCAL_REPO}
 fi
 
-git clone ${GIT_REPO} ${LOCAL_REPO}
+git clone ${GIT_REPO} ${LOCAL_REPO} 2>&1
 
 cd ${LOCAL_REPO}
 echo "Currently at directory `pwd`..."
@@ -66,17 +66,17 @@ fi
 
 # SET NEW ST2 VERSION INFO AT RELEASE BRANCH
 echo "Creating new branch ${BRANCH}..."
-git checkout -b ${BRANCH} origin/master
+git checkout -b ${BRANCH} origin/master 2>&1
 
 ST2DOCS_VERSION_FILE="version.txt"
 ST2DOCS_VERSION_STR="${SHORT_VERSION}"
 
-ST2DOCS_VERSION_STR_MATCH=`grep "${SHORT_VERSION}" ${ST2DOCS_VERSION_FILE} || true`
+ST2DOCS_VERSION_STR_MATCH=`grep -w "${SHORT_VERSION}" ${ST2DOCS_VERSION_FILE} || true`
 if [[ -z "${ST2DOCS_VERSION_STR_MATCH}" ]]; then
     echo "Setting version in ${ST2DOCS_VERSION_FILE} to ${SHORT_VERSION}..."
     echo "${SHORT_VERSION}" > ${ST2DOCS_VERSION_FILE}
 
-    ST2DOCS_VERSION_STR_MATCH=`grep "${SHORT_VERSION}" ${ST2DOCS_VERSION_FILE} || true`
+    ST2DOCS_VERSION_STR_MATCH=`grep -w "${SHORT_VERSION}" ${ST2DOCS_VERSION_FILE} || true`
     if [[ -z "${ST2DOCS_VERSION_STR_MATCH}" ]]; then
         >&2 echo "ERROR: Unable to update the st2 version in ${ST2DOCS_VERSION_FILE}."
         exit 1

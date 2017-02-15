@@ -12,7 +12,7 @@ CWD=`pwd`
 
 
 # CHECK IF BRANCH EXISTS
-BRANCH_EXISTS=`git ls-remote --heads ${GIT_REPO} | grep refs/heads/${BRANCH} || true`
+BRANCH_EXISTS=`git ls-remote --heads ${GIT_REPO} | grep -w refs/heads/${BRANCH} || true`
 
 if [[ ! -z "${BRANCH_EXISTS}" ]]; then
     >&2 echo "ERROR: Branch ${BRANCH} already exist in ${GIT_REPO}."
@@ -46,12 +46,12 @@ git checkout -b ${BRANCH} origin/master
 ST2TESTS_VERSION_FILE="version.txt"
 ST2TESTS_VERSION_STR="${SHORT_VERSION}"
 
-ST2TESTS_VERSION_STR_MATCH=`grep "${SHORT_VERSION}" ${ST2TESTS_VERSION_FILE} || true`
+ST2TESTS_VERSION_STR_MATCH=`grep -w "${SHORT_VERSION}" ${ST2TESTS_VERSION_FILE} || true`
 if [[ -z "${ST2TESTS_VERSION_STR_MATCH}" ]]; then
     echo "Setting version in ${ST2TESTS_VERSION_FILE} to ${SHORT_VERSION}..."
     echo "${SHORT_VERSION}" > ${ST2TESTS_VERSION_FILE}
 
-    ST2TESTS_VERSION_STR_MATCH=`grep "${SHORT_VERSION}" ${ST2TESTS_VERSION_FILE} || true`
+    ST2TESTS_VERSION_STR_MATCH=`grep -w "${SHORT_VERSION}" ${ST2TESTS_VERSION_FILE} || true`
     if [[ -z "${ST2TESTS_VERSION_STR_MATCH}" ]]; then
         >&2 echo "ERROR: Unable to update the st2 version in ${ST2TESTS_VERSION_FILE}."
         exit 1
