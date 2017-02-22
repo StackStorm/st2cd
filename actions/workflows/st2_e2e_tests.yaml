@@ -78,7 +78,7 @@ workflows:
                     timeout: 500
                 on-success:
                     - robot_mistral_tests
-                robot_mistral_tests:
+            robot_mistral_tests:
                 action: core.remote
                 input:
                     hosts: <% $.host_ip %>
