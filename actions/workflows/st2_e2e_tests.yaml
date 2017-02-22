@@ -77,7 +77,7 @@ workflows:
                     cmd: cd /tmp/st2tests && . venv/bin/activate && pybot robotfm_tests/docs/
                     timeout: 500
                 on-success:
-                    - robot_mistral_tests       
+                    - robot_mistral_tests
             robot_mistral_tests:
                 action: core.remote
                 input:
@@ -87,7 +87,6 @@ workflows:
                     timeout: 300
                 on-success:
                     - robot_chatopsCI_tests
-
             robot_chatopsCI_tests:
                 action: core.remote
                 input:
