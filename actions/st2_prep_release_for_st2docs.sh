@@ -71,7 +71,7 @@ git checkout -b ${BRANCH} origin/master
 ST2DOCS_VERSION_FILE="version.txt"
 ST2DOCS_VERSION_STR="${SHORT_VERSION}"
 
-ST2DOCS_VERSION_STR_MATCH=`grep "${SHORT_VERSION}" ${ST2DOCS_VERSION_FILE} || true`
+ST2DOCS_VERSION_STR_MATCH=`grep -w "${SHORT_VERSION}" ${ST2DOCS_VERSION_FILE} || true`
 if [[ -z "${ST2DOCS_VERSION_STR_MATCH}" ]]; then
     echo "Setting version in ${ST2DOCS_VERSION_FILE} to ${SHORT_VERSION}..."
     echo "${SHORT_VERSION}" > ${ST2DOCS_VERSION_FILE}
