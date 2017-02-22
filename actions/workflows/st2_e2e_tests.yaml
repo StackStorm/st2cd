@@ -115,7 +115,7 @@ workflows:
                 input:
                     hosts: <% $.host %>
                     env: <% $.env %>
-                    cmd: st2 run core.http url=http://www.marshmallowkittens.org
+                    cmd: st2 run core.http url=https://google.com
             test_core_remote_single_host:
                 action: core.remote
                 input:
