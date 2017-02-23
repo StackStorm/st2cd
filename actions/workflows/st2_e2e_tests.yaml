@@ -83,7 +83,7 @@ workflows:
                 input:
                     hosts: <% $.host_ip %>
                     env: <% $.st2_cli_env %>
-                    cmd: cd /tmp/st2tests && source venv/bin/activate && pybot robotfm_tests/mistral/
+                    cmd: cd /tmp/st2tests && . venv/bin/activate && pybot robotfm_tests/mistral/
                     timeout: 300
                 on-success:
                     - robot_chatopsCI_tests
