@@ -101,8 +101,9 @@ fi
 # Update the st2 version at circle.yml
 CIRCLE_YML_FILE="circle.yml"
 echo "Setting version in ${CIRCLE_YML_FILE} to ${BRANCH}..."
-sed -i -e "s/\(ST2_GITREV:[ ]*\).*/\1${BRANCH}/" ${CIRCLE_YML_FILE}
-sed -i -e "s/\(ST2MISTRAL_GITREV:[ ]*\).*/\1${MISTRAL_VERSION}/" ${CIRCLE_YML_FILE}
+# capture group one is to ensure proper indentation. Capture group two is actual var definition
+sed -i -e "s/\(.*\)# \(ST2_GITREV:[ ]*\).*/\1\2${BRANCH}/" ${CIRCLE_YML_FILE}
+sed -i -e "s/\(.*\)# \(ST2MISTRAL_GITREV:[ ]*\).*/\1\2${MISTRAL_VERSION}/" ${CIRCLE_YML_FILE}
 
 MODIFIED=`git status | grep modified || true`
 if [[ ! -z "${MODIFIED}" ]]; then
