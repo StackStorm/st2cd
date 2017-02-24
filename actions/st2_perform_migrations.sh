@@ -145,6 +145,14 @@ run_migration_scripts() {
     fi
   done
 }
+
+update_mistral_db() {
+  sudo service mistral-api stop
+  sudo service mistral stop
+  /opt/stackstorm/mistral/bin/mistral-db-manage --config-file /etc/mistral/mistral.conf upgrade head
+  /opt/stackstorm/mistral/bin/mistral-db-manage --config-file /etc/mistral/mistral.conf populate
+}
+
 ## Version specific migration functions. Note that the function names must have to
 ## migrate_to_${major}.${minor}. Otherwise, those methods won't be run.
 
@@ -157,6 +165,7 @@ trap 'fail' EXIT
 STEP="Setup args" && setup_args $@
 STEP="Validate versions" && validate_versions
 STEP="Perform migration" && perform_migration
+STEP="Perform updates" && update_mistral_db
 trap - EXIT
 
 ok_message
