@@ -153,6 +153,23 @@ migrate_to_1.5() {
   run_migration_scripts $scripts
 }
 
+migrate_to_2.2() {
+  sudo service mistral-api stop
+  sudo service mistral stop
+  sudo -u postgres psql
+  \connect mistral
+  DROP TABLE event_triggers_v2;
+  DROP TABLE workflow_executions_v2 CASCADE;
+  DROP TABLE task_executions_v2;
+  DROP TABLE action_executions_v2;
+  DROP TABLE named_locks;
+  \q
+  /opt/stackstorm/mistral/bin/mistral-db-manage --config-file /etc/mistral/mistral.conf upgrade head
+  /opt/stackstorm/mistral/bin/mistral-db-manage --config-file /etc/mistral/mistral.conf populate
+  sudo service mistral start
+  sudo service mistral-api start
+}
+
 trap 'fail' EXIT
 STEP="Setup args" && setup_args $@
 STEP="Validate versions" && validate_versions
