@@ -147,8 +147,7 @@ run_migration_scripts() {
 }
 
 update_mistral_db() {
-  sudo service mistral-api stop
-  sudo service mistral stop
+  $(sudo service stop mistral-api; sudo service stop mistral-server) || true
   /opt/stackstorm/mistral/bin/mistral-db-manage --config-file /etc/mistral/mistral.conf upgrade head
   /opt/stackstorm/mistral/bin/mistral-db-manage --config-file /etc/mistral/mistral.conf populate
 }
