@@ -50,17 +50,17 @@ st2cd.bwc_finalize_release:
                 - make_bwc_docs_latest
         make_bwc_docs_latest:
             action: st2cd.bwc_docs
-            on-success:
-                - push_bwc_client
-        push_bwc_client:
-            action: st2cd.pypi_upload
-            input:
-                repo: bwc-cli
-                version: <% $.version %>
-                fork: <% $.fork %>
-                local_repo: <% 'bwc_cli_' + $.local_repo_sfx %>
-                hosts: <% $.host %>
-                cwd: <% $.cwd %>
+        #     on-success:
+        #         - push_bwc_client
+        # push_bwc_client:
+        #     action: st2cd.pypi_upload
+        #     input:
+        #         repo: bwc-cli
+        #         version: <% $.version %>
+        #         fork: <% $.fork %>
+        #         local_repo: <% 'bwc_cli_' + $.local_repo_sfx %>
+        #         hosts: <% $.host %>
+        #         cwd: <% $.cwd %>
 
 
         cleanup_on_failure:
