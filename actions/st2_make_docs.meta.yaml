@@ -42,4 +42,4 @@ parameters:
         immutable: true
         default: "--"
     timeout:
-        default: 900
+        default: 1800
