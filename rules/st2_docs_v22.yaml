@@ -1,5 +1,5 @@
 ---
-    name: "st2_docs_v21"
+    name: "st2_docs_v22"
     pack: "st2cd"
     description: "Build st2 docs for StackStorm v2.2"
     enabled: true
