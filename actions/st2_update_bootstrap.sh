@@ -43,7 +43,7 @@ if [ "${BRANCH}" != "master" ]; then
 fi
 
 # Replace BRANCH that uses single-quotes with new version
-sed -i "s/BRANCH='.*/BRANCH='${VERSION}'/g" ./scripts/st2_bootstrap.sh
+sed -i "s/BRANCH=.*${PREVIOUS_VERSION}.*/BRANCH='${VERSION}'/g" ./scripts/st2_bootstrap.sh
 
 git add ./scripts
 git commit -m "Updating bootstrap script with $VERSION release"
