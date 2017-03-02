@@ -42,7 +42,7 @@ if [ "${BRANCH}" != "master" ]; then
     git checkout -b ${BRANCH} origin/${BRANCH}
 fi
 
-# Replace BRANCH that uses single-quotes with new version
+# Replace BRANCH that currently references old version
 sed -i "s/BRANCH=.*${PREVIOUS_VERSION}.*/BRANCH='${VERSION}'/g" ./scripts/st2_bootstrap.sh
 
 git add ./scripts
