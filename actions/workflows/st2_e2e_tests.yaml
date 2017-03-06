@@ -235,6 +235,15 @@ workflows:
                     cmd: st2 run tests.test_quickstart_trace <% $.st2_cli_args %>
                     timeout: 600
                 on-success:
+                    - test_quickstart_run_pack_tests_tool
+            test_quickstart_run_pack_tests_tool:
+                action: core.remote
+                input:
+                    hosts: <% $.host %>
+                    env: <% $.env %>
+                    cmd: st2 run tests.test_run_pack_tests_tool <% $.st2_cli_args %>
+                    timeout: 600
+                on-success:
                     - test_quickstart_timer_rules
             test_quickstart_timer_rules:
                 action: core.remote
