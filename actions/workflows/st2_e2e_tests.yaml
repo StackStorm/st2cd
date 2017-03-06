@@ -242,7 +242,7 @@ workflows:
                     hosts: <% $.host %>
                     env: <% $.env %>
                     # Note: This test is only available and working in StackStorm >= 2.3dev
-                    cmd: "st2 action get tests.test_run_pack_tests_tool && st2 run tests.test_run_pack_tests_tool <% $.st2_cli_args %> || echo 'run_pack_tests_tool tests not available'"
+                    cmd: "st2 action get tests.test_windows_runners ; if [ $? -eq 0 ]; then st2 run tests.test_run_pack_tests_tool <% $.st2_cli_args %>; else 'run_pack_tests_tool tests not available'; fi"
                     timeout: 600
                 on-success:
                     - test_quickstart_timer_rules
