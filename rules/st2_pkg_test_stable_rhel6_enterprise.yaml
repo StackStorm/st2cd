@@ -21,6 +21,6 @@ action:
     distro: RHEL6
     pkg_env: production
     release: stable
-    version: "2.1.0"
+    version: "2.2.0"
     enterprise: true
     enterprise_key: "{{system.enterprise_key_prd_stable}}"
