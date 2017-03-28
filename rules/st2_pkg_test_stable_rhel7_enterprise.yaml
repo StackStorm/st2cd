@@ -23,4 +23,4 @@ action:
     release: stable
     version: "2.2.0"
     enterprise: true
-    enterprise_key: "{{system.enterprise_key_prd_stable}}"
+    enterprise_key: "{{st2kv.system.enterprise_key_prd_stable}}"
