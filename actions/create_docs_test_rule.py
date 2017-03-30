@@ -86,7 +86,7 @@ def main(args):
                 'branch': args.branch,
                 'author': '{{trigger.body.head_commit.author.username}}',
                 'environment': 'production',
-                'docs_url': '{{system.s3_bucket_docs_production}}'
+                'docs_url': '{{st2kv.system.s3_bucket_docs_production}}'
             }
         }
     }

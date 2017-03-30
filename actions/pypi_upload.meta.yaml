@@ -32,13 +32,13 @@ parameters:
     pypi_username:
         type: string
         description: Username to login to pypi
-        default: "{{system.st2_pypi_username}}"
+        default: "{{st2kv.system.st2_pypi_username}}"
         secret: true
         position: 5
     pypi_password:
         type: string
         description: Password for the pypi account
-        default: "{{system.st2_pypi_password}}"
+        default: "{{st2kv.system.st2_pypi_password}}"
         secret: true
         position: 6
     dir:

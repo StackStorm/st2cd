@@ -8,7 +8,7 @@
     repo:
       type: "string"
       description: "Url of the repo to clone."
-      default: "https://{{system.st2_github_token}}:x-oauth-basic@github.com/StackStorm/st2flow.git"
+      default: "https://{{st2kv.system.st2_github_token}}:x-oauth-basic@github.com/StackStorm/st2flow.git"
       required: false
     repo_target:
       type: "string"

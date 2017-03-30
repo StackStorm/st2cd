@@ -46,7 +46,7 @@
       params:
         hosts: "{{build_server}}"
         repo: "/tmp/{{repodir}}/docs/build/html"
-        location: "{% if branch == 'master' %}/latest/{% elif version|string() == system.st2_stable_version|string() %}/{% endif %}"
+        location: "{% if branch == 'master' %}/latest/{% elif version|string() == st2kv.system.st2_stable_version|string() %}/{% endif %}"
         bucket: "{{docs_url}}"
         version: "/{{version}}/"
       on-success: "clean_repo"
