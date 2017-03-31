@@ -29,7 +29,7 @@ st2cd.st2_prep_release_rules:
         get_host:
             action: linux.dig
             input:
-                hostname: st2-build-slave-ubuntu.service.consul
+                hostname: st2cicd-slave-ubuntu.service.consul
                 rand: true
                 count: 1
             publish:
