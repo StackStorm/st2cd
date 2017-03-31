@@ -46,7 +46,7 @@
       name: "add_name_tag"
       ref: "aws.ec2_create_tags"
       params:
-        resource_ids: "{{ec2_instance_id}}"
+        resource_ids: ["{{ec2_instance_id}}"]
         tags: "Name={{hostname}}"
       on-success: "add_cname"
     -
