@@ -47,9 +47,10 @@ function git_repo {
 }
 
 function create_new_rules {
-    cat ./rules/bwc_docs_ipfabric_prod_$PREV_FILE_POSTFIX_UNDERSCORE.yaml > ./rules/bwc_docs_ipfabric_prod_$FILE_POSTFIX_UNDERSCORE.yaml
-    cat ./rules/st2_docs_$PREV_FILE_POSTFIX.yaml > ./rules/st2_docs_$FILE_POSTFIX.yaml
-    cat ./rules/bwc_docs_prod_$PREV_FILE_POSTFIX_UNDERSCORE.yaml > ./rules/bwc_docs_prod_$FILE_POSTFIX_UNDERSCORE.yaml
+    # Ignoring "file already exists" error (this will happen for patch releases, since minor release created this file already)
+    cat ./rules/bwc_docs_ipfabric_prod_$PREV_FILE_POSTFIX_UNDERSCORE.yaml > ./rules/bwc_docs_ipfabric_prod_$FILE_POSTFIX_UNDERSCORE.yaml || true
+    cat ./rules/st2_docs_$PREV_FILE_POSTFIX.yaml > ./rules/st2_docs_$FILE_POSTFIX.yaml || true
+    cat ./rules/bwc_docs_prod_$PREV_FILE_POSTFIX_UNDERSCORE.yaml > ./rules/bwc_docs_prod_$FILE_POSTFIX_UNDERSCORE.yaml  || true
 }
 
 function update_new_rules {
