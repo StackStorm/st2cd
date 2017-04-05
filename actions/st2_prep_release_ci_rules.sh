@@ -40,7 +40,12 @@ function git_repo {
 }
 
 function create_new_rules {
-    cat ./rules/st2_pkg_build_${PREV_FILE_POSTFIX_UNDERSCORE}_on_pytest.yaml > ./rules/st2_pkg_build_${FILE_POSTFIX_UNDERSCORE}_on_pytest.yaml
+    # Skip if the two intended versions are the same.
+    # This can happen on patch releases, since 2.2.1 is reduced to v2.2, which is the same as if the version was 2.2.0
+    if [ "$PREV_FILE_POSTFIX_UNDERSCORE" != "$FILE_POSTFIX_UNDERSCORE" ]
+    then
+        cat ./rules/st2_pkg_build_${PREV_FILE_POSTFIX_UNDERSCORE}_on_pytest.yaml > ./rules/st2_pkg_build_${FILE_POSTFIX_UNDERSCORE}_on_pytest.yaml
+    fi
 }
 
 function update_new_rules {
