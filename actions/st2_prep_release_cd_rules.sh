@@ -76,7 +76,7 @@ function update_existing_rules {
 
 function git_finish {
     git add ./rules
-    git commit -m "Adding/Updating rules for $VERSION release"
+    git commit -m "Adding/Updating rules for $VERSION release" || true
     git push
 }
 
