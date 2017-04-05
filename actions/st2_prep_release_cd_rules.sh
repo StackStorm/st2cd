@@ -47,10 +47,14 @@ function git_repo {
 }
 
 function create_new_rules {
-    # Ignoring "file already exists" error (this will happen for patch releases, since minor release created this file already)
-    cat ./rules/bwc_docs_ipfabric_prod_$PREV_FILE_POSTFIX_UNDERSCORE.yaml > ./rules/bwc_docs_ipfabric_prod_$FILE_POSTFIX_UNDERSCORE.yaml || true
-    cat ./rules/st2_docs_$PREV_FILE_POSTFIX.yaml > ./rules/st2_docs_$FILE_POSTFIX.yaml || true
-    cat ./rules/bwc_docs_prod_$PREV_FILE_POSTFIX_UNDERSCORE.yaml > ./rules/bwc_docs_prod_$FILE_POSTFIX_UNDERSCORE.yaml  || true
+    # Skip if the two intended versions are the same.
+    # This can happen on patch releases, since 2.2.1 is reduced to v2.2, which is the same as if the version was 2.2.0
+    if [ "$PREV_FILE_POSTFIX_UNDERSCORE" != "$FILE_POSTFIX_UNDERSCORE" ]
+    then
+        cat ./rules/bwc_docs_ipfabric_prod_$PREV_FILE_POSTFIX_UNDERSCORE.yaml > ./rules/bwc_docs_ipfabric_prod_$FILE_POSTFIX_UNDERSCORE.yaml
+        cat ./rules/st2_docs_$PREV_FILE_POSTFIX.yaml > ./rules/st2_docs_$FILE_POSTFIX.yaml
+        cat ./rules/bwc_docs_prod_$PREV_FILE_POSTFIX_UNDERSCORE.yaml > ./rules/bwc_docs_prod_$FILE_POSTFIX_UNDERSCORE.yaml
+    elif
 }
 
 function update_new_rules {
