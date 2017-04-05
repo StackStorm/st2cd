@@ -45,7 +45,7 @@ function create_new_rules {
     if [ "$PREV_FILE_POSTFIX_UNDERSCORE" != "$FILE_POSTFIX_UNDERSCORE" ]
     then
         cat ./rules/st2_pkg_build_${PREV_FILE_POSTFIX_UNDERSCORE}_on_pytest.yaml > ./rules/st2_pkg_build_${FILE_POSTFIX_UNDERSCORE}_on_pytest.yaml
-    elif
+    fi
 }
 
 function update_new_rules {
