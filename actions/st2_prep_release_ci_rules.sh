@@ -40,7 +40,8 @@ function git_repo {
 }
 
 function create_new_rules {
-    cat ./rules/st2_pkg_build_${PREV_FILE_POSTFIX_UNDERSCORE}_on_pytest.yaml > ./rules/st2_pkg_build_${FILE_POSTFIX_UNDERSCORE}_on_pytest.yaml
+    # Ignoring "file already exists" error (this will happen for patch releases, since minor release created this file already)
+    cat ./rules/st2_pkg_build_${PREV_FILE_POSTFIX_UNDERSCORE}_on_pytest.yaml > ./rules/st2_pkg_build_${FILE_POSTFIX_UNDERSCORE}_on_pytest.yaml || true
 }
 
 function update_new_rules {
