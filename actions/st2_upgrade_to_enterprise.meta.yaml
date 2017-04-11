@@ -35,26 +35,30 @@ parameters:
     version:  # example: 1.5.1
         type: string
         position: 4
+    st2_username:
+        type: string
+         default: "st2admin"
+         position: 5
     ldap_host:
         type: string
         default: "{{st2kv.system.enterprise_ad_host}}"
-        position: 5
+        position: 6
     ldap_bind_dn:
         type: string
         default: "{{st2kv.system.enterprise_ad_bind_dn}}"
-        position: 6
+        position: 7
     ldap_bind_passwd:
         type: string
         default: "{{st2kv.system.enterprise_ad_bind_passwd}}"
-        position: 7
+        position: 8
     ldap_base_ou:
         type: string
         default: "{{st2kv.system.enterprise_ad_base_ou}}"
-        position: 8
+        position: 9
     ldap_group_dn:
         type: string
         default: "{{st2kv.system.enterprise_ad_group_dn}}"
-        position: 9
+        position: 10
     dir:
         immutable: true
         default: /home/stanley/

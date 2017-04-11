@@ -6,11 +6,12 @@ DISTRO=$2
 RELEASE=$3
 PKG_ENV=$4
 VERSION=$5  # Should be of the form ${major}.${minor}.${patch}
-LDAP_HOST=$6
-LDAP_BIND_DN=$7
-LDAP_BIND_PASSWD=$8
-LDAP_BASE_OU=$9
-LDAP_GROUP_DN=${10}
+ST2_USERNAME=$6
+LDAP_HOST=$7
+LDAP_BIND_DN=$8
+LDAP_BIND_PASSWD=$9
+LDAP_BASE_OU=$10
+LDAP_GROUP_DN=${11}
 REPO=enterprise
 
 if [[ $VERSION="None" ]]; then
@@ -49,27 +50,23 @@ install_enterprise_bits() {
     if [[ ${DISTRO} = \UBUNTU* ]]; then
         curl -s https://${LICENSE_KEY}:@packagecloud.io/install/repositories/StackStorm/${REPO}/script.deb.sh | bash
         if [[ -z $VERSION ]]; then
-            apt-get install -y st2flow
-            apt-get install -y st2-auth-ldap
+            apt-get install -y bwc-enterprise
         else
-            local FLOW_PKG_VERSION=$(get_apt_pkg_latest_revision st2flow $VERSION)
-            local LDAP_PKG_VERSION=$(get_apt_pkg_latest_revision st2-auth-ldap $VERSION)
-            apt-get install -y st2flow=$FLOW_PKG_VERSION
-            apt-get install -y st2-auth-ldap=$LDAP_PKG_VERSION
+            local BWC_PKG_VERSION=$(get_apt_pkg_latest_revision bwc-enterprise $VERSION)
+            apt-get install -y bwc-enterprise=$BWC_PKG_VERSION
         fi
     else
         curl -s https://${LICENSE_KEY}:@packagecloud.io/install/repositories/StackStorm/${REPO}/script.rpm.sh | sudo bash
         if [[ -z $VERSION ]]; then
-            yum install -y st2flow
-            yum install -y st2-auth-ldap
+            yum install -y bwc-enterprise
         else
-            local FLOW_PKG=$(get_rpm_pkg_name_with_latest_revision st2flow $VERSION)
-            local LDAP_PKG=$(get_rpm_pkg_name_with_latest_revision st2-auth-ldap $VERSION)
-            yum install -y $FLOW_PKG
-            yum install -y $LDAP_PKG
+            local BWC_PKG=$(get_rpm_pkg_name_with_latest_revision bwc-enterprise $VERSION)
+            yum install -y $BWC_PKG
         fi
     fi
 }
+
+
 
 update_st2_conf() {
     # Replace the auth section
@@ -98,10 +95,48 @@ api_url =
 CONF
 }
 
+enable_and_configure_rbac() {
+  if [[ ${DISTRO} = \UBUNTU* ]]; then
+      sudo apt-get install -y crudini
+  else
+      sudo yum install -y crudini
+  fi
+  # Enable RBAC
+  sudo crudini --set /etc/st2/st2.conf rbac enable 'True'
+
+  # TODO: Move directory creation to package
+  sudo mkdir -p /opt/stackstorm/rbac/assignments/
+  sudo mkdir -p /opt/stackstorm/rbac/roles/
+
+  # Write role assignment for admin user
+  ROLE_ASSIGNMENT_FILE="/opt/stackstorm/rbac/assignments/${ST2_USERNAME}.yaml"
+  sudo bash -c "cat > ${ROLE_ASSIGNMENT_FILE}" <<EOL
+---
+  username: "${ST2_USERNAME}"
+  roles:
+    - "system_admin"
+EOL
+
+  # Write role assignment for stanley (system) user
+  ROLE_ASSIGNMENT_FILE="/opt/stackstorm/rbac/assignments/stanley.yaml"
+  sudo bash -c "cat > ${ROLE_ASSIGNMENT_FILE}" <<EOL
+---
+  username: "stanley"
+  roles:
+    - "admin"
+EOL
+
+  # Sync roles and assignments
+  sudo st2-apply-rbac-definitions --config-file /etc/st2/st2.conf
+
+}
+
+
 restart_st2() {
     st2ctl restart
 }
 
 install_enterprise_bits
 update_st2_conf
+enable_and_configure_rbac
 restart_st2

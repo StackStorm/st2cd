@@ -12,25 +12,25 @@ st2cd.st2_enterprise_tests:
                 hosts: <% $.host_ip %>
                 cmd: '(test -f /home/stanley/.ssh/stanley_rsa) || (echo "SSH key for stanley user not installed" ; exit 1)'
                 timeout: 10
-            #     on-success:
-            #         - verify_rbac_is_enabled
-            # verify_rbac_is_enabled:
-            #     action: core.remote_sudo
-            #     input:
-            #         hosts: <% $.host_ip %>
-            #         cmd: "grep -zlP '\\[rbac\\]\\senable\\s?=\\s?True' /etc/st2/st2.conf"
-            #         timeout: 10
-            #     on-success:
-            #         - verify_default_rbac_admin_role_assignments_are_present
-            # # Verify that a default role for the following users exist:
-            # # - st2admin (username passed to the installer) - note this user is also
-            # #   used for ChatOps
-            # # - stanley (system user)
-            # verify_default_rbac_admin_role_assignments_are_present:
-            #     action: st2cd.st2_enterprise_verify_default_rbac_admin_role_assignments_are_present
-            #     input:
-            #         hosts: <% $.host_ip %>
-            #         sudo: true
+                on-success:
+                    - verify_rbac_is_enabled
+        verify_rbac_is_enabled:
+            action: core.remote_sudo
+            input:
+                hosts: <% $.host_ip %>
+                cmd: "grep -zlP '\\[rbac\\]\\senable\\s?=\\s?True' /etc/st2/st2.conf"
+                timeout: 10
+            on-success:
+                - verify_default_rbac_admin_role_assignments_are_present
+                # Verify that a default role for the following users exist:
+                # - st2admin (username passed to the installer) - note this user is also
+                #   used for ChatOps
+                # - stanley (system user)
+       verify_default_rbac_admin_role_assignments_are_present:
+           action: st2cd.st2_enterprise_verify_default_rbac_admin_role_assignments_are_present
+           input:
+               hosts: <% $.host_ip %>
+               sudo: true
             on-success:
                 - verify_flow_is_installed
         verify_flow_is_installed:
