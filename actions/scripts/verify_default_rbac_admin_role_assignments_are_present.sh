@@ -23,10 +23,8 @@ function role_assignment_exists() {
     fi
 }
 
-role_assignment_exists "root_cli" "admin"
+role_assignment_exists "st2admin" "system_admin"
 role_assignment_exists "stanley" "admin"
-role_assignment_exists "chatops_bot" "admin"
-role_assignment_exists "admin" "system_admin"
 
 echo "All role assignmet files exist"
 exit 0
