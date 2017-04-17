@@ -13,6 +13,7 @@ workflows:
             - st2_username
             - st2_password
             - version
+            - enterprise
 
         tasks:
             init:
@@ -97,6 +98,12 @@ workflows:
                 retry:
                     count: 2
                     delay: 30
+                on-success:
+                    - enterprise_tests: <% $.enterprise %>
+            enterprise_tests:
+               action: st2cd.st2_enterprise_tests
+               input:
+                    host_ip: <% $.host_ip %>
 
     test_basic:
         type: direct

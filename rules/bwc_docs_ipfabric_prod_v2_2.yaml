@@ -1,5 +1,5 @@
 ---
-    name: "bwc_docs_ipfabric_prod_v2_2"
+    name: "bwc_docs_ipfabric_prod_v2.2"
     pack: "st2cd"
     description: "Build BWC docs and push to s3"
     enabled: true

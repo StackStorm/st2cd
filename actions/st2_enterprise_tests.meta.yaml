@@ -1,0 +1,11 @@
+---
+name: st2_enterprise_tests
+pack: st2cd
+description: Run the set of st2 enterprise tests
+enabled: true
+runner_type: mistral-v2
+entry_point: workflows/st2_enterprise_tests.yaml
+parameters:
+    host_ip:
+        type: string
+        required: true

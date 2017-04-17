@@ -86,7 +86,7 @@ st2cd.create_vm_role:
         add_tags:
             action: aws.ec2_create_tags
             input:
-                resource_ids: <% $.ec2_instance_id %>
+                resource_ids: [<% $.ec2_instance_id %>]
                 tags: Name=<% $.hostname %>,Creator=<% $.creator %>,Role=<% $.role %>,Purpose=<% switch(isEmpty($.purpose) => "No Description", $.purpose => $.purpose) %>
             on-success:
                 - add_cname
