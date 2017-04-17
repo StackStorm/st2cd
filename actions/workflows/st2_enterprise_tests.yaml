@@ -22,11 +22,11 @@ st2cd.st2_enterprise_tests:
                 timeout: 10
             on-success:
                 - verify_default_rbac_admin_role_assignments_are_present
-       # Verify that a default role for the following users exist:
-       # - st2admin (username passed to the installer) - note this user is also
-       #   used for ChatOps
-       # - stanley (system user)
-       verify_default_rbac_admin_role_assignments_are_present:
+        # Verify that a default role for the following users exist:
+        # - st2admin (username passed to the installer) - note this user is also
+        #   used for ChatOps
+        # - stanley (system user)
+        verify_default_rbac_admin_role_assignments_are_present:
            action: st2cd.st2_enterprise_verify_default_rbac_admin_role_assignments_are_present
            input:
                hosts: <% $.host_ip %>
