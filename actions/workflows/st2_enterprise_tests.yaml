@@ -12,8 +12,8 @@ st2cd.st2_enterprise_tests:
                 hosts: <% $.host_ip %>
                 cmd: '(test -f /home/stanley/.ssh/stanley_rsa) || (echo "SSH key for stanley user not installed" ; exit 1)'
                 timeout: 10
-                on-success:
-                    - verify_rbac_is_enabled
+            on-success:
+                - verify_rbac_is_enabled
         verify_rbac_is_enabled:
             action: core.remote_sudo
             input:
