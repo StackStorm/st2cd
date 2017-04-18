@@ -27,10 +27,10 @@ st2cd.st2_enterprise_tests:
         #   used for ChatOps
         # - stanley (system user)
         verify_default_rbac_admin_role_assignments_are_present:
-           action: st2cd.st2_enterprise_verify_default_rbac_admin_role_assignments_are_present
-           input:
-               hosts: <% $.host_ip %>
-               sudo: true
+            action: st2cd.st2_enterprise_verify_default_rbac_admin_role_assignments_are_present
+            input:
+                hosts: <% $.host_ip %>
+                sudo: true
             on-success:
                 - verify_flow_is_installed
         verify_flow_is_installed:
