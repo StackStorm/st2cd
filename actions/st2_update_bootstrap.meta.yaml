@@ -1,0 +1,25 @@
+---
+name: st2_update_bootstrap
+description: Update bootstrap script with new release version
+enabled: true
+runner_type: remote-shell-script
+entry_point: st2_update_bootstrap.sh
+parameters:
+    local_repo:
+        type: string
+        description: Location where to clone the repo. Programmatically determined if not provided.
+        position: 1
+    dir:
+        immutable: true
+        default: /home/stanley/
+    sudo:
+        immutable: true
+        default: false
+    cmd:
+        immutable: true
+        default: ""
+    kwarg_op:
+        immutable: true
+        default: "--"
+    timeout:
+        default: 900
