@@ -14,7 +14,7 @@
       type: "string"
       description: "S3 bucket to push built egg to."
       required: true
-      default: "st2community"
+      default: "st2_community"
     github_token:
       type: "string"
       description: "GitHub auth token"
