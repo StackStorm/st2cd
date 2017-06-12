@@ -19,7 +19,7 @@
       required: true
       type: "string"
     instance_type:
-      default: "m3.large"
+      default: "c4.large"
       type: "string"
     key_name:
       default: "st2_deploy"
