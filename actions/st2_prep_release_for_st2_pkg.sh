@@ -47,12 +47,12 @@ VERSION_FILE="rake/build/environment.rb"
 NEW_MISTRAL_VERSION_STR="envpass :gitrev,[ ]*'${MISTRAL_VERSION}',[ ]*from: 'ST2MISTRAL_GITREV'"
 NEW_MISTRAL_VERSION_STR_MATCH=`grep "${NEW_MISTRAL_VERSION_STR}" ${VERSION_FILE} || true`
 if [[ -z "${NEW_MISTRAL_VERSION_STR_MATCH}" ]]; then
-    echo "Setting mistral version (1st location) in ${VERSION_FILE} to ${MISTRAL_VERSION}..."
+    echo "[master] Setting mistral version (1st location) in ${VERSION_FILE} to ${MISTRAL_VERSION}..."
     sed -i -e "s/\(envpass :gitrev,[ ]*'\).*\(',[ ]*from: 'ST2MISTRAL_GITREV'\)/\1${MISTRAL_VERSION}\2/" ${VERSION_FILE}
 
     NEW_MISTRAL_VERSION_STR_MATCH=`grep "${NEW_MISTRAL_VERSION_STR}" ${VERSION_FILE} || true`
     if [[ -z "${NEW_MISTRAL_VERSION_STR_MATCH}" ]]; then
-        >&2 echo "ERROR: Unable to update the mistral version (1st location) in ${VERSION_FILE}."
+        >&2 echo "[master] ERROR: Unable to update the mistral version (1st location) in ${VERSION_FILE}."
         exit 1
     fi
 fi
@@ -61,20 +61,21 @@ fi
 NEW_MISTRAL_VERSION_STR="envpass :mistral_version, '${VERSION}'"
 NEW_MISTRAL_VERSION_STR_MATCH=`grep "${NEW_MISTRAL_VERSION_STR}" ${VERSION_FILE} || true`
 if [[ -z "${NEW_MISTRAL_VERSION_STR_MATCH}" ]]; then
-    echo "Setting mistral version (2nd location) in ${VERSION_FILE} to ${MISTRAL_VERSION}..."
+    echo "[master] Setting mistral version (2nd location) in ${VERSION_FILE} to ${MISTRAL_VERSION}..."
     sed -i -e "s/\(envpass :mistral_version, \).*/\1'${VERSION}'/" ${VERSION_FILE}
 
     NEW_MISTRAL_VERSION_STR_MATCH=`grep "${NEW_MISTRAL_VERSION_STR}" ${VERSION_FILE} || true`
     if [[ -z "${NEW_MISTRAL_VERSION_STR_MATCH}" ]]; then
-        >&2 echo "ERROR: Unable to update the mistral version (2nd location) in ${VERSION_FILE}."
+        >&2 echo "[master] ERROR: Unable to update the mistral version (2nd location) in ${VERSION_FILE}."
         exit 1
     fi
 fi
 
-# 'scripts/st2_bootstrap.sh'
 # Pin bash installer to latest stable 'st2-packages' branch in 'master'
 # Replace only the first occurrence!
-sed "0,/BRANCH=.*/ s//BRANCH='${BRANCH}'/" scripts/st2_bootstrap.sh
+VERSION_FILE="scripts/st2_bootstrap.sh"
+echo "[master] Setting version in ${VERSION_FILE} to ${BRANCH}..."
+sed "0,/BRANCH=.*/ s//BRANCH='${BRANCH}'/" ${VERSION_FILE}
 
 
 MODIFIED=`git status | grep modified || true`
@@ -94,19 +95,19 @@ VERSION_FILE="rake/build/environment.rb"
 NEW_VERSION_STR="envpass :gitrev,[ ]*'${BRANCH}',[ ]*from: 'ST2_GITREV'"
 NEW_VERSION_STR_MATCH=`grep "${NEW_VERSION_STR}" ${VERSION_FILE} || true`
 if [[ -z "${NEW_VERSION_STR_MATCH}" ]]; then
-    echo "Setting version in ${VERSION_FILE} to ${BRANCH}..."
+    echo "[${BRANCH}] Setting version in ${VERSION_FILE} to ${BRANCH}..."
     sed -i -e "s/\(envpass :gitrev,[ ]*'\).*\(',[ ]*from: 'ST2_GITREV'\)/\1${BRANCH}\2/" ${VERSION_FILE}
 
     NEW_VERSION_STR_MATCH=`grep "${NEW_VERSION_STR}" ${VERSION_FILE} || true`
     if [[ -z "${NEW_VERSION_STR_MATCH}" ]]; then
-        >&2 echo "ERROR: Unable to update the st2 version in ${VERSION_FILE}."
+        >&2 echo "[${BRANCH}] ERROR: Unable to update the st2 version in ${VERSION_FILE}."
         exit 1
     fi
 fi
 
 # Update the st2 version at circle.yml
 CIRCLE_YML_FILE="circle.yml"
-echo "Setting version in ${CIRCLE_YML_FILE} to ${BRANCH}..."
+echo "[${BRANCH}] Setting version in ${CIRCLE_YML_FILE} to ${BRANCH}..."
 sed -i -e "s/\(ST2_GITREV:[ ]*\).*/\1${BRANCH}/" ${CIRCLE_YML_FILE}
 sed -i -e "s/\(ST2MISTRAL_GITREV:[ ]*\).*/\1${MISTRAL_VERSION}/" ${CIRCLE_YML_FILE}
 
