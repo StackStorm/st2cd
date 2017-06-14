@@ -87,7 +87,7 @@ VERSION_FILE="rake/build/environment.rb"
 NEW_VERSION_STR="envpass :gitrev,[ ]*'${BRANCH}',[ ]*from: 'ST2_GITREV'"
 NEW_VERSION_STR_MATCH=`grep "${NEW_VERSION_STR}" ${VERSION_FILE} || true`
 if [[ -z "${NEW_VERSION_STR_MATCH}" ]]; then
-    echo "[${BRANCH}] Setting version in '${VERSION_FILE}' to '${BRANCH}'..."
+    echo "[${BRANCH}] Setting st2 'ST2_GITREV' in '${VERSION_FILE}' to latest stable '${BRANCH}'..."
     sed -i -e "s/\(envpass :gitrev,[ ]*'\).*\(',[ ]*from: 'ST2_GITREV'\)/\1${BRANCH}\2/" ${VERSION_FILE}
 
     NEW_VERSION_STR_MATCH=`grep "${NEW_VERSION_STR}" ${VERSION_FILE} || true`
@@ -102,12 +102,12 @@ VERSION_FILE="rake/build/environment.rb"
 NEW_MISTRAL_VERSION_STR="envpass :gitrev,[ ]*'${MISTRAL_VERSION}',[ ]*from: 'ST2MISTRAL_GITREV'"
 NEW_MISTRAL_VERSION_STR_MATCH=`grep "${NEW_MISTRAL_VERSION_STR}" ${VERSION_FILE} || true`
 if [[ -z "${NEW_MISTRAL_VERSION_STR_MATCH}" ]]; then
-    echo "[master] Setting 'ST2MISTRAL_GITREV' branch in '${VERSION_FILE}' to latest stable '${MISTRAL_VERSION}'..."
+    echo "[${BRANCH}] Setting 'ST2MISTRAL_GITREV' branch in '${VERSION_FILE}' to latest stable '${MISTRAL_VERSION}'..."
     sed -i -e "s/\(envpass :gitrev,[ ]*'\).*\(',[ ]*from: 'ST2MISTRAL_GITREV'\)/\1${MISTRAL_VERSION}\2/" ${VERSION_FILE}
 
     NEW_MISTRAL_VERSION_STR_MATCH=`grep "${NEW_MISTRAL_VERSION_STR}" ${VERSION_FILE} || true`
     if [[ -z "${NEW_MISTRAL_VERSION_STR_MATCH}" ]]; then
-        >&2 echo "[master] ERROR: Unable to update the 'ST2MISTRAL_GITREV' in '${VERSION_FILE}'."
+        >&2 echo "[${BRANCH}] ERROR: Unable to update the 'ST2MISTRAL_GITREV' in '${VERSION_FILE}'."
         exit 1
     fi
 fi
@@ -117,12 +117,12 @@ VERSION_FILE="rake/build/environment.rb"
 NEW_MISTRAL_VERSION_STR="envpass :mistral_version, '${VERSION}'"
 NEW_MISTRAL_VERSION_STR_MATCH=`grep "${NEW_MISTRAL_VERSION_STR}" ${VERSION_FILE} || true`
 if [[ -z "${NEW_MISTRAL_VERSION_STR_MATCH}" ]]; then
-    echo "[master] Setting 'mistral_version' in '${VERSION_FILE}' to latest stable '${VERSION}'..."
+    echo "[${BRANCH}] Setting 'mistral_version' in '${VERSION_FILE}' to latest stable '${VERSION}'..."
     sed -i -e "s/\(envpass :mistral_version, \).*/\1'${VERSION}'/" ${VERSION_FILE}
 
     NEW_MISTRAL_VERSION_STR_MATCH=`grep "${NEW_MISTRAL_VERSION_STR}" ${VERSION_FILE} || true`
     if [[ -z "${NEW_MISTRAL_VERSION_STR_MATCH}" ]]; then
-        >&2 echo "[master] ERROR: Unable to update the 'mistral_version' in '${VERSION_FILE}'."
+        >&2 echo "[${BRANCH}] ERROR: Unable to update the 'mistral_version' in '${VERSION_FILE}'."
         exit 1
     fi
 fi
