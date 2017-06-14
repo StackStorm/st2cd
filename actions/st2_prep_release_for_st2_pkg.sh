@@ -60,10 +60,10 @@ if [[ -z "${NEW_MISTRAL_VERSION_STR_MATCH}" ]]; then
     fi
 fi
 
-# Pin bash installer to latest stable 'st2-packages' branch in 'master'
-# Replace only the first occurrence!
+# Update 'BRANCH' to latest stable "vX.Y" branch at 'scripts/st2_bootstrap.sh'
 VERSION_FILE="scripts/st2_bootstrap.sh"
-echo "[master] Setting version in ${VERSION_FILE} to ${BRANCH}..."
+echo "[master] Setting 'BRANCH' version in '${VERSION_FILE}' to latest stable '${BRANCH}'..."
+# Replace only the first occurrence!
 sed -i -e "0,/BRANCH=.*/ s//BRANCH='${BRANCH}'/" ${VERSION_FILE}
 
 
