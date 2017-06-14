@@ -64,7 +64,7 @@ fi
 # Replace only the first occurrence!
 VERSION_FILE="scripts/st2_bootstrap.sh"
 echo "[master] Setting version in ${VERSION_FILE} to ${BRANCH}..."
-sed "0,/BRANCH=.*/ s//BRANCH='${BRANCH}'/" ${VERSION_FILE}
+sed -i -e "0,/BRANCH=.*/ s//BRANCH='${BRANCH}'/" ${VERSION_FILE}
 
 
 MODIFIED=`git status | grep modified || true`
