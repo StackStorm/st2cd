@@ -69,7 +69,7 @@ sed -i -e "0,/BRANCH=.*/ s//BRANCH='${BRANCH}'/" ${VERSION_FILE}
 
 MODIFIED=`git status | grep modified || true`
 if [[ ! -z "${MODIFIED}" ]]; then
-    git add ${VERSION_FILE}
+    git add -A
     git commit -qm "Update version info for release - ${VERSION}"
     git push origin master -q
 fi
