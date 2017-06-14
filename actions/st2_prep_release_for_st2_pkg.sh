@@ -71,6 +71,12 @@ if [[ -z "${NEW_MISTRAL_VERSION_STR_MATCH}" ]]; then
     fi
 fi
 
+# 'scripts/st2_bootstrap.sh'
+# Pin bash installer to latest stable 'st2-packages' branch in 'master'
+# Replace only the first occurrence!
+sed "0,/BRANCH=.*/ s//BRANCH='${BRANCH}'/" scripts/st2_bootstrap.sh
+
+
 MODIFIED=`git status | grep modified || true`
 if [[ ! -z "${MODIFIED}" ]]; then
     git add ${VERSION_FILE}
