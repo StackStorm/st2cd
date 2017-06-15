@@ -81,7 +81,10 @@ if [[ $(grep -c . <<< "${REQUIREMENTS}") > 1 ]]; then
     echo "Updating requirements.txt..."
     REQUIREMENTS=`echo "${REQUIREMENTS}" | sed '/https:\/\/github.com\/stackstorm/Id'`
     echo "${REQUIREMENTS}" > requirements.txt
-    grep -q 'python-mistralclient' requirements.txt || echo "git+https://github.com/StackStorm/python-mistralclient.git@${BRANCH}#egg=python-mistralclient" >> requirements.txt
+    # Note: python-mistralclient must come before troveclient since troveclient depends on mistralclient
+    # In This case we insert it before python-barbicanclient
+    MISTRALCLIENT_LINE="git+https://github.com/StackStorm/python-mistralclient.git@${BRANCH}#egg=python-mistralclient"
+    grep -q 'python-mistralclient' requirements.txt || sed -i "/python-barbicanclient/ i ${MISTRALCLIENT_LINE}" requirements.txt
     ${GIT} add requirements.txt
     ${GIT} diff --quiet --exit-code --cached || ${GIT} commit -m "Pin dependencies in requirements.txt"
 fi
