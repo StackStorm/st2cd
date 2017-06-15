@@ -82,11 +82,6 @@ if [[ $(grep -c . <<< "${REQUIREMENTS}") > 1 ]]; then
     REQUIREMENTS=`echo "${REQUIREMENTS}" | sed '/https:\/\/github.com\/stackstorm/Id'`
     echo "${REQUIREMENTS}" > requirements.txt
 
-    # Note: python-mistralclient must come before troveclient since troveclient depends on mistralclient
-    # In This case we insert it before python-barbicanclient
-    MISTRALCLIENT_LINE="git+https://github.com/StackStorm/python-mistralclient.git@${BRANCH}#egg=python-mistralclient"
-    grep -q 'python-mistralclient' requirements.txt || sed -i "/python-barbicanclient/ i ${MISTRALCLIENT_LINE}" requirements.txt
-
     # Note: Newer versions of troveclient (>=2.10.0) don't work with our mistralclient fork because of the version changing we do
     # See https://github.com/StackStorm/mistral/pull/24 for context and details
     sed -i "s/^python-troveclient.*/python-troveclient==2.9.0/g" requirements.txts
