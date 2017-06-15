@@ -84,7 +84,7 @@ if [[ $(grep -c . <<< "${REQUIREMENTS}") > 1 ]]; then
 
     # Note: Newer versions of troveclient (>=2.10.0) don't work with our mistralclient fork because of the version changing we do
     # See https://github.com/StackStorm/mistral/pull/24 for context and details
-    sed -i "s/^python-troveclient.*/python-troveclient==2.9.0/g" requirements.txts
+    sed -i "s/^python-troveclient.*/python-troveclient==2.9.0/g" requirements.txt
 
     ${GIT} add requirements.txt
     ${GIT} diff --quiet --exit-code --cached || ${GIT} commit -m "Pin dependencies in requirements.txt"
