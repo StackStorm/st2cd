@@ -24,7 +24,8 @@
         hosts: "st2build001"
         source: "/tmp/{{hostname}}-flow.tar.gz"
         keyfile: "/home/stanley/.ssh/st2_stanley_key"
-        destination: "{{hostname}}:/tmp/"
+        dest_server: "{{hostname}}"
+        destination: "/tmp/"
       on-success: "clean_flow"
     -
       name: "clean_flow"
