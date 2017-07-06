@@ -21,6 +21,6 @@ action:
     distro: UBUNTU16
     pkg_env: production
     release: stable
-    version: "2.3.0"
+    version: "2.3.1"
     enterprise: true
     enterprise_key: "{{st2kv.system.enterprise_key_prd_stable}}"
