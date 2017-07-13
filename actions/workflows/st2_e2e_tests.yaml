@@ -99,6 +99,18 @@ workflows:
                     count: 2
                     delay: 30
                 on-success:
+                    - robot_CLI_tests
+            robot_CLI_tests:
+                action: core.remote
+                input:
+                    hosts: <% $.host_ip %>
+                    env: <% $.st2_cli_env %>
+                    cmd: cd /tmp/st2tests && . venv/bin/activate && pybot robotfm_tests/cli/
+                    timeout: 300
+                retry:
+                    count: 2
+                    delay: 30
+                on-success:
                     - enterprise_tests: <% $.enterprise %>
             enterprise_tests:
                action: st2cd.st2_enterprise_tests
