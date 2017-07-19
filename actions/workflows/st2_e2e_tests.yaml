@@ -69,43 +69,27 @@ workflows:
                     host: <% $.host_ip %>
                     env: <% $.st2_cli_env %>
                 on-success:
-                    - robot_docs_tests
-            robot_docs_tests:
+                    - pabot_docs_tests
+            pabot_docs_tests:
                 action: core.remote
                 input:
                     hosts: <% $.host_ip %>
                     env: <% $.st2_cli_env %>
-                    cmd: cd /tmp/st2tests && . venv/bin/activate && pybot robotfm_tests/docs/
-                    timeout: 500
-                on-success:
-                    - robot_mistral_tests
-            robot_mistral_tests:
-                action: core.remote
-                input:
-                    hosts: <% $.host_ip %>
-                    env: <% $.st2_cli_env %>
-                    cmd: cd /tmp/st2tests && . venv/bin/activate && pybot robotfm_tests/mistral/
-                    timeout: 300
-                on-success:
-                    - robot_chatopsCI_tests
-            robot_chatopsCI_tests:
-                action: core.remote
-                input:
-                    hosts: <% $.host_ip %>
-                    env: <% $.st2_cli_env %>
-                    cmd: cd /tmp/st2tests && . venv/bin/activate && pybot robotfm_tests/chatopsCI/
+                    cmd: "cd /tmp/st2tests && . ./venv/bin/activate && bash /tmp/st2tests/robot_parallel_tests.sh \
+                        'robotfm_tests/docs/' 0"
                     timeout: 300
                 retry:
                     count: 2
                     delay: 30
                 on-success:
-                    - robot_CLI_tests
-            robot_CLI_tests:
+                    - pabot_chatops_mistral_CLI_tests
+            pabot_chatops_mistral_CLI_tests:
                 action: core.remote
                 input:
                     hosts: <% $.host_ip %>
                     env: <% $.st2_cli_env %>
-                    cmd: cd /tmp/st2tests && . venv/bin/activate && pybot robotfm_tests/cli/
+                    cmd: "cd /tmp/st2tests && . ./venv/bin/activate && bash /tmp/st2tests/robot_parallel_tests.sh \
+                        'robotfm_tests/cli/ robotfm_tests/mistral/ robotfm_tests/chatopsCI/' 0"
                     timeout: 300
                 retry:
                     count: 2
