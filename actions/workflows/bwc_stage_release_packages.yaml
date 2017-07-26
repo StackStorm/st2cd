@@ -8,6 +8,7 @@ workflows:
         input:
             - version
             - projects
+            - username: stackstorm
             - wait
             - distros:
                 RHEL6: el6
@@ -27,7 +28,8 @@ workflows:
                 with-items: project in <% $.projects %>
                 action: circle_ci.run_build
                 input:
-                    project: stackstorm/<% $.project %>
+                    project: <% $.project %>
+                    username: <% $.username %>
                     branch: <% $.branch %>
                 publish:
                     package_jobs: <% task(package_all).result.select(
@@ -38,7 +40,8 @@ workflows:
                 with-items: package_job in <% $.package_jobs %>
                 workflow: wait_for_package
                 input:
-                    project: stackstorm/<% $.package_job[0] %>
+                    project: <% $.package_job[0] %>
+                    username: <% $.username %>
                     build_number: <% str($.package_job[1]) %>
 
 
@@ -46,11 +49,13 @@ workflows:
         input:
             - project
             - build_number
+            - username
         tasks:
             wait_build_completion:
                 action: circle_ci.wait_until_build_finishes
                 input:
                     project: <% $.project %>
+                    username: <% $.username %>
                     build_number: <% $.build_number %>
                     wait_timeout: 3600
                     timeout: 3600
@@ -60,6 +65,7 @@ workflows:
                 action: circle_ci.get_build_info
                 input:
                     project: <% $.project %>
+                    username: <% $.username %>
                     build_num: <% int($.build_number) %>
                 publish:
                     status: <% task(check_build_status).result.result %>
