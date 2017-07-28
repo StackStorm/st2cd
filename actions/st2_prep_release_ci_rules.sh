@@ -2,7 +2,6 @@
 # To be created:
 # st2ci
 ############################################
-# st2_pkg_build_{{version}}_on_pytest.yaml
 set -e
 
 PROJECT=$1
@@ -40,16 +39,11 @@ function git_repo {
 }
 
 function create_new_rules {
-    # Skip if the two intended versions are the same.
-    # This can happen on patch releases, since 2.2.1 is reduced to v2.2, which is the same as if the version was 2.2.0
-    if [ "$PREV_FILE_POSTFIX_UNDERSCORE" != "$FILE_POSTFIX_UNDERSCORE" ]
-    then
-        cat ./rules/st2_pkg_build_${PREV_FILE_POSTFIX_UNDERSCORE}_on_pytest.yaml > ./rules/st2_pkg_build_${FILE_POSTFIX_UNDERSCORE}_on_pytest.yaml
-    fi
+    echo "Creating new rules"
 }
 
 function update_new_rules {
-    sed -i "s/$PREV_BRANCH/$BRANCH/g" ./rules/st2_pkg_build_${FILE_POSTFIX_UNDERSCORE}_on_pytest.yaml
+    echo "Updating new rules"
 }
 
 function git_finish {
