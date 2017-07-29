@@ -47,14 +47,16 @@ workflows:
                     version: <% $.version %>
                     timeout: 220
                 on-success:
+                    # Run Basic and quickstart tests together
                     - run_basic_tests
+                    - run_quickstart_tests
             run_basic_tests:
                 workflow: test_basic
                 input:
                     host: <% $.host_ip %>
                     env: <% $.st2_cli_env %>
-                on-success:
-                    - run_quickstart_tests
+                # on-success:
+                #     - run_quickstart_tests
             run_quickstart_tests:
                 workflow: test_quickstart
                 input:
@@ -62,6 +64,7 @@ workflows:
                     env: <% $.st2_cli_env %>
                     protocol: <% $.protocol %>
                 on-success:
+                    # Run Mistral tests after basic and quickstart
                     - run_mistral_tests
             run_mistral_tests:
                 workflow: test_mistral
@@ -138,6 +141,19 @@ workflows:
                     st2_cli_args: token=<% $.env.get(ST2_AUTH_TOKEN) %> protocol=<% $.protocol %>
                 on-success:
                     - test_quickstart
+                    - test_quickstart_key
+                    - test_quickstart_rules
+                    - test_quickstart_packs
+                    - test_quickstart_local_script
+                    - test_quickstart_remote_script
+                    - test_quickstart_passive_sensor
+                    - test_quickstart_polling_sensor
+                    - test_quickstart_python
+                    - test_quickstart_key_triggers
+                    - test_quickstart_trace
+                    - test_quickstart_run_pack_tests_tool
+                    # Keep timer_rules sequential
+                    # - test_quickstart_timer_rules
             test_quickstart:
                 action: core.remote
                 input:
@@ -145,16 +161,16 @@ workflows:
                     env: <% $.env %>
                     cmd: st2 run tests.test_quickstart <% $.st2_cli_args %>
                     timeout: 180
-                on-success:
-                    - test_quickstart_key
+                # on-success:
+                #     - test_quickstart_key
             test_quickstart_key:
                 action: core.remote
                 input:
                     hosts: <% $.host %>
                     env: <% $.env %>
                     cmd: st2 run tests.test_quickstart_key <% $.st2_cli_args %>
-                on-success:
-                    - test_quickstart_rules
+                # on-success:
+                #     - test_quickstart_rules
             test_quickstart_rules:
                 action: core.remote
                 input:
@@ -162,8 +178,8 @@ workflows:
                     env: <% $.env %>
                     cmd: st2 run tests.test_quickstart_rules <% $.st2_cli_args %>
                     timeout: 600
-                on-success:
-                    - test_quickstart_packs
+                # on-success:
+                #     - test_quickstart_packs
             test_quickstart_packs:
                 action: core.remote
                 input:
@@ -171,8 +187,8 @@ workflows:
                     env: <% $.env %>
                     cmd: st2 run tests.test_packs_pack <% $.st2_cli_args %>
                     timeout: 600
-                on-success:
-                    - test_quickstart_local_script
+                # on-success:
+                #     - test_quickstart_local_script
             test_quickstart_local_script:
                 action: core.remote
                 input:
@@ -180,8 +196,8 @@ workflows:
                     env: <% $.env %>
                     cmd: st2 run tests.test_quickstart_local_script_actions <% $.st2_cli_args %>
                     timeout: 600
-                on-success:
-                    - test_quickstart_remote_script
+                # on-success:
+                #     - test_quickstart_remote_script
             test_quickstart_remote_script:
                 action: core.remote
                 input:
@@ -189,8 +205,8 @@ workflows:
                     env: <% $.env %>
                     cmd: st2 run tests.test_quickstart_remote_script_actions <% $.st2_cli_args %>
                     timeout: 600
-                on-success:
-                    - test_quickstart_passive_sensor
+                # on-success:
+                #     - test_quickstart_passive_sensor
             test_quickstart_passive_sensor:
                 action: core.remote
                 input:
@@ -198,8 +214,8 @@ workflows:
                     env: <% $.env %>
                     cmd: st2 run tests.test_quickstart_passive_sensor <% $.st2_cli_args %>
                     timeout: 600
-                on-success:
-                    - test_quickstart_polling_sensor
+                # on-success:
+                #     - test_quickstart_polling_sensor
             test_quickstart_polling_sensor:
                 action: core.remote
                 input:
@@ -207,8 +223,8 @@ workflows:
                     env: <% $.env %>
                     cmd: st2 run tests.test_quickstart_polling_sensor <% $.st2_cli_args %>
                     timeout: 600
-                on-success:
-                    - test_quickstart_python
+                # on-success:
+                #     - test_quickstart_python
             test_quickstart_python:
                 action: core.remote
                 input:
@@ -216,18 +232,17 @@ workflows:
                     env: <% $.env %>
                     cmd: st2 run tests.test_quickstart_python_actions <% $.st2_cli_args %>
                     timeout: 600
-                on-success:
-                    # - test_quickstart_key_triggers
-                    - test_quickstart_trace
-            # test_quickstart_key_triggers:
-            #     action: core.remote
-            #     input:
-            #         hosts: <% $.host %>
-            #         env: <% $.env %>
-            #         cmd: st2 run tests.test_key_triggers <% $.st2_cli_args %>
-            #         timeout: 600
-            #     on-success:
-            #         - test_quickstart_trace
+                # on-success:
+                #     - test_quickstart_key_triggers
+            test_quickstart_key_triggers:
+                action: core.remote
+                input:
+                    hosts: <% $.host %>
+                    env: <% $.env %>
+                    cmd: st2 run tests.test_key_triggers <% $.st2_cli_args %>
+                    timeout: 600
+                # on-success:
+                #    - test_quickstart_trace
             test_quickstart_trace:
                 action: core.remote
                 input:
@@ -235,8 +250,8 @@ workflows:
                     env: <% $.env %>
                     cmd: st2 run tests.test_quickstart_trace <% $.st2_cli_args %>
                     timeout: 600
-                on-success:
-                    - test_quickstart_run_pack_tests_tool
+                # on-success:
+                #     - test_quickstart_run_pack_tests_tool
             test_quickstart_run_pack_tests_tool:
                 action: core.remote
                 input:
@@ -245,6 +260,7 @@ workflows:
                     # Note: This test is only available and working in StackStorm >= 2.3dev
                     cmd: "st2 action get tests.test_run_pack_tests_tool ; if [ $? -eq 0 ]; then st2 run tests.test_run_pack_tests_tool <% $.st2_cli_args %>; else echo 'run_pack_tests_tool tests not available'; fi"
                     timeout: 600
+                # Keep timer_rules sequential
                 on-success:
                     - test_quickstart_timer_rules
             test_quickstart_timer_rules:
