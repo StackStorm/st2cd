@@ -58,7 +58,7 @@ workflows:
                 # on-success:
                 #     - run_quickstart_tests
             run_quickstart_tests:
-                workflow: test_quickstart
+                workflow: test_quickstart_wf
                 input:
                     host: <% $.host_ip %>
                     env: <% $.st2_cli_env %>
@@ -128,7 +128,7 @@ workflows:
                     cmd: st2 run core.remote hosts=<% $.host %> hostname
 
 
-    test_quickstart:
+    test_quickstart_wf:
         type: direct
         input:
             - host
