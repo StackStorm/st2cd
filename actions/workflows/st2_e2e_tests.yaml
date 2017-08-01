@@ -129,7 +129,7 @@ workflows:
 
 
     test_quickstart:
-        type: direct
+        type: reverse
         input:
             - host
             - env
@@ -137,25 +137,13 @@ workflows:
         tasks:
             init:
                 action: std.noop
+                description: "Init task that should be executed first. Make sure other tasks depends on it."
                 publish:
                     st2_cli_args: token=<% $.env.get(ST2_AUTH_TOKEN) %> protocol=<% $.protocol %>
-                on-success:
-                    - test_quickstart
-                    - test_quickstart_key
-                    - test_quickstart_rules
-                    - test_quickstart_packs
-                    - test_quickstart_local_script
-                    - test_quickstart_remote_script
-                    - test_quickstart_passive_sensor
-                    - test_quickstart_polling_sensor
-                    - test_quickstart_python
-                    - test_quickstart_key_triggers
-                    - test_quickstart_trace
-                    - test_quickstart_run_pack_tests_tool
-                    # Keep timer_rules sequential
-                    # - test_quickstart_timer_rules
+
             test_quickstart:
                 action: core.remote
+                requires: [init]
                 input:
                     hosts: <% $.host %>
                     env: <% $.env %>
@@ -165,6 +153,7 @@ workflows:
                 #     - test_quickstart_key
             test_quickstart_key:
                 action: core.remote
+                requires: [init]
                 input:
                     hosts: <% $.host %>
                     env: <% $.env %>
@@ -173,6 +162,7 @@ workflows:
                 #     - test_quickstart_rules
             test_quickstart_rules:
                 action: core.remote
+                requires: [init]
                 input:
                     hosts: <% $.host %>
                     env: <% $.env %>
@@ -182,6 +172,7 @@ workflows:
                 #     - test_quickstart_packs
             test_quickstart_packs:
                 action: core.remote
+                requires: [init]
                 input:
                     hosts: <% $.host %>
                     env: <% $.env %>
@@ -191,6 +182,7 @@ workflows:
                 #     - test_quickstart_local_script
             test_quickstart_local_script:
                 action: core.remote
+                requires: [init]
                 input:
                     hosts: <% $.host %>
                     env: <% $.env %>
@@ -200,6 +192,7 @@ workflows:
                 #     - test_quickstart_remote_script
             test_quickstart_remote_script:
                 action: core.remote
+                requires: [init]
                 input:
                     hosts: <% $.host %>
                     env: <% $.env %>
@@ -209,6 +202,7 @@ workflows:
                 #     - test_quickstart_passive_sensor
             test_quickstart_passive_sensor:
                 action: core.remote
+                requires: [init]
                 input:
                     hosts: <% $.host %>
                     env: <% $.env %>
@@ -218,6 +212,7 @@ workflows:
                 #     - test_quickstart_polling_sensor
             test_quickstart_polling_sensor:
                 action: core.remote
+                requires: [init]
                 input:
                     hosts: <% $.host %>
                     env: <% $.env %>
@@ -227,6 +222,7 @@ workflows:
                 #     - test_quickstart_python
             test_quickstart_python:
                 action: core.remote
+                requires: [init]
                 input:
                     hosts: <% $.host %>
                     env: <% $.env %>
@@ -236,6 +232,7 @@ workflows:
                 #     - test_quickstart_key_triggers
             test_quickstart_key_triggers:
                 action: core.remote
+                requires: [init]
                 input:
                     hosts: <% $.host %>
                     env: <% $.env %>
@@ -245,6 +242,7 @@ workflows:
                 #    - test_quickstart_trace
             test_quickstart_trace:
                 action: core.remote
+                requires: [init]
                 input:
                     hosts: <% $.host %>
                     env: <% $.env %>
@@ -254,6 +252,7 @@ workflows:
                 #     - test_quickstart_run_pack_tests_tool
             test_quickstart_run_pack_tests_tool:
                 action: core.remote
+                requires: [init]
                 input:
                     hosts: <% $.host %>
                     env: <% $.env %>
@@ -265,6 +264,7 @@ workflows:
                     - test_quickstart_timer_rules
             test_quickstart_timer_rules:
                 action: core.remote
+                requires: [init]
                 input:
                     hosts: <% $.host %>
                     env: <% $.env %>
