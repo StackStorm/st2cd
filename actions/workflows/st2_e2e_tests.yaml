@@ -84,13 +84,13 @@ workflows:
                     count: 2
                     delay: 30
                 on-success:
-                    - pabot_chatops_mistral_CLI_tests
-            pabot_chatops_mistral_CLI_tests:
+                    - pabot_chatops_CLI_tests
+            pabot_chatops_CLI_tests:
                 action: core.remote
                 input:
                     hosts: <% $.host_ip %>
                     env: <% $.st2_cli_env %>
-                    cmd: "cd /tmp/st2tests && . ./venv/bin/activate && bash /tmp/st2tests/robot_parallel_tests.sh '--processes 3 robotfm_tests/cli/ robotfm_tests/mistral/ robotfm_tests/chatopsCI/' 0"
+                    cmd: "cd /tmp/st2tests && . ./venv/bin/activate && bash /tmp/st2tests/robot_parallel_tests.sh '--processes 2 robotfm_tests/cli/ robotfm_tests/chatopsCI/' 0"
                     timeout: 300
                 retry:
                     count: 2
