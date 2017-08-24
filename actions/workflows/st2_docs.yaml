@@ -57,6 +57,7 @@
         location: "{% if branch == 'master' %}/latest/{% elif version|string() == st2kv.system.st2_stable_version|string() %}/{% endif %}"
         bucket: "{% if environment == 'production' %}docs.stackstorm.com{% else %}{{docs_url}}{% endif %}"
         version: "/{{version}}/"
+        timeout: 600
       on-success: "clean_repo"
       on-failure: "clean_repo"
     -
