@@ -78,7 +78,7 @@ workflows:
                 input:
                     hosts: <% $.host_ip %>
                     env: <% $.st2_cli_env %>
-                    cmd: "cd /tmp/st2tests && . ./venv/bin/activate && bash /tmp/st2tests/robot_parallel_tests.sh '--processes 3 robotfm_tests/docs/' 0"
+                    cmd: "cd /tmp/st2tests && . ./venv/bin/activate && bash /tmp/st2tests/robot_parallel_tests.sh '--processes 1 robotfm_tests/docs/' 0"
                     timeout: 300
                 retry:
                     count: 2
