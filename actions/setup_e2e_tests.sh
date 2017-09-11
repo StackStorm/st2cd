@@ -9,15 +9,16 @@ DEBTEST=`lsb_release -a 2> /dev/null | grep Distributor | awk '{print $3}'`
 RHTEST=`cat /etc/redhat-release 2> /dev/null | sed -e "s~\(.*\)release.*~\1~g"`
 
 if [[ -n "$RHTEST" ]]; then
-  echo "*** Detected Distro is ${RHTEST} ***"
-  sudo yum install -y python-pip wget
+    RHVERSION=`cat /etc/redhat-release 2> /dev/null | sed -r 's/([^0-9]*([0-9]*)){1}.*/\2/'`
+    echo "*** Detected Distro is ${RHTEST} - ${RHVERSION} ***"
+    sudo yum install -y python-pip wget
 elif [[ -n "$DEBTEST" ]]; then
-  echo "*** Detected Distro is ${DEBTEST} ***"
-  sudo apt-get install -y wget
-  sudo apt-get -q -y install python-pip python-dev build-essential
+    echo "*** Detected Distro is ${DEBTEST} ***"
+    sudo apt-get install -y wget
+    sudo apt-get -q -y install python-pip python-dev build-essential
 else
-  echo "Unknown Operating System."
-  exit 2
+    echo "Unknown Operating System."
+    exit 2
 fi
 
 # Setup crypto key file
@@ -56,7 +57,13 @@ st2ctl reload --register-all
 cd st2tests
 sudo pip install --upgrade pip
 sudo pip install --upgrade virtualenv
-virtualenv venv
+
+# wheel==0.30.0 doesn't support python 2.6 (default on el6)
+if [[ "$RHVERSION" == 6 ]]; then
+    virtualenv venv -p /opt/stackstorm/st2/bin/python2.7
+else
+    virtualenv venv
+fi
 . venv/bin/activate
 pip install -r robotfm_tests/test-requirements.txt
 
