@@ -57,6 +57,8 @@ st2ctl reload --register-all
 cd st2tests
 sudo pip install --upgrade pip
 sudo pip install --upgrade virtualenv
+
+# wheel==0.30.0 doesn't support python 2.6 (default on el6)
 if [[ "$RHVERSION" == 6 ]]; then
     virtualenv venv -p /opt/stackstorm/st2/bin/python2.7
 else
