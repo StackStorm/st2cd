@@ -56,7 +56,7 @@ workflows:
                 input:
                     project: <% $.project %>
                     username: <% $.username %>
-                    build_number: <% $.build_number %>
+                    build_num: <% $.build_number %>
                     wait_timeout: 3600
                     timeout: 3600
                 on-success:
