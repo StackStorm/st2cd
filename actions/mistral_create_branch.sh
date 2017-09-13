@@ -5,7 +5,7 @@ VERSION=$1
 REPO_MAIN=$2
 REPO_CLIENT=$3
 REPO_ACTION=$4
-REQUIREMENTS=$(echo "$5" | sed 's/\\n/\n/g')
+REQUIREMENTS=$(echo "$5" | sed 's/\\\\n/\n/g' | sed 's/\\n/\n/g')
 
 GIT=`which git`
 SHORT_VERSION=`echo ${VERSION} | cut -d "." -f1-2`
