@@ -72,6 +72,13 @@ workflows:
                     host: <% $.host_ip %>
                     env: <% $.st2_cli_env %>
                 on-success:
+                    - run_inquiry_tests
+            run_inquiry_tests:
+                workflow: test_inquiry
+                input:
+                    host: <% $.host_ip %>
+                    env: <% $.st2_cli_env %>
+                on-success:
                     - pabot_docs_tests
             pabot_docs_tests:
                 action: core.remote
@@ -282,3 +289,33 @@ workflows:
                     env: <% $.env %>
                     cmd: st2 run examples.mistral_examples
                     timeout: 600
+
+
+    test_inquiry:
+        type: direct
+        input:
+            - host
+            - env
+            - protocol
+        tasks:
+            init:
+                action: std.noop
+                publish:
+                    st2_cli_args: token=<% $.env.get(ST2_AUTH_TOKEN) %> protocol=<% $.protocol %>
+                on-success:
+                    - test_inquiry_chain
+                    - test_inquiry_mistral
+
+            test_inquiry_chain:
+                action: core.remote
+                input:
+                    hosts: <% $.host %>
+                    env: <% $.env %>
+                    cmd: st2 run tests.test_inquiry_chain <% $.st2_cli_args %>
+                    timeout: 180
+            test_inquiry_mistral:
+                action: core.remote
+                input:
+                    hosts: <% $.host %>
+                    env: <% $.env %>
+                    cmd: st2 run tests.test_inquiry_mistral <% $.st2_cli_args %>
