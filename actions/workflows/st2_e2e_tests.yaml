@@ -78,6 +78,7 @@ workflows:
                 input:
                     host: <% $.host_ip %>
                     env: <% $.st2_cli_env %>
+                    protocol: <% $.protocol %>
                 on-success:
                     - pabot_docs_tests
             pabot_docs_tests:
