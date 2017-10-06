@@ -74,8 +74,17 @@ workflows:
                 on-success:
                     # Temporary hack so that inquiry tests only run if version
                     # contains inquiry feature. Should remove after 2.5 release
+                    - decide_skip_inquiry: <% not $.version = null %>
+                    - run_inquiry_tests: <% $.version = null %>
+
+            # Temporary hack so that inquiry tests only run if version
+            # contains inquiry feature. Should remove after 2.5 release
+            decide_skip_inquiry:
+                action: core.noop
+                on-success:
                     - run_inquiry_tests: <% version_match($.version, ">2.4.1") %>
                     - pabot_docs_tests: <% version_match($.version, "<=2.4.1") %>
+
             run_inquiry_tests:
                 workflow: test_inquiry
                 input:
