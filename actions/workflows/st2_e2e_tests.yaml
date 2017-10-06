@@ -74,8 +74,24 @@ workflows:
                 on-success:
                     # Temporary hack so that inquiry tests only run if version
                     # contains inquiry feature. Should remove after 2.5 release
+                    #
+                    # When running against unstable, version will be null
+                    # So if this is null, don't try to do a version comparsion;
+                    # just run the inquiry tests.
+                    # If version isn't null, try to figure out if the version
+                    # is greater than 2.4.1, since anything higher
+                    # has the inquiries feature.
+                    - decide_skip_inquiry: <% not $.version = null %>
+                    - run_inquiry_tests: <% $.version = null %>
+
+            # Temporary hack so that inquiry tests only run if version
+            # contains inquiry feature. Should remove after 2.5 release
+            decide_skip_inquiry:
+                action: core.noop
+                on-success:
                     - run_inquiry_tests: <% version_match($.version, ">2.4.1") %>
                     - pabot_docs_tests: <% version_match($.version, "<=2.4.1") %>
+
             run_inquiry_tests:
                 workflow: test_inquiry
                 input:
