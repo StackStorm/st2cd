@@ -72,7 +72,10 @@ workflows:
                     host: <% $.host_ip %>
                     env: <% $.st2_cli_env %>
                 on-success:
-                    - run_inquiry_tests
+                    # Temporary hack so that inquiry tests only run if version
+                    # contains inquiry feature. Should remove after 2.5 release
+                    - run_inquiry_tests: <% version_match($.version, ">2.4.1") %>
+                    - pabot_docs_tests: <% version_match($.version, "<=2.4.1") %>
             run_inquiry_tests:
                 workflow: test_inquiry
                 input:
