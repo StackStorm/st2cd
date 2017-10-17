@@ -24,6 +24,10 @@ parameters:
         type: string
         description: Location where to clone the repo. Programmatically determined if not provided.
         position: 3
+    branch:
+        type: string
+        description: Git branch to checkout
+        position: 4
     dir:
         immutable: true
         default: /home/stanley/

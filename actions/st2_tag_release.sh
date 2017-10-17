@@ -5,9 +5,8 @@ PROJECT=$1
 VERSION=$2
 FORK=$3
 LOCAL_REPO=$4
+BRANCH=$5
 GIT_REPO="git@github.com:${FORK}/${PROJECT}.git"
-SHORT_VERSION=`echo ${VERSION} | cut -d "." -f1-2`
-BRANCH="v${SHORT_VERSION}"
 TAGGED_VERSION="v${VERSION}"
 CWD=`pwd`
 
