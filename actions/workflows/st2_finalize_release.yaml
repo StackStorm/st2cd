@@ -72,14 +72,15 @@ st2cd.st2_finalize_release:
                 hosts: <% $.host %>
                 cwd: <% $.cwd %>
             on-success:
-                - st2_tag_release
+                - tag_release
         st2_tag_release:
-            action: st2cd.st2_tag_release
+            action: st2cd.tag_release
             input:
                 project: st2
                 version: <% $.version %>
                 fork: <% $.fork %>
                 local_repo: <% 'st2_' + $.local_repo_sfx %>
+                branch: v<% $.major_minor_version %>
                 hosts: <% $.host %>
                 cwd: <% $.cwd %>
             on-success:
@@ -109,6 +110,18 @@ st2cd.st2_finalize_release:
                 version: <% $.version %>
                 fork: <% $.fork %>
                 local_repo: <% 'st2_' + $.local_repo_sfx %>
+                hosts: <% $.host %>
+                cwd: <% $.cwd %>
+            on-success:
+                - st2_docker_tag_release
+        st2_docker_tag_release:
+            action: st2cd.tag_release
+            input:
+                project: st2_docker
+                version: <% $.version %>
+                fork: <% $.fork %>
+                local_repo: <% 'st2docker_' + $.local_repo_sfx %>
+                branch: master
                 hosts: <% $.host %>
                 cwd: <% $.cwd %>
 
