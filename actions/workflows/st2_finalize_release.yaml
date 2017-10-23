@@ -72,9 +72,9 @@ st2cd.st2_finalize_release:
                 hosts: <% $.host %>
                 cwd: <% $.cwd %>
             on-success:
-                - st2_tag_release
+                - tag_release
         st2_tag_release:
-            action: st2cd.st2_tag_release
+            action: st2cd.tag_release
             input:
                 project: st2
                 version: <% $.version %>
@@ -115,7 +115,7 @@ st2cd.st2_finalize_release:
             on-success:
                 - st2_docker_tag_release
         st2_docker_tag_release:
-            action: st2cd.st2_tag_release
+            action: st2cd.tag_release
             input:
                 project: st2_docker
                 version: <% $.version %>

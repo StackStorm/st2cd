@@ -1,9 +1,9 @@
 ---
-name: st2_tag_release
-description: Tag release on a st2 project
+name: tag_release
+description: Tag release
 enabled: true
 runner_type: remote-shell-script
-entry_point: st2_tag_release.sh
+entry_point: tag_release.sh
 parameters:
     project:
         type: string
