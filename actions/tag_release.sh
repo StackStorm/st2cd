@@ -37,7 +37,7 @@ git clone ${GIT_REPO} ${LOCAL_REPO}
 
 cd ${LOCAL_REPO}
 echo "Currently at directory `pwd`..."
-git checkout -b ${BRANCH} origin/${BRANCH}
+git checkout -B ${BRANCH} origin/${BRANCH}
 
 
 # CHECK IF TAG EXISTS

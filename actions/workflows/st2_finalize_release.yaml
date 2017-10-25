@@ -117,7 +117,7 @@ st2cd.st2_finalize_release:
         st2_docker_tag_release:
             action: st2cd.tag_release
             input:
-                project: st2_docker
+                project: st2-docker
                 version: <% $.version %>
                 fork: <% $.fork %>
                 local_repo: <% 'st2docker_' + $.local_repo_sfx %>
