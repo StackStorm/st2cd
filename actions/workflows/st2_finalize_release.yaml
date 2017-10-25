@@ -72,7 +72,7 @@ st2cd.st2_finalize_release:
                 hosts: <% $.host %>
                 cwd: <% $.cwd %>
             on-success:
-                - tag_release
+                - st2_tag_release
         st2_tag_release:
             action: st2cd.tag_release
             input:
