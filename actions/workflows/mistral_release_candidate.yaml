@@ -17,7 +17,7 @@ st2cd.mistral_release_candidate:
         - notify_failure_channels:
             - "#thunderdome"
             - "#stackstorm"
-        - webui_base_url: "https://st2cicd"
+        - webui_base_url: "https://st2cicd.uswest2.stackstorm.net"
 
     task-defaults:
         on-error:
