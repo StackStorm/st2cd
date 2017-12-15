@@ -59,12 +59,10 @@ index-servers =
     pypitest
 
 [pypi]
-repository: https://upload.pypi.org/legacy/
 username: ${PYPI_USERNAME}
 password: ${PYPI_PASSWORD}
 
 [pypitest]
-repository: https://test.pypi.org/legacy/
 username: ${PYPI_USERNAME}
 password: ${PYPI_PASSWORD}
 pypirc
@@ -80,11 +78,16 @@ if [ "${REPO}" != "${PROJECT}" ]; then
     cd ./${PROJECT}
 fi
 
- 
+
 echo "Currently at directory `pwd`..."
-python setup.py sdist upload -r pypitest
+sudo pip install -U twine wheel
+
+python setup.py sdist bdist_wheel
+
+twine upload dist/* -r pypitest
 if [[ $? != 0 ]]; then exit 1; fi
-python setup.py sdist upload -r pypi
+
+twine upload dist/* -r pypi
 if [[ $? != 0 ]]; then exit 1; fi
 
 
