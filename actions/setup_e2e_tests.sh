@@ -49,6 +49,11 @@ fi
 echo "Installing Packs: tests, asserts, fixtures, webui..."
 sudo cp -R st2tests/packs/* /opt/stackstorm/packs/
 
+echo "Copy st2 CI configuration if it exists..."
+if [ -f st2tests/conf/st2.ci.conf ]; then
+    sudo cp -f st2tests/conf/st2.ci.conf /etc/st2/st2.conf
+fi
+
 sudo cp -R /usr/share/doc/st2/examples /opt/stackstorm/packs/
 st2 run packs.setup_virtualenv packs=examples,tests,asserts,fixtures,webui
 st2ctl reload --register-all
