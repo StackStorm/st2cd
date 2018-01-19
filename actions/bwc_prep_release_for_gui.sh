@@ -47,15 +47,17 @@ git checkout -b ${BRANCH} origin/master
 VERSION_FILE="circle.yml"
 VERSION_STR="git clone -b ${BRANCH} https:\/\/github.com"
 
-VERSION_STR_MATCH=`grep "${VERSION_STR}" ${VERSION_FILE} || true`
-if [[ -z "${VERSION_STR_MATCH}" ]]; then
-    echo "Setting version in ${VERSION_FILE} to ${VERSION}..."
-    sed -i -e "s/git clone https:\/\/github.com/${VERSION_STR}/g" ${VERSION_FILE}
-
+if [ -f ${VERSION_FILE} ]; then
     VERSION_STR_MATCH=`grep "${VERSION_STR}" ${VERSION_FILE} || true`
     if [[ -z "${VERSION_STR_MATCH}" ]]; then
-        >&2 echo "ERROR: Unable to update the bwc version in ${VERSION_FILE}."
-        exit 1
+        echo "Setting version in ${VERSION_FILE} to ${VERSION}..."
+        sed -i -e "s/git clone https:\/\/github.com/${VERSION_STR}/g" ${VERSION_FILE}
+
+        VERSION_STR_MATCH=`grep "${VERSION_STR}" ${VERSION_FILE} || true`
+        if [[ -z "${VERSION_STR_MATCH}" ]]; then
+            >&2 echo "ERROR: Unable to update the bwc version in ${VERSION_FILE}."
+            exit 1
+        fi
     fi
 fi
 
