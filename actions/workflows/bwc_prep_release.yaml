@@ -122,6 +122,18 @@ st2cd.bwc_prep_release:
                 local_repo: <% 'bwc_ipfabric_docs_' + $.local_repo_sfx %>
                 hosts: <% $.host %>
                 cwd: <% $.cwd %>
+            on-success:
+                - prep_bwc_installer
+        
+        prep_bwc_installer:
+            action: st2cd.bwc_prep_release_for_bwc_installer
+            input:
+                project: bwc-installer
+                version: <% $.version %>
+                fork: <% $.fork %>
+                local_repo: <% 'bwc-installer_' + $.local_repo_sfx %>
+                hosts: <% $.host %>
+                cwd: <% $.cwd %>
 
 
         cleanup_on_failure:
