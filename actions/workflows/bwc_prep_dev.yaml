@@ -62,6 +62,17 @@ st2cd.bwc_prep_dev:
                 local_repo: <% 'st2enterprise_auth_ldap_' + $.local_repo_sfx %>
                 hosts: <% $.host %>
                 cwd: <% $.cwd %>
+            on-success:
+                - prep_bwc_ui
+        prep_bwc_ui:
+            action: st2cd.bwc_prep_dev_for_bwc_ui
+            input:
+                project: bwc-ui
+                version: <% $.dev_version %>
+                fork: <% $.fork %>
+                local_repo: <% 'bwc-ui_' + $.local_repo_sfx %>
+                hosts: <% $.host %>
+                cwd: <% $.cwd %>
         #    on-success:
         #        - prep_bwc_ipfabric_suite
         # prep_bwc_ipfabric_suite:
