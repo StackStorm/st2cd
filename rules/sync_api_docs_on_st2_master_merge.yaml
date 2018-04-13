@@ -11,7 +11,7 @@ criteria:
     trigger.body.payload.vcs_url:
         type: equals
         pattern: "https://github.com/StackStorm/st2"
-    # branch not starting with 'master' or 'vX.Y'
+    # branch starting with 'master' or 'vX.Y'
     trigger.body.payload.branch:
         type: regex
         pattern: "^master|^v[0-9]+\\.[0-9]+"
