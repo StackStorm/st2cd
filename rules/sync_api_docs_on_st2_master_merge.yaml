@@ -1,0 +1,29 @@
+---
+name: sync_api_docs_on_st2_master
+description: Sync API documentation on merges to st2 master
+pack: st2cd
+enabled: true
+
+trigger:
+    type: circle_ci.build_event
+
+criteria:
+    trigger.body.payload.vcs_url:
+        type: equals
+        pattern: "https://github.com/StackStorm/st2"
+    # branch not starting with 'master' or 'vX.Y'
+    trigger.body.payload.branch:
+        type: regex
+        pattern: "^master|^v[0-9]+\\.[0-9]+"
+    trigger.body.payload.outcome:
+        type: equals
+        pattern: success
+
+action:
+    ref: circle_ci.run_build
+    parameters:
+      project: st2apidocs
+      username: stackstorm
+      branch: master
+      build_paramaters:
+          ST2_BRANCH: "{{ trigger.body.payload.branch }}"
