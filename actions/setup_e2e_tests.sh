@@ -55,7 +55,7 @@ st2ctl reload --register-all
 
 # Robotframework requirements
 cd st2tests
-sudo pip install --upgrade pip
+sudo pip install --upgrade "pip>=9.0,<9.1"
 sudo pip install --upgrade virtualenv
 
 # wheel==0.30.0 doesn't support python 2.6 (default on el6)
