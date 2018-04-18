@@ -61,14 +61,14 @@ st2ctl reload --register-all
 
 # Robotframework requirements
 cd st2tests
-sudo pip install --upgrade pip
-sudo pip install --upgrade virtualenv
+sudo pip install --upgrade "pip>=9.0,<9.1"
+sudo pip install --upgrade "virtualenv==15.1.0"
 
 # wheel==0.30.0 doesn't support python 2.6 (default on el6)
 if [[ "$RHVERSION" == 6 ]]; then
-    virtualenv venv -p /opt/stackstorm/st2/bin/python2.7
+    virtualenv --no-download venv -p /opt/stackstorm/st2/bin/python2.7
 else
-    virtualenv venv
+    virtualenv --no-download venv
 fi
 . venv/bin/activate
 pip install -r robotfm_tests/test-requirements.txt
