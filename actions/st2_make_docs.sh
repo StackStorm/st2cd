@@ -33,6 +33,9 @@ if [ -d "${LOCAL_REPO}" ]; then
     rm -rf ${LOCAL_REPO}
 fi
 
+# Make sure latest version of virtualenv is installed
+sudo pip install --upgrade "virtualenv==15.1.0"
+
 git clone ${GIT_REPO} ${LOCAL_REPO}
 
 cd ${LOCAL_REPO}
