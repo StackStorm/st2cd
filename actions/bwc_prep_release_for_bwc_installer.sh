@@ -7,7 +7,6 @@ FORK=$3
 LOCAL_REPO=$4
 GIT_REPO="git@github.com:${FORK}/${PROJECT}.git"
 SHORT_VERSION=`echo ${VERSION} | cut -d "." -f1-2`
-DEV_VERSION="${SHORT_VERSION}dev"
 BRANCH="v${SHORT_VERSION}"
 CWD=`pwd`
 
@@ -39,33 +38,15 @@ git clone ${GIT_REPO} ${LOCAL_REPO}
 cd ${LOCAL_REPO}
 echo "Currently at directory `pwd`..."
 
+
+# CREATE RELEASE BRANCH AND SET NEW ST2 VERSION INFO
 echo "Creating new branch ${BRANCH}..."
 git checkout -b ${BRANCH} origin/master
 
+# XXX: No changes need to be made to the repo today. 
 
-# SET NEW ST2 VERSION INFO
-VERSION_FILE="package.json"
-VERSION_STR="\"st2_version\": \"${VERSION}\""
-
-VERSION_STR_MATCH=`grep "${VERSION_STR}" ${VERSION_FILE} || true`
-if [[ -z "${VERSION_STR_MATCH}" ]]; then
-    echo "Setting version in ${VERSION_FILE} to ${VERSION}..."
-    sed -i -e "s/\(^  \"st2_version\": \"\).*\(\"\)/\1${VERSION}\2/" ${VERSION_FILE}
-
-    VERSION_STR_MATCH=`grep "${VERSION_STR}" ${VERSION_FILE} || true`
-    if [[ -z "${VERSION_STR_MATCH}" ]]; then
-        >&2 echo "ERROR: Unable to update the st2 version in ${VERSION_FILE}."
-        exit 1
-    fi
-fi
-
-MODIFIED=`git status | grep modified || true`
-if [[ ! -z "${MODIFIED}" ]]; then
-    git add ${VERSION_FILE}
-    git commit -qm "Update version info for release - ${VERSION}"
-    git push origin ${BRANCH} -q
-fi
-
+echo "Pushing branch ${BRANCH} to github"
+git push origin ${BRANCH}
 
 # CLEANUP
 cd ${CWD}
