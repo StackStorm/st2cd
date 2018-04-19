@@ -37,7 +37,7 @@
       params:
         hosts: "{{build_server}}"
         timeout: 2000
-        cmd: "cd {{repodir}} && make bwcdocs"
+        cmd: 'cd {{repodir}} && sudo pip install --upgrade "virtualenv==15.1.0" && make bwcdocs'
       on-success: "s3cmd_docs"
       on-failure: "clean_repo"
     -
