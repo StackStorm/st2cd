@@ -132,7 +132,7 @@ st2cd.st2_finalize_release:
                 project: st2apidocs
                 username: stackstorm
                 branch: master
-                build_paramaters:
+                build_parameters:
                     ST2_BRANCH: <% 'v' + $.major_minor_version %>
 
         cleanup_on_failure:
