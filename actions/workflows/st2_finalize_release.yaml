@@ -124,7 +124,16 @@ st2cd.st2_finalize_release:
                 branch: master
                 hosts: <% $.host %>
                 cwd: <% $.cwd %>
-
+            on-success:
+                - ship_api_docs
+        ship_api_docs:
+            action: circle_ci.run_build
+            input:
+                project: st2apidocs
+                username: stackstorm
+                branch: master
+                build_parameters:
+                    ST2_BRANCH: <% 'v' + $.major_minor_version %>
 
         cleanup_on_failure:
             action: core.remote
