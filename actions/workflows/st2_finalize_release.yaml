@@ -125,7 +125,29 @@ st2cd.st2_finalize_release:
                 hosts: <% $.host %>
                 cwd: <% $.cwd %>
             on-success:
+                - packer_st2_tag_release
+
+        get_utc_date:
+            action: core.local
+            input:
+                cmd: "date -u +%Y%m%d"
+            publish:
+                utc_date: <% task(get_utc_date).result.stdout %>
+            on-success:
+                - update_packer_st2_changelog_and_tag
+        update_packer_st2_changelog_and_tag:
+            action: stdcd.update_changelog
+            input:
+                project: packer-st2
+                version: <% $.version + '_' + $.utc_date %>
+                fork: <% $.fork %>
+                local_repo: <% 'packerst2_' + $.local_repo_sfx %>
+                branch: master
+                hosts: <% $.host %>
+                cwd: <% $.cwd %>
+            on-success:
                 - ship_api_docs
+
         ship_api_docs:
             action: circle_ci.run_build
             input:
