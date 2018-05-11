@@ -134,12 +134,12 @@ st2cd.st2_finalize_release:
             publish:
                 utc_date: <% task(get_utc_date).result.stdout %>
             on-success:
-                - update_packer_st2_changelog_and_tag
-        update_packer_st2_changelog_and_tag:
-            action: stdcd.update_changelog
+                - vagrant_tag_release
+        vagrant_tag_release:
+            action: stdcd.vagrant_tag_release
             input:
                 project: packer-st2
-                version: <% $.version + '_' + $.utc_date %>
+                version: <% $.version + '-' + $.utc_date %>
                 fork: <% $.fork %>
                 local_repo: <% 'packerst2_' + $.local_repo_sfx %>
                 branch: master

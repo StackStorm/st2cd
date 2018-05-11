@@ -1,9 +1,9 @@
 ---
-name: update_changelog
+name: vagrant_tag_release
 description: Update changelog, commit and tag
 enabled: true
 runner_type: remote-shell-script
-entry_point: update_changelog.sh
+entry_point: vagrant_tag_release.sh
 parameters:
     project:
         type: string
