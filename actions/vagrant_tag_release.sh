@@ -41,8 +41,8 @@ git checkout -B ${BRANCH} origin/${BRANCH}
 
 # UPDATE CHANGELOG IF NECESSARY
 if ! grep ${TAGGED_VERSION} CHANGELOG.md; then
-    sed -i "/## In Development/a ## ${TAGGED_VERSION}" C.md
-    sed -i "/## In Development/{G;}" C.md
+    sed -i "/## In Development/a ## ${TAGGED_VERSION}" CHANGELOG.md
+    sed -i "/## In Development/{G;}" CHANGELOG.md
     git add CHANGELOG.md
     git commit -m "Add ${TAGGED_VERSION} to CHANGELOG.md"
     git push

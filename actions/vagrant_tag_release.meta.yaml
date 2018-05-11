@@ -1,6 +1,6 @@
 ---
 name: vagrant_tag_release
-description: Update changelog, commit and tag
+description: Update changelog, commit and tag packer-st2 repo
 enabled: true
 runner_type: remote-shell-script
 entry_point: vagrant_tag_release.sh

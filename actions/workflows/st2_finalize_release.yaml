@@ -136,10 +136,10 @@ st2cd.st2_finalize_release:
             on-success:
                 - vagrant_tag_release
         vagrant_tag_release:
-            action: stdcd.vagrant_tag_release
+            action: st2cd.vagrant_tag_release
             input:
                 project: packer-st2
-                version: <% $.version + '-' + $.utc_date %>
+                version: <% $.version + '-' + str($.utc_date) %>
                 fork: <% $.fork %>
                 local_repo: <% 'packerst2_' + $.local_repo_sfx %>
                 branch: master
