@@ -125,7 +125,29 @@ st2cd.st2_finalize_release:
                 hosts: <% $.host %>
                 cwd: <% $.cwd %>
             on-success:
+                - get_utc_date
+
+        get_utc_date:
+            action: core.local
+            input:
+                cmd: "date -u +%Y%m%d"
+            publish:
+                utc_date: <% task(get_utc_date).result.stdout %>
+            on-success:
+                - vagrant_tag_release
+        vagrant_tag_release:
+            action: st2cd.vagrant_tag_release
+            input:
+                project: packer-st2
+                version: <% $.version + '-' + str($.utc_date) %>
+                fork: <% $.fork %>
+                local_repo: <% 'packerst2_' + $.local_repo_sfx %>
+                branch: master
+                hosts: <% $.host %>
+                cwd: <% $.cwd %>
+            on-success:
                 - ship_api_docs
+
         ship_api_docs:
             action: circle_ci.run_build
             input:
