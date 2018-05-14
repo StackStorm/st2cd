@@ -39,8 +39,12 @@ cd ${LOCAL_REPO}
 echo "Currently at directory `pwd`..."
 git checkout -B ${BRANCH} origin/${BRANCH}
 
+# Parse StackStorm version from TAGGED_VERSION
+ST2_VERSION="$(echo $TAGGED_VERSION|grep -oP '(?<=v)(\d+\.\d+\.\d+)(?=-\d{8}$)')"
+
 # UPDATE CHANGELOG IF NECESSARY
 if ! grep ${TAGGED_VERSION} CHANGELOG.md; then
+    sed -i "/## In Development/a * StackStorm $ST2_VERSION released" CHANGELOG.md
     sed -i "/## In Development/a ## ${TAGGED_VERSION}" CHANGELOG.md
     sed -i "/## In Development/{G;}" CHANGELOG.md
     git add CHANGELOG.md
