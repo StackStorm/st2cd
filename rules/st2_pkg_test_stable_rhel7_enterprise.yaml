@@ -21,6 +21,6 @@ action:
     distro: RHEL7
     pkg_env: production
     release: stable
-    version: "2.7.1"
+    version: "2.7.2"
     enterprise: true
     enterprise_key: "{{st2kv.system.enterprise_key_prd_stable}}"

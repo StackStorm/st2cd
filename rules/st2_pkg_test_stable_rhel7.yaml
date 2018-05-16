@@ -21,4 +21,4 @@ action:
     distro: RHEL7
     pkg_env: production
     release: stable
-    version: "2.7.1"
+    version: "2.7.2"
