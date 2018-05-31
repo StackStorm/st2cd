@@ -14,7 +14,7 @@ LDAP_GROUP_DN=${10}
 ST2_USERNAME=st2admin
 REPO=enterprise
 
-if [[ $VERSION="None" ]]; then
+if [ $VERSION = "None" ]; then
     VERSION=''
 fi
 
@@ -39,14 +39,13 @@ get_rpm_pkg_name_with_latest_revision() {
     local PKG_NAME=$1
     local PKG_VERSION=$2
 
-    yum install -y yum-utils # need repoquery
-    repoquery --show-duplicates $PKG_NAME-$PKG_VERSION* | sort --version-sort | tail -n 1
+    repoquery --quiet --show-duplicates $PKG_NAME-$PKG_VERSION* 2>/dev/null | sort --version-sort | tail -n 1
 }
 
 install_enterprise_bits() {
     # Install enterprise bits from packagecloud
     echo "Downloading from repo ${REPO}..."
-
+    echo "Version: $VERSION"
     if [[ ${DISTRO} = \UBUNTU* ]]; then
         curl -s https://${LICENSE_KEY}:@packagecloud.io/install/repositories/StackStorm/${REPO}/script.deb.sh | bash
         if [[ -z $VERSION ]]; then
@@ -60,6 +59,7 @@ install_enterprise_bits() {
         if [[ -z $VERSION ]]; then
             yum install -y bwc-enterprise
         else
+            yum install -y yum-utils # need repoquery
             local BWC_PKG=$(get_rpm_pkg_name_with_latest_revision bwc-enterprise $VERSION)
             yum install -y $BWC_PKG
         fi
