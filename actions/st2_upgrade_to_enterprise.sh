@@ -63,7 +63,7 @@ install_enterprise_bits() {
             echo "st2-auth-ldap${ST2LDAP_PKG_VERSION}"
             echo "bwc-ui${BWCUI_PKG_VERSION}"
             echo "##########################################################"
-            apt-get install -y bwc-enterprise${BWC_ENTERPRISE_PKG_VERSION} st2flow${ST2FLOW_PKG_VERSION} st2-auth-ldap${ST2LDAP_PKG_VERSION} bwc-ui${BWCUI_PKG_VERSION}
+            apt-get install -y bwc-enterprise=${BWC_ENTERPRISE_PKG_VERSION} st2flow=${ST2FLOW_PKG_VERSION} st2-auth-ldap=${ST2LDAP_PKG_VERSION} bwc-ui=${BWCUI_PKG_VERSION}
         fi
     else
         curl -s https://${LICENSE_KEY}:@packagecloud.io/install/repositories/StackStorm/${REPO}/script.rpm.sh | sudo bash
