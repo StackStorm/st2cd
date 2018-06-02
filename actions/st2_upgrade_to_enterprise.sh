@@ -46,13 +46,24 @@ install_enterprise_bits() {
     # Install enterprise bits from packagecloud
     echo "Downloading from repo ${REPO}..."
     echo "Version: $VERSION"
+
     if [[ ${DISTRO} = \UBUNTU* ]]; then
         curl -s https://${LICENSE_KEY}:@packagecloud.io/install/repositories/StackStorm/${REPO}/script.deb.sh | bash
         if [[ -z $VERSION ]]; then
             apt-get install -y bwc-enterprise
         else
-            local BWC_PKG_VERSION=$(get_apt_pkg_latest_revision bwc-enterprise $VERSION)
-            apt-get install -y bwc-enterprise=$BWC_PKG_VERSION
+            local BWC_ENTERPRISE_PKG_VERSION=$(get_apt_pkg_latest_revision bwc-enterprise $VERSION)
+            local ST2FLOW_PKG_VERSION=$(get_apt_pkg_latest_revision st2flow $VERSION)
+            local ST2LDAP_PKG_VERSION=$(get_apt_pkg_latest_revision st2-auth-ldap $VERSION)
+            local BWCUI_PKG_VERSION=$(get_apt_pkg_latest_revision bwc-ui $VERSION)
+            echo "##########################################################"
+            echo "#### Following versions of packages will be installed ####"
+            echo "bwc-enterprise${BWC_ENTERPRISE_PKG_VERSION}"
+            echo "st2flow${ST2FLOW_PKG_VERSION}"
+            echo "st2-auth-ldap${ST2LDAP_PKG_VERSION}"
+            echo "bwc-ui${BWCUI_PKG_VERSION}"
+            echo "##########################################################"
+            apt-get install -y bwc-enterprise=${BWC_ENTERPRISE_PKG_VERSION} st2flow=${ST2FLOW_PKG_VERSION} st2-auth-ldap=${ST2LDAP_PKG_VERSION} bwc-ui=${BWCUI_PKG_VERSION}
         fi
     else
         curl -s https://${LICENSE_KEY}:@packagecloud.io/install/repositories/StackStorm/${REPO}/script.rpm.sh | sudo bash
@@ -61,7 +72,15 @@ install_enterprise_bits() {
         else
             yum install -y yum-utils # need repoquery
             local BWC_PKG=$(get_rpm_pkg_name_with_latest_revision bwc-enterprise $VERSION)
-            yum install -y $BWC_PKG
+            local ST2FLOW_PKG=$(get_rpm_pkg_name_with_latest_revision st2flow $VERSION)
+            local ST2LDAP_PKG=$(get_rpm_pkg_name_with_latest_revision st2-auth-ldap $VERSION)
+            local BWCUI_PKG=$(get_rpm_pkg_name_with_latest_revision bwc-ui $VERSION)
+            local BWC_ENTERPRISE_PKG="${BWC_PKG} ${ST2FLOW_PKG} ${ST2LDAP_PKG} ${BWCUI_PKG}"
+            echo "##########################################################"
+            echo "#### Following versions of packages will be installed ####"
+            echo "${BWC_ENTERPRISE_PKG}"
+            echo "##########################################################"
+            yum install -y $BWC_ENTERPRISE_PKG
         fi
     fi
 }
