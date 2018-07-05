@@ -53,7 +53,11 @@ ${GIT} add ${VERSION_FILE}
 
 VERSION_FILE="setup.cfg"
 echo "Setting version in ${VERSION_FILE} to ${VERSION}..."
-sed -i "s/^version = .*$/version = ${VERSION}/g" ${VERSION_FILE}
+# 1. First delete all "version = " occurences - this way we handle both - minor and patch
+# release correctly
+sed -i '/^version = .*$/d' ${VERSION_FILE}
+# 2. Append a version
+sed -i "s/^name = python-mistralclient/name = python-mistralclient\nversion = ${VERSION}/g" ${VERSION_FILE}
 ${GIT} add ${VERSION_FILE}
 
 ${GIT} commit -qm "Update version info for release - ${VERSION}"
