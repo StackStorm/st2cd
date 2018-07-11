@@ -35,6 +35,7 @@ parameters:
         description: Username to authenticate to the Windows server
     windows_password:
         type: string
+        secret: true
         description: Password to authenticate to the Windows server
     version:
         type: string

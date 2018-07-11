@@ -46,6 +46,7 @@
       default: "Administrator"
     windows_password:
       type: "string"
+      secret: true
       description: "Windows password"
       default: ""
     protocol:
