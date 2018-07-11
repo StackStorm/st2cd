@@ -354,7 +354,7 @@ workflows:
                 publish:
                     st2_cli_args: token=<% $.env.get(ST2_AUTH_TOKEN) %> protocol=<% $.protocol %>
                 on-success:
-                    - test_inquiry_chain
+                    - test_winrm_runners
 
             test_winrm_runners:
                 action: core.remote
