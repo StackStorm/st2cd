@@ -94,7 +94,7 @@ st2cd.create_vm_windows:
             action: st2cd.aws_decrypt_password_data
             input:
                 keyfile: <% $.keyfile %>
-                password_data: <% $.ec2_instance_password_data $>
+                password_data: <% $.ec2_instance_password_data %>
             publish:
                 ec2_instance_password: <% task(decrypt_password_data).result.result $>
             on-success:
