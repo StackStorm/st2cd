@@ -29,7 +29,7 @@ st2cd.create_vm_windows:
             - destroy_vm_on_failure: <% $.ec2_instance_id != null %>
             - fail: <% $.ec2_instance_id = null %>
 
-    tasks:                
+    tasks:
         get_subnet_id:
             action: st2.kv.get
             input:
@@ -98,7 +98,7 @@ st2cd.create_vm_windows:
                 ec2_instance_password: <% task(decrypt_password_data).result.result $>
             on-success:
                 - wait_for_winrm
-                
+
         wait_for_winrm:
             action: windows.wait_for_winrm
             input:
