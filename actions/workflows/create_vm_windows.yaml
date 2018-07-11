@@ -91,7 +91,7 @@ st2cd.create_vm_windows:
                 - decrypt_password_data
 
         decrypt_password_data:
-            action: default.aws_decrypt_password_data
+            action: st2cd.aws_decrypt_password_data
             input:
                 keyfile: <% $.keyfile %>
                 password_data: <% $.ec2_instance_password_data $>
