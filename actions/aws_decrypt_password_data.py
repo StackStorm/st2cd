@@ -15,14 +15,25 @@ class AwsDecryptPassworData(Action):
 
         self.logger.debug("Decrypting password data using: %s", keyfile)
         value = password_data
+
         if not value:
             return ''
+
+        # Hack because somewhere in the Mistral parameter "publish" pipeline, we
+        # strip trailing and leading whitespace from a string which results in
+        # an invalid base64 string
+        if not value.startswith('\r\n'):
+            value = '\r\n' + value
+
+        if not value.endswith('\r\n'):
+            value = value + '\r\n'
+
+        value = base64.b64decode(value)
 
         try:
             with open(keyfile) as pk_file:
                 pk_contents = pk_file.read()
                 private_key = rsa.PrivateKey.load_pkcs1(six.b(pk_contents))
-                value = base64.b64decode(value)
                 value = rsa.decrypt(value, private_key)
                 return value.decode('utf-8')
         except Exception:
