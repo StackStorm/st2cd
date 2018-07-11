@@ -1,0 +1,142 @@
+version: '2.0'
+
+st2cd.create_vm_windows:
+    description: Create a Windows VM in AWS
+    type: direct
+    input:
+        - instance_type
+        - environment
+        - key_name
+        - keyfile
+        - dns_zone
+        - hostname
+        - username
+        - role
+        - creator
+        - purpose
+        - distro
+
+    vars:
+        ec2_instance_id: null
+
+    output:
+        vm_info: <% task(run_instance).result.result[0] %>
+        vm_username: <% $.username %>
+        vm_password: <% $.ec2_instance_password %>
+
+    task-defaults:
+        on-error:
+            - destroy_vm_on_failure: <% $.ec2_instance_id != null %>
+            - fail: <% $.ec2_instance_id = null %>
+
+    tasks:                
+        get_subnet_id:
+            action: st2.kv.get
+            input:
+                key: <% $.environment %>_subnet
+            on-success:
+                - get_ami
+
+        get_ami:
+            action: st2.kv.get
+            input:
+                key: ami_<% $.distro %>
+            on-success:
+                - run_instance
+
+        check_cname:
+            action: aws.r53_zone_get_cname
+            input:
+                name: <% $.hostname %>.<% $.dns_zone %>
+                zone: <% $.dns_zone %>
+            on-success:
+                - run_instance: <% task(check_cname).result.result[0] = null %>
+                - fail: <% task(check_cname).result.result[0] != null %>
+
+        run_instance:
+            action: aws.ec2_run_instances
+            input:
+                image_id: <% task(get_ami).result.result %>
+                instance_type: <% $.instance_type %>
+                key_name: <% $.key_name %>
+            publish:
+                ec2_instance_id: <% task(run_instance).result.result[0].id %>
+                ec2_instance_private_ip: <% task(run_instance).result.result[0].private_ip_address %>
+                ec2_instance_private_dns: <% task(run_instance).result.result[0].private_dns_name %>
+            on-success:
+                - wait_for_instance
+
+        wait_for_instance:
+            action: aws.ec2_wait_for_state
+            input:
+                instance_id: <% $.ec2_instance_id %>
+                state: running
+            on-success:
+                - wait_for_password_data
+
+        wait_for_password_data:
+            action: aws.ec2_get_password_data
+            input:
+                instance_id: <% $.ec2_instance_id %>
+            retry:
+                # Note: AWS EC2 says it may take up to 15 minutes for password data to become
+                # available
+                count: 20
+                delay: 45
+                continue-on: <% task(wait_for_password_data).result.result[0].isEmpty() %>
+            publish:
+                ec2_instance_password_data: <% task(wait_for_password_data).result.result[0] $>
+            on-success:
+                - decrypt_password_data
+
+        decrypt_password_data:
+            action: default.aws_decrypt_password_data
+            input:
+                keyfile: <% $.keyfile %>
+                password_data: <% $.ec2_instance_password_data $>
+            publish:
+                ec2_instance_password: <% task(decrypt_password_data).result.result $>
+            on-success:
+                - wait_for_winrm
+                
+        wait_for_winrm:
+            action: windows.wait_for_winrm
+            input:
+                # Note: need to wait at _least_ 4 minutes, this is the time that AWS
+                # claims it takes just to initialize Windows after it's transitioned
+                # to the 'running' state
+                host: <% $.ec2_instance_private_ip %>
+                username: <% $.username %>
+                password: <% $.ec2_instance_password %>
+                verify_ssl_cert: false
+                winrm_timeout: 20
+                retries: 20
+                timeout: 800
+            on-success:
+                - add_tags
+
+        add_tags:
+            action: aws.ec2_create_tags
+            input:
+                resource_ids: [<% $.ec2_instance_id %>]
+                tags: Name=<% $.hostname %>,Creator=<% $.creator %>,Role=<% $.role %>,Purpose=<% switch(isEmpty($.purpose) => "No Description", $.purpose => $.purpose) %>
+            on-success:
+                - add_cname
+
+        add_cname:
+            action: aws.r53_zone_add_cname
+            input:
+                name: <% $.hostname %>.<% $.dns_zone %>
+                value: <% $.ec2_instance_private_dns %>
+                zone: <% $.dns_zone %>
+            publish:
+                cname: <% $.hostname %>.<% $.dns_zone %>
+
+
+        destroy_vm_on_failure:
+            action: st2cd.destroy_vm
+            input:
+                hostname: <% $.hostname %>
+                instance_id: <% $.ec2_instance_id %>
+            on-complete:
+                - fail
