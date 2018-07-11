@@ -86,7 +86,7 @@ st2cd.create_vm_windows:
                 delay: 45
                 continue-on: <% task(wait_for_password_data).result.result[0].isEmpty() %>
             publish:
-                ec2_instance_password_data: <% task(wait_for_password_data).result.result[0] $>
+                ec2_instance_password_data: <% task(wait_for_password_data).result.result[0] %>
             on-success:
                 - decrypt_password_data
 
@@ -96,7 +96,7 @@ st2cd.create_vm_windows:
                 keyfile: <% $.keyfile %>
                 password_data: <% $.ec2_instance_password_data %>
             publish:
-                ec2_instance_password: <% task(decrypt_password_data).result.result $>
+                ec2_instance_password: <% task(decrypt_password_data).result.result %>
             on-success:
                 - wait_for_winrm
 
