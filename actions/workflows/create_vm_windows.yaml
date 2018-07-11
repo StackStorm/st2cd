@@ -42,7 +42,7 @@ st2cd.create_vm_windows:
             input:
                 key: ami_<% $.distro %>
             on-success:
-                - run_instance
+                - check_cname
 
         check_cname:
             action: aws.r53_zone_get_cname
