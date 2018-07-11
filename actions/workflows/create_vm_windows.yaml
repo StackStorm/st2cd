@@ -18,6 +18,8 @@ st2cd.create_vm_windows:
 
     vars:
         ec2_instance_id: null
+        # User data script which configures firewall and enables WinRM over https
+        ec2_instance_user_data: "<powershell>\n# download the script\n(New-Object System.Net.WebClient).DownloadFile('https://raw.githubusercontent.com/ansible/ansible/devel/examples/scripts/ConfigureRemotingForAnsible.ps1', './ConfigureRemotingForAnsible.ps1')\n# execute the script\n./ConfigureRemotingForAnsible.ps1\n</powershell>"
 
     output:
         vm_info: <% task(run_instance).result.result[0] %>
@@ -30,16 +32,6 @@ st2cd.create_vm_windows:
             - fail: <% $.ec2_instance_id = null %>
 
     tasks:
-        # Retrieve user data script which enables WinRM
-        get_user_data_script:
-            action: core.http
-            input:
-              url: "https://raw.githubusercontent.com/ansible/ansible/devel/examples/scripts/ConfigureRemotingForAnsible.ps1"
-            publish:
-                ec2_instance_user_data: <% task(get_user_data_script).result.body %>
-            on-success:
-                - get_subnet_id
-
         get_subnet_id:
             action: st2.kv.get
             input:
