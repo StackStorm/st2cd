@@ -28,7 +28,7 @@ class AwsDecryptPassworData(Action):
         if not value.endswith('\r\n'):
             value = value + '\r\n'
 
-        self.logger.debug('Encrypted value: "%s"' $ (value))
+        self.logger.debug('Encrypted value: "%s"' % (value))
         value = base64.b64decode(value)
 
         try:
