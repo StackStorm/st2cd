@@ -111,8 +111,8 @@ st2cd.create_vm_windows:
                 password: <% $.ec2_instance_password %>
                 verify_ssl_cert: false
                 winrm_timeout: 20
-                retries: 30
-                timeout: 1000
+                retries: 20
+                timeout: 200
             on-success:
                 - add_tags
 
