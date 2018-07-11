@@ -58,6 +58,7 @@ st2cd.create_vm_windows:
             input:
                 image_id: <% task(get_ami).result.result %>
                 instance_type: <% $.instance_type %>
+                subnet_id: <% task(get_subnet_id).result.result %>
                 key_name: <% $.key_name %>
             publish:
                 ec2_instance_id: <% task(run_instance).result.result[0].id %>
