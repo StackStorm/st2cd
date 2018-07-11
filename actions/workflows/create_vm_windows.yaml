@@ -113,7 +113,7 @@ st2cd.create_vm_windows:
                 username: <% $.username %>
                 password: <% $.ec2_instance_password %>
                 verify_ssl_cert: false
-                winrm_timeout: 20
+                winrm_timeout: 10
                 retries: 20
                 timeout: 200
             on-success:
