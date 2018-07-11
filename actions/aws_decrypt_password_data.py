@@ -19,15 +19,6 @@ class AwsDecryptPassworData(Action):
         if not value:
             return ''
 
-        # Hack because somewhere in the Mistral parameter "publish" pipeline, we
-        # strip trailing and leading whitespace from a string which results in
-        # an invalid base64 string
-        if not value.startswith('\r\n'):
-            value = '\r\n' + value
-
-        if not value.endswith('\r\n'):
-            value = value + '\r\n'
-
         self.logger.debug('Encrypted value: "%s"' % (value))
         value = base64.b64decode(value)
 
