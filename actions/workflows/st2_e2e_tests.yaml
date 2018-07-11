@@ -361,5 +361,5 @@ workflows:
                 input:
                     hosts: <% $.host %>
                     env: <% $.env %>
-                    cmd: st2 run tests.test_inquiry_chain winrm_host=<% $.windows_host %> winrm_username=<% $.windows_username %> winrm_password=<% $.windows_password %> <% $.st2_cli_args %>
+                    cmd: st2 run tests.test_winrm_runners winrm_host=<% $.windows_host %> winrm_username=<% $.windows_username %> winrm_password=<% $.windows_password %> <% $.st2_cli_args %>
                     timeout: 180
