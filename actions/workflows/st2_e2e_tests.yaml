@@ -84,7 +84,7 @@ workflows:
                     env: <% $.st2_cli_env %>
                     protocol: <% $.protocol %>
                 on-success:
-                    - pabot_docs_tests
+                    - run_windows_tests
             run_windows_tests:
                 workflow: test_windows
                 input:
