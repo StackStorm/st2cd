@@ -30,6 +30,16 @@ st2cd.create_vm_windows:
             - fail: <% $.ec2_instance_id = null %>
 
     tasks:
+        # Retrieve user data script which enables WinRM
+        get_user_data_script:
+            action: core.http
+            input:
+              url: "https://raw.githubusercontent.com/ansible/ansible/devel/examples/scripts/ConfigureRemotingForAnsible.ps1"
+            publish:
+                ec2_instance_user_data: <% task(get_user_data_script).result.body %>
+            on-success:
+                - get_subnet_id
+
         get_subnet_id:
             action: st2.kv.get
             input:
@@ -60,6 +70,7 @@ st2cd.create_vm_windows:
                 instance_type: <% $.instance_type %>
                 subnet_id: <% task(get_subnet_id).result.result %>
                 key_name: <% $.key_name %>
+                user_data: <% $.ec2_instance_user_data %>
             publish:
                 ec2_instance_id: <% task(run_instance).result.result[0].id %>
                 ec2_instance_private_ip: <% task(run_instance).result.result[0].private_ip_address %>
