@@ -77,7 +77,12 @@ files=(
     "st2client/st2client/__init__.py"
 )
 
-for f in "${files[@]}"
+# Add all the runners
+runner_init_files=($(find contrib/runners -maxdepth 3 -name __init__.py -not -path "*tests*" -not -path "*query*" -not -path "*callback*" -not -path "*functions*"))
+
+init_files=("${files[@]}" "${runner_init_files[@]}")
+
+for f in "${init_files[@]}"
 do
     if [[ ! -e "$f" ]]; then
         >&2 echo "ERROR: Version file ${f} does not exist."
