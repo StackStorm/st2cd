@@ -72,15 +72,15 @@ fi
 echo "Creating new branch ${BRANCH}..."
 git checkout -b ${BRANCH} origin/master
 
-files=(
+COMMON_INIT_FILES=(
     "st2common/st2common/__init__.py"
     "st2client/st2client/__init__.py"
 )
 
 # Add all the runners
-runner_init_files=($(find contrib/runners -maxdepth 3 -name __init__.py -not -path "*tests*" -not -path "*query*" -not -path "*callback*" -not -path "*functions*"))
+RUNNER_INIT_FILES=($(find contrib/runners -maxdepth 3 -name __init__.py -not -path "*tests*" -not -path "*query*" -not -path "*callback*" -not -path "*functions*"))
 
-init_files=("${files[@]}" "${runner_init_files[@]}")
+ALL_INIT_FILES=("${COMMON_INIT_FILES[@]}" "${RUNNER_INIT_FILES[@]}")
 
 for f in "${init_files[@]}"
 do
