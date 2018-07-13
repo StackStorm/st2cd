@@ -29,15 +29,15 @@
         cmd: "cd /tmp/{{repodir}} && cat version.txt | cut -d '.' -f 1-2"
       publish:
         version: "{{version[build_server].stdout | replace('\n', '')}}"
-      on-success: "make_bwcdocs"
+      on-success: "make_ewcdocs"
       on-failure: "clean_repo"
     -
-      name: "make_bwcdocs"
+      name: "make_ewcdocs"
       ref: "core.remote"
       params:
         hosts: "{{build_server}}"
         timeout: 2000
-        cmd: 'cd {{repodir}} && sudo pip install --upgrade "virtualenv==15.1.0" && make bwcdocs'
+        cmd: 'cd {{repodir}} && sudo pip install --upgrade "virtualenv==15.1.0" && make ewcdocs'
       on-success: "s3cmd_docs"
       on-failure: "clean_repo"
     -
