@@ -361,9 +361,11 @@ workflows:
                 input:
                     hosts: <% $.host %>
                     env: <% $.env %>
-                    cmd: '(st2 runner list | grep winrm-) || (echo "WinRM runner not available (likely running under < 2.9dev, skipping tests...)" ; exit 3)'
+                    cmd: '(st2 runner list <% $.st2_cli_args %> | grep winrm-) || (echo "WinRM runner not available (likely running under StackStorm < 2.9dev, skipping tests...)" ; exit 3)'
                 on-success:
                     - test_winrm_runners
+                on-error:
+                    - skip_winrm_tests_due_to_winrm_runners_not_available
 
             test_winrm_runners:
                 action: core.remote
@@ -372,3 +374,6 @@ workflows:
                     env: <% $.env %>
                     cmd: "st2 run tests.test_winrm_runners winrm_host=<% $.windows_host %> winrm_username=<% $.windows_username %> winrm_password='<% $.windows_password %>' <% $.st2_cli_args %>"
                     timeout: 180
+
+            skip_winrm_tests_due_to_winrm_runners_not_available:
+                action: core.noop
