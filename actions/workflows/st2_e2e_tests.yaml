@@ -361,7 +361,7 @@ workflows:
                 input:
                     hosts: <% $.host %>
                     env: <% $.env %>
-                    cmd: '(st2 runner list | grep winrm-) || (echo "WinRM runner not available (likely running under StackStorm < 2.9dev, skipping tests...)" ; exit 3)'
+                    cmd: 'st2 runner list ; (st2 runner list | grep winrm-) || (echo "WinRM runner not available (likely running under StackStorm < 2.9dev, skipping tests...)" ; exit 3)'
                 on-success:
                     - test_winrm_runners
                 on-error:
