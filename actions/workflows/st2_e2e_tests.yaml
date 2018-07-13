@@ -361,7 +361,9 @@ workflows:
                 input:
                     hosts: <% $.host %>
                     env: <% $.env %>
-                    cmd: 'st2 runner list ; (st2 runner list | grep winrm-) || (echo "WinRM runners not available (likely running under StackStorm < 2.9dev, skipping tests...)" ; exit 3)'
+                    # NOTE: We need to explicitly provide column width argument otherwise grep
+                    # #fails due to columns being set to 10 characters and line wrapping around
+                    cmd: 'st2 runner list -w 100; (st2 runner list -w 100 | grep winrm-) || (echo "WinRM runners not available (likely running under StackStorm < 2.9dev, skipping tests...)" ; exit 3)'
                 on-success:
                     - test_winrm_runners
                 on-error:
