@@ -354,6 +354,15 @@ workflows:
                 publish:
                     st2_cli_args: token=<% $.env.get(ST2_AUTH_TOKEN) %> protocol=<% $.protocol %>
                 on-success:
+                    - test_winrm_runners_are_available
+
+            test_winrm_runners_are_available:
+                action: core.remote
+                input:
+                    hosts: <% $.host %>
+                    env: <% $.env %>
+                    cmd: '(st2 runner list | grep winrm-) || (echo "WinRM runner not available (likely running under < 2.9dev, skipping tests...)" ; exit 3)'
+                on-success:
                     - test_winrm_runners
 
             test_winrm_runners:
