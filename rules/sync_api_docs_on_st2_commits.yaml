@@ -1,6 +1,6 @@
 ---
 name: sync_api_docs_on_st2_commits
-description: Sync API documentation on merges to st2 master/relese branches
+description: Sync API documentation on merges to st2 master/release branches
 pack: st2cd
 enabled: true
 
