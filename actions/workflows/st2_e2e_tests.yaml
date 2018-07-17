@@ -354,7 +354,20 @@ workflows:
                 publish:
                     st2_cli_args: token=<% $.env.get(ST2_AUTH_TOKEN) %> protocol=<% $.protocol %>
                 on-success:
+                    - test_winrm_runners_are_available
+
+            test_winrm_runners_are_available:
+                action: core.remote
+                input:
+                    hosts: <% $.host %>
+                    env: <% $.env %>
+                    # NOTE: We need to explicitly provide column width argument otherwise grep
+                    # #fails due to columns being set to 10 characters and line wrapping around
+                    cmd: 'st2 runner list -w 100; (st2 runner list -w 100 | grep winrm-) || (echo "WinRM runners not available (likely running under StackStorm < 2.9dev, skipping tests...)" ; exit 3)'
+                on-success:
                     - test_winrm_runners
+                on-error:
+                    - skip_winrm_tests_due_to_winrm_runners_not_available
 
             test_winrm_runners:
                 action: core.remote
@@ -363,3 +376,6 @@ workflows:
                     env: <% $.env %>
                     cmd: "st2 run tests.test_winrm_runners winrm_host=<% $.windows_host %> winrm_username=<% $.windows_username %> winrm_password='<% $.windows_password %>' <% $.st2_cli_args %>"
                     timeout: 180
+
+            skip_winrm_tests_due_to_winrm_runners_not_available:
+                action: core.noop
