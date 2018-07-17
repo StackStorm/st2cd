@@ -45,12 +45,14 @@ COMMON_INIT_FILES=(
 )
 
 # Add all the runners
-RUNNER_INIT_FILES=($(find contrib/runners -maxdepth 3 -name __init__.py -not -path "*tests*" -not -path "*query*" -not -path "*callback*" -not -path "*functions*"))
+RUNNER_INIT_FILES=($(find contrib/runners -mindepth 3 -maxdepth 3 -name __init__.py -not -path "*tests*" -not -path "*query*" -not -path "*callback*" -not -path "*functions*"))
 
 ALL_INIT_FILES=("${COMMON_INIT_FILES[@]}" "${RUNNER_INIT_FILES[@]}")
 
 for INIT_FILE in "${ALL_INIT_FILES[@]}"
 do
+    echo "Setting version in: ${INIT_FILE}"
+
     if [[ ! -e "${INIT_FILE}" ]]; then
         >&2 echo "ERROR: Version file ${INIT_FILE} does not exist."
         exit 1
