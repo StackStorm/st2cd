@@ -38,15 +38,21 @@ git clone -b ${BRANCH} --single-branch ${GIT_REPO} ${LOCAL_REPO}
 cd ${LOCAL_REPO}
 echo "Currently at directory `pwd`..."
 
-
 # SET ST2 VERSION INFO
-INIT_FILES=(
+COMMON_INIT_FILES=(
     "st2common/st2common/__init__.py"
     "st2client/st2client/__init__.py"
 )
 
-for INIT_FILE in "${INIT_FILES[@]}"
+# Add all the runners
+RUNNER_INIT_FILES=($(find contrib/runners -mindepth 3 -maxdepth 3 -name __init__.py -not -path "*tests*" -not -path "*query*" -not -path "*callback*" -not -path "*functions*"))
+
+ALL_INIT_FILES=("${COMMON_INIT_FILES[@]}" "${RUNNER_INIT_FILES[@]}")
+
+for INIT_FILE in "${ALL_INIT_FILES[@]}"
 do
+    echo "Setting version in: ${INIT_FILE}"
+
     if [[ ! -e "${INIT_FILE}" ]]; then
         >&2 echo "ERROR: Version file ${INIT_FILE} does not exist."
         exit 1

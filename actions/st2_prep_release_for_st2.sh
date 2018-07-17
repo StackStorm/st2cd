@@ -72,12 +72,17 @@ fi
 echo "Creating new branch ${BRANCH}..."
 git checkout -b ${BRANCH} origin/master
 
-files=(
+COMMON_INIT_FILES=(
     "st2common/st2common/__init__.py"
     "st2client/st2client/__init__.py"
 )
 
-for f in "${files[@]}"
+# Add all the runners
+RUNNER_INIT_FILES=($(find contrib/runners -maxdepth 3 -name __init__.py -not -path "*tests*" -not -path "*query*" -not -path "*callback*" -not -path "*functions*"))
+
+ALL_INIT_FILES=("${COMMON_INIT_FILES[@]}" "${RUNNER_INIT_FILES[@]}")
+
+for f in "${init_files[@]}"
 do
     if [[ ! -e "$f" ]]; then
         >&2 echo "ERROR: Version file ${f} does not exist."
