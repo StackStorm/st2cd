@@ -5,7 +5,7 @@ pack: st2cd
 enabled: true
 
 trigger:
-    type: circle_ci.build_event
+    type: githubwebhook.github_event
 
 criteria:
     trigger.body.ref:
@@ -22,4 +22,4 @@ action:
       username: stackstorm
       branch: master
       build_parameters:
-          ST2_BRANCH: "{{ trigger.body.payload.ref.split('/')[2] }}"
+          ST2_BRANCH: "{{ trigger.body.ref.split('/')[2] }}"
