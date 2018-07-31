@@ -244,6 +244,7 @@ workflows:
                     - test_quickstart_python
                     - test_quickstart_trace
                     - test_quickstart_run_pack_tests_tool
+                    - test_quickstart_pack_install_tool
             test_quickstart_python:
                 action: core.remote
                 input:
@@ -269,6 +270,17 @@ workflows:
                     env: <% $.env %>
                     # Note: This test is only available and working in StackStorm >= 2.3dev
                     cmd: "st2 action get tests.test_run_pack_tests_tool ; if [ $? -eq 0 ]; then st2 run tests.test_run_pack_tests_tool <% $.st2_cli_args %>; else echo 'run_pack_tests_tool tests not available'; fi"
+                    timeout: 600
+                # Keep key_triggers and timer_rules tests sequential.
+                # test_quickstart_key_triggers conflicts with test_quickstart_python (race) so
+                # they can't run at the same time.
+            test_quickstart_pack_install_tool:
+                action: core.remote
+                input:
+                    hosts: <% $.host %>
+                    env: <% $.env %>
+                    # Note: This test is only available and working in StackStorm >= 2.3dev
+                    cmd: "st2 action get tests.test_pack_install_tool ; if [ $? -eq 0 ]; then st2 run tests.test_pack_install_tool <% $.st2_cli_args %>; else echo 'pack_install_tool tests not available'; fi"
                     timeout: 600
                 # Keep key_triggers and timer_rules tests sequential.
                 # test_quickstart_key_triggers conflicts with test_quickstart_python (race) so
