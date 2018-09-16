@@ -85,8 +85,8 @@ echo "Setting version in ${VERSION_FILE} to ${VERSION}..."
 sed -i -e "s/\(__version__ = \).*/\1'${VERSION}'/" ${VERSION_FILE}
 
 
-# Update 'ST2_PACKAGES_BRANCH' to latest stable "vX.Y" branch at 'circle.yml'
-VERSION_FILE="circle.yml"
+# Update 'ST2_PACKAGES_BRANCH' to latest stable "vX.Y" branch at '.circleci/config.yml'
+VERSION_FILE=".circleci/config.yml"
 NEW_ST2_PACKAGES_BRANCH_STR="ST2_PACKAGES_BRANCH: v${SHORT_VERSION}"
 NEW_ST2_PACKAGES_BRANCH_STR_MATCH=`grep "${NEW_ST2_PACKAGES_BRANCH_STR}" ${VERSION_FILE} || true`
 if [[ -z "${NEW_ST2_PACKAGES_BRANCH_STR_MATCH}" ]]; then
@@ -100,8 +100,8 @@ if [[ -z "${NEW_ST2_PACKAGES_BRANCH_STR_MATCH}" ]]; then
     fi
 fi
 
-# Update 'ST2MISTRAL_GITREV' to latest stable "st2-X.Y.Z" branch at 'circle.yml'
-VERSION_FILE="circle.yml"
+# Update 'ST2MISTRAL_GITREV' to latest stable "st2-X.Y.Z" branch at '.circleci/config.yml'
+VERSION_FILE=".circleci/config.yml"
 NEW_ST2MISTRAL_GITREV_STR="ST2MISTRAL_GITREV: ${BRANCH}"
 NEW_ST2MISTRAL_GITREV_STR_MATCH=`grep "${NEW_ST2MISTRAL_GITREV_STR}" ${VERSION_FILE} || true`
 if [[ -z "${NEW_ST2MISTRAL_GITREV_STR_MATCH}" ]]; then

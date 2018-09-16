@@ -127,12 +127,12 @@ if [[ -z "${NEW_MISTRAL_VERSION_STR_MATCH}" ]]; then
     fi
 fi
 
-# Update 'ST2_GITREV' in 'circle.yml'
-CIRCLE_YML_FILE="circle.yml"
+# Update 'ST2_GITREV' in '.circleci/config.yml'
+CIRCLE_YML_FILE=".circleci/config.yml"
 echo "[${BRANCH}] Setting 'ST2_GITREV' in '${CIRCLE_YML_FILE}' to '${BRANCH}'..."
 sed -i -e "s/#\s*\(ST2_GITREV:\s*\).*/\1${BRANCH}/" ${CIRCLE_YML_FILE}
 
-# Update 'ST2MISTRAL_GITREV' in 'circle.yml'
+# Update 'ST2MISTRAL_GITREV' in '.circleci/config.yml'
 echo "[${BRANCH}] Setting 'ST2MISTRAL_GITREV' in '${CIRCLE_YML_FILE}' to '${MISTRAL_VERSION}'..."
 sed -i -e "s/#\s*\(ST2MISTRAL_GITREV:\s*\).*/\1${MISTRAL_VERSION}/" ${CIRCLE_YML_FILE}
 
