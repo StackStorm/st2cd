@@ -1,0 +1,19 @@
+---
+name: wait_for_package
+runner_type: mistral-v2
+description: Subworkflow for st2_stage_release_packages
+enabled: true
+entry_point: workflows/wait_for_package.yaml
+parameters:
+    project:
+        type: string
+        description: The StackStorm project job to wait for
+        required: true
+    build_number:
+        type: string
+        description: The CircleCI build number to wait for
+        required: true
+    username:
+        type: string
+        description: The username of the CircleCI user to use
+        required: false

@@ -9,6 +9,8 @@ st2cd.destroy_vm:
         - instance_id
         - used_dns: False
         - used_id: False
+    vars:
+        volume_to_delete_iteration_count: 0
     tasks:
         get_instance_dns:
             action: linux.dig
@@ -66,10 +68,16 @@ st2cd.destroy_vm:
             action: aws.ec2_terminate_instances
             input:
                 instance_ids: <% $.instances[0] %>
-            # Give the instance time to terminate and volume(s) to be detached.
-            wait-after: 60
             on-error:
                 - notify_destroy_instance_failure
+            on-success:
+                # Give the instance time to terminate and volume(s) to be detached.
+                - wait_for_instance_to_terminate
+        wait_for_instance_to_terminate:
+            action: core.local
+            input:
+                cmd: sleep 60
+                timeout: 120
             on-success:
                 - delete_cname
         delete_cname:
@@ -86,15 +94,21 @@ st2cd.destroy_vm:
             action: aws.ec2_delete_volume
             input:
                 volume_id: <% $.volume %>
-            # The instance may still be terminating and volumes are attached.
-            retry:
-                count: 10
-                delay: 60
+            publish-on-error:
+                volume_to_delete_iteration_count: <% $.volume_to_delete_iteration_count + 1 %>
             on-error:
-                - notify_delete_volumes_failure
+                - notify_delete_volumes_failure: <% $.volume_to_delete_iteration_count >= 10 %>
+                # The instance may still be terminating and volumes are attached.
+                - wait_for_volume_to_delete: <% $.volume_to_delete_iteration_count < 10 %>
             on-success:
                 - notify_success
 
+        wait_for_volume_to_delete:
+            action: core.local
+            input:
+                cmd: sleep 60
+            on-success:
+                - delete_volumes
 
         notify_success:
             action: slack.post_message
