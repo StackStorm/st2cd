@@ -1,0 +1,16 @@
+---
+version: '2.0'
+
+st2cd.st2_e2e_tests_test_mistral:
+    type: direct
+    input:
+        - host
+        - env
+    tasks:
+        test_mistral_examples:
+            action: core.remote
+            input:
+                hosts: <% $.host %>
+                env: <% $.env %>
+                cmd: st2 run examples.mistral_examples
+                timeout: 600

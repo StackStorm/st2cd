@@ -1,0 +1,34 @@
+---
+version: '2.0'
+
+st2cd.st2_e2e_tests_test_inquiry:
+    type: direct
+    input:
+        - host
+        - env
+        - protocol
+    tasks:
+        init:
+            action: std.noop
+            publish:
+                st2_cli_args: token=<% $.env.get(ST2_AUTH_TOKEN) %> protocol=<% $.protocol %>
+            on-success:
+                - test_inquiry_chain
+
+        test_inquiry_chain:
+            action: core.remote
+            input:
+                hosts: <% $.host %>
+                env: <% $.env %>
+                cmd: st2 run tests.test_inquiry_chain <% $.st2_cli_args %>
+                timeout: 180
+            on-success:
+                - test_inquiry_mistral
+
+        test_inquiry_mistral:
+            action: core.remote
+            input:
+                hosts: <% $.host %>
+                env: <% $.env %>
+                cmd: st2 run tests.test_inquiry_mistral <% $.st2_cli_args %>
+                timeout: 180

@@ -1,0 +1,14 @@
+---
+name: st2_e2e_tests_test_basic
+pack: st2cd
+description: Run the set of st2 end to end tests
+enabled: true
+runner_type: mistral-v2
+entry_point: workflows/st2_e2e_tests_test_basic.yaml
+parameters:
+    host:
+        type: string
+        required: true
+    env:
+        type: string
+        required: true
