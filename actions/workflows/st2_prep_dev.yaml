@@ -40,6 +40,17 @@ st2cd.st2_prep_dev:
 
         prep:
             on-complete:
+                - prep_st2
+        prep_st2:
+            action: st2cd.st2_prep_dev_for_st2
+            input:
+                project: st2
+                version: <% $.dev_version %>
+                fork: <% $.fork %>
+                local_repo: <% 'st2_' + $.local_repo_sfx %>
+                hosts: <% $.host %>
+                cwd: <% $.cwd %>
+            on-success:
                 - prep_st2_dockerfiles
         prep_st2_dockerfiles:
             action: st2cd.st2_prep_dev_for_st2_dockerfiles
@@ -51,22 +62,11 @@ st2cd.st2_prep_dev:
                 hosts: <% $.host %>
                 cwd: <% $.cwd %>
             on-success:
-                - prep_st2
+                - prep_st2enterprise_dockerfiles
         prep_st2enterprise_dockerfiles:
             action: st2cd.st2_prep_dev_for_st2enterprise_dockerfiles
             input:
                 project: st2enterprise-dockerfiles
-                version: <% $.dev_version %>
-                fork: <% $.fork %>
-                local_repo: <% 'st2_' + $.local_repo_sfx %>
-                hosts: <% $.host %>
-                cwd: <% $.cwd %>
-            on-success:
-                - prep_st2
-        prep_st2:
-            action: st2cd.st2_prep_dev_for_st2
-            input:
-                project: st2
                 version: <% $.dev_version %>
                 fork: <% $.fork %>
                 local_repo: <% 'st2_' + $.local_repo_sfx %>
