@@ -8,7 +8,7 @@ st2cd.st2_prep_dev:
         - cwd
 
     vars:
-        dev_version: <% $.version.split('.')[0] + '.' + $.version.split('.')[1] + 'dev' %> 
+        dev_version: <% $.version.split('.')[0] + '.' + $.version.split('.')[1] + 'dev' %>
         local_repo_sfx: null
 
     task-defaults:
@@ -38,12 +38,33 @@ st2cd.st2_prep_dev:
             on-success:
                 - prep
 
-
         prep:
             on-complete:
+                - prep_st2_dockerfiles
+        prep_st2_dockerfiles:
+            action: st2cd.st2_prep_dev_for_st2_dockerfiles
+            input:
+                project: st2-dockerfiles
+                version: <% $.dev_version %>
+                fork: <% $.fork %>
+                local_repo: <% 'st2_' + $.local_repo_sfx %>
+                hosts: <% $.host %>
+                cwd: <% $.cwd %>
+            on-success:
+                - prep_st2
+        prep_st2enterprise_dockerfiles:
+            action: st2cd.st2_prep_dev_for_st2enterprise_dockerfiles
+            input:
+                project: st2enterprise-dockerfiles
+                version: <% $.dev_version %>
+                fork: <% $.fork %>
+                local_repo: <% 'st2_' + $.local_repo_sfx %>
+                hosts: <% $.host %>
+                cwd: <% $.cwd %>
+            on-success:
                 - prep_st2
         prep_st2:
-            action: st2cd.st2_prep_dev_for_st2            
+            action: st2cd.st2_prep_dev_for_st2
             input:
                 project: st2
                 version: <% $.dev_version %>
