@@ -8,7 +8,7 @@ parameters:
     project:
         type: string
         description: Project name for st2-dockerfiles
-        required: true
+        default: st2-dockerfiles
         position: 0
     version:
         type: string
