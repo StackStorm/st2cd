@@ -1,6 +1,6 @@
 ---
   name: "install_tests"
-  runner_type: "run-remote-script"
+  runner_type: remote-shell-script
   description: "Install St2 tests"
   enabled: true
   entry_point: "install_tests.sh"

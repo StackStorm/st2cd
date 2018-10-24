@@ -1,6 +1,6 @@
 ---
   name: "git_create_branch"
-  runner_type: "run-remote-script"
+  runner_type: remote-shell-script
   description: "Creates a branch."
   enabled: true
   entry_point: "git_create_branch.sh"

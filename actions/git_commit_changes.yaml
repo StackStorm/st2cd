@@ -1,6 +1,6 @@
 ---
   name: "git_commit_changes"
-  runner_type: "run-remote-script"
+  runner_type: remote-shell-script
   description: "Commits all open changes in branch."
   enabled: true
   entry_point: "git_commit_changes.sh"

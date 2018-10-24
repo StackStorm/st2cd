@@ -1,6 +1,6 @@
 ---
   name: "st2_set_version_info"
-  runner_type: "run-remote-script"
+  runner_type: remote-shell-script
   description: "Set version info in st2 branch."
   enabled: true
   entry_point: "st2_set_version_info.sh"

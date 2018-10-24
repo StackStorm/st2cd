@@ -1,6 +1,6 @@
 ---
 name: git_delete_branch
-runner_type: run-remote-script
+runner_type: remote-shell-script
 description: Remove branch from repo and push to remote.
 enabled: true
 entry_point: git_delete_branch.sh

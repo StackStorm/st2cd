@@ -1,6 +1,6 @@
 ---
   name: "create_docs_test_rule"
-  runner_type: "run-remote-script"
+  runner_type: remote-shell-script
   description: "Create a rule to run docs build on a release branch."
   enabled: true
   entry_point: "create_docs_test_rule.py"

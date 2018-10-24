@@ -1,6 +1,6 @@
 ---
   name: "check_pkgs"
-  runner_type: "run-remote-script"
+  runner_type: remote-shell-script
   description: "Check the packages"
   enabled: true
   entry_point: "check_pkgs.sh"

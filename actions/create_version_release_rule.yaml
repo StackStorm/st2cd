@@ -1,6 +1,6 @@
 ---
   name: "create_version_release_rule"
-  runner_type: "run-remote-script"
+  runner_type: remote-shell-script
   description: "Create a rule to listen for github events on branch commits."
   enabled: true
   entry_point: "create_version_release_rule.py"

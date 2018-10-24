@@ -1,6 +1,6 @@
 ---
   name: "st2_prep_release_ci_rules"
-  runner_type: "run-remote-script"
+  runner_type: remote-shell-script
   description: "Create and update rules for st2cd."
   enabled: true
   entry_point: "st2_prep_release_ci_rules.sh"
