@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-# When there's a st2 release:
+# This script is run during the StackStorm release process:
 #  - if missing, create a branch named ${BRANCH} (i.e., "vX.Y") in ${PROJECT}.
 #  - update the Makefile on this branch to reference $ST2_VERSION (i.e., "X.Y.Z").
 
