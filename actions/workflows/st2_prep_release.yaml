@@ -114,6 +114,28 @@ st2cd.st2_prep_release:
                 local_repo: <% 'st2_packages_' + $.local_repo_sfx %>
                 hosts: <% $.host %>
                 cwd: <% $.cwd %>
+            on-success:
+                - prep_st2_dockerfiles
+        prep_st2_dockerfiles:
+            action: st2cd.st2_prep_release_for_st2_dockerfiles
+            input:
+                project: st2-dockerfiles
+                version: <% $.version %>
+                fork: <% $.fork %>
+                local_repo: <% 'st2_dockerfiles_' + $.local_repo_sfx %>
+                hosts: <% $.host %>
+                cwd: <% $.cwd %>
+            on-success:
+                - prep_st2enterprise_dockerfiles
+        prep_st2enterprise_dockerfiles:
+            action: st2cd.st2_prep_release_for_st2enterprise_dockerfiles
+            input:
+                project: st2enterprise-dockerfiles
+                version: <% $.version %>
+                fork: <% $.fork %>
+                local_repo: <% 'st2enterprise_dockerfiles_' + $.local_repo_sfx %>
+                hosts: <% $.host %>
+                cwd: <% $.cwd %>
 
 
         cleanup_on_failure:
