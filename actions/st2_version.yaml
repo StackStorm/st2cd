@@ -1,6 +1,6 @@
 ---
   name: "st2_version"
-  runner_type: "run-remote"
+  runner_type: remote-shell-cmd
   description: "st2_version"
   enabled: true
   entry_point: ""

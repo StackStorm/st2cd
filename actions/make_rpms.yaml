@@ -1,6 +1,6 @@
 ---
   name: "make_rpms"
-  runner_type: "run-remote"
+  runner_type: remote-shell-cmd
   description: "Use make targets to build rpm packages"
   enabled: true
   entry_point: ""

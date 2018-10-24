@@ -1,6 +1,6 @@
 ---
   name: "make_docs"
-  runner_type: "run-remote"
+  runner_type: remote-shell-cmd
   description: "Build docs"
   enabled: true
   entry_point: ""

@@ -1,6 +1,6 @@
 ---
   name: "apt_get"
-  runner_type: "run-remote"
+  runner_type: remote-shell-cmd
   description: "Run apt-get on a remote host"
   enabled: true
   entry_point: ""

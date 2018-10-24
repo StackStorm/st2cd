@@ -1,6 +1,6 @@
 {
     "name": "make_debs",
-    "runner_type": "run-remote",
+    "runner_type": "remote-shell-cmd",
     "description": "Use make targets to build debian packages",
     "enabled": true,
     "entry_point": "",
