@@ -1,8 +1,9 @@
 ---
+name: kvstore
 description: 'Get value from datastore'
 enabled: true
+runner_type: python-script
 entry_point: kvstore.py
-name: kvstore
 parameters:
   key:
     required: True
@@ -19,4 +20,3 @@ parameters:
       - 'update'
   value:
     type: string
-runner_type: run-python
