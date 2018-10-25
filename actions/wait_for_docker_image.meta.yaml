@@ -1,0 +1,22 @@
+---
+name: wait_for_docker_image
+description: Wait until specified docker image exists
+enabled: true
+runner_type: remote-shell-script
+entry_point: wait_for_docker_image.sh
+parameters:
+    org:
+        type: string
+        description: Docker Hub organization
+        default: StackStorm
+        position: 0
+    image:
+        type: string
+        description: Image name
+        required: true
+        position: 1
+    version:
+        type: string
+        description: Image version
+        required: true
+        position: 2

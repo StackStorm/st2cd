@@ -127,8 +127,8 @@ st2cd.st2_prep_release:
                 cwd: <% $.cwd %>
             on-success:
                 - wait_for_community_docker_images
-        wait_for_community_docker_images:
-            action:
+        wait_for_community_docker_image:
+            action: st2cd.wait_for_docker_image
             input:
                 org: <% $.fork %>
                 image: st2workflowengine
