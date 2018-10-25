@@ -135,6 +135,8 @@ st2cd.st2_prep_release:
                 version: <% $.version %>
                 tries: 15
                 delay: 60
+                hosts: <% $.host %>
+                cwd: <% $.cwd %>
             on-success:
                 - prep_st2enterprise_dockerfiles
         prep_st2enterprise_dockerfiles:
