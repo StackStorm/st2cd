@@ -126,6 +126,14 @@ st2cd.st2_prep_release:
                 hosts: <% $.host %>
                 cwd: <% $.cwd %>
             on-success:
+                - wait_for_community_docker_images
+        wait_for_community_docker_images:
+            action:
+            input:
+                org: <% $.fork %>
+                image: st2workflowengine
+                version: <% $.version %>
+            on-success:
                 - prep_st2enterprise_dockerfiles
         prep_st2enterprise_dockerfiles:
             action: st2cd.st2_prep_release_for_st2enterprise_dockerfiles
