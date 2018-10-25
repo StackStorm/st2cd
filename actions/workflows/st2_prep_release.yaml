@@ -133,6 +133,8 @@ st2cd.st2_prep_release:
                 org: <% $.fork %>
                 image: st2workflowengine
                 version: <% $.version %>
+                tries: 45
+                default: 60
             on-success:
                 - prep_st2enterprise_dockerfiles
         prep_st2enterprise_dockerfiles:

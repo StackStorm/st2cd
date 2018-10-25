@@ -20,3 +20,13 @@ parameters:
         description: Image version
         required: true
         position: 2
+    tries:
+        type: string
+        description: Check for image this many times
+        required: true
+        position: 3
+    delay:
+        type: string
+        description: Number of seconds to delay between each check
+        required: true
+        position: 4
