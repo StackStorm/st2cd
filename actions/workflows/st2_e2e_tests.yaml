@@ -102,10 +102,10 @@ workflows:
                     hosts: <% $.host_ip %>
                     env: <% $.st2_cli_env %>
                     cmd: "cd /tmp/st2tests && . ./venv/bin/activate && bash /tmp/st2tests/robot_parallel_tests.sh '--processes 1 robotfm_tests/docs/' 0"
-                    timeout: 230
+                    timeout: 220
                 retry:
                     count: 2
-                    delay: 15
+                    delay: 10
                 on-success:
                     - pabot_CLI_tests
             pabot_CLI_tests:
@@ -114,10 +114,10 @@ workflows:
                     hosts: <% $.host_ip %>
                     env: <% $.st2_cli_env %>
                     cmd: "cd /tmp/st2tests && . ./venv/bin/activate && bash /tmp/st2tests/robot_parallel_tests.sh '--processes 1 robotfm_tests/cli/' 0"
-                    timeout: 200
+                    timeout: 190
                 retry:
                     count: 2
-                    delay: 15
+                    delay: 10
                 on-success:
                     - pabot_chatops_tests
             pabot_chatops_tests:
@@ -126,10 +126,10 @@ workflows:
                     hosts: <% $.host_ip %>
                     env: <% $.st2_cli_env %>
                     cmd: "cd /tmp/st2tests && . ./venv/bin/activate && bash /tmp/st2tests/robot_parallel_tests.sh '--processes 1 robotfm_tests/chatopsCI/' 0"
-                    timeout: 250
+                    timeout: 220
                 retry:
                     count: 2
-                    delay: 15
+                    delay: 10
                 on-success:
                     - enterprise_tests: <% $.enterprise %>
             enterprise_tests:
