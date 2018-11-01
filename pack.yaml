@@ -1,6 +1,6 @@
 ---
 name : st2cd
-description : pack of actions specifically created for the continuous delivery pipeline at StackStorm
-version : 0.1.0
+description : Continuous delivery pipeline at StackStorm
+version : 0.1.1
 author : st2-dev
 email : info@stackstorm.com
