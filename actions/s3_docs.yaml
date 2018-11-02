@@ -1,6 +1,6 @@
 ---
   name: "s3_docs"
-  runner_type: "run-remote-script"
+  runner_type: remote-shell-script
   description: "s3 docs"
   enabled: true
   entry_point: "s3_docs.sh"

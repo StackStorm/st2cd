@@ -3,7 +3,7 @@ name: st2_prep_dev_for_enterprise_ldap
 description: Prepare the st2 enterprise ldap repo for next iteration of development
 enabled: true
 runner_type: remote-shell-script
-entry_point: st2_prep_dev_for_enterprise_ldap.sh
+entry_point: st2_chg_ver_for_enterprise_ldap.sh
 parameters:
     project:
         type: string
@@ -20,10 +20,15 @@ parameters:
         description: Fork to use
         default: StackStorm
         position: 2
+    branch:
+        type: string
+        description: Branch to update
+        default: master
+        position: 3
     local_repo:
         type: string
         description: Location where to clone the repo. Programmatically determined if not provided.
-        position: 3
+        position: 4
     dir:
         immutable: true
         default: /home/stanley/

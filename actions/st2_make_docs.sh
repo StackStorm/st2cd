@@ -33,6 +33,9 @@ if [ -d "${LOCAL_REPO}" ]; then
     rm -rf ${LOCAL_REPO}
 fi
 
+# Make sure latest version of virtualenv is installed
+sudo pip install --upgrade "virtualenv==15.1.0"
+
 git clone ${GIT_REPO} ${LOCAL_REPO}
 
 cd ${LOCAL_REPO}
@@ -40,7 +43,7 @@ echo "Currently at directory `pwd`..."
 
 
 # UPDATE DOCS URL
-CONF_FILE="docs/source/conf.py"
+CONF_FILE="docs/source/info.py"
 DOCS_URL_MATCH=`grep "${DOCS_URL}" ${CONF_FILE} || true`
 if [[ -z "${DOCS_URL_MATCH}" ]]; then
     sed -i -e "s/${DEFAULT_DOCS_URL}/${DOCS_URL}/g" ${CONF_FILE}

@@ -1,6 +1,6 @@
 ---
   name: get_distro
-  runner_type: run-remote-script
+  runner_type: remote-shell-script
   description: Determine the name of the OS distro
   enabled: true
   entry_point: get_distro.sh

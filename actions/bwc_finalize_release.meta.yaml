@@ -1,0 +1,22 @@
+---
+name: bwc_finalize_release
+runner_type: mistral-v2
+description: Finalize bwc release
+enabled: true
+entry_point: workflows/bwc_finalize_release.yaml
+parameters:
+    version:
+        type: string
+        description: Version used for the release. Should include the patch e.g. 0.1.0
+        required: true
+    fork:
+        type: string
+        description: Fork to use
+        default: StackStorm    
+    host:
+        type: string
+        description: Host where to run the release process.
+    cwd:
+        type: string
+        description: Working directory where remote shell scripts use
+        default: /home/stanley

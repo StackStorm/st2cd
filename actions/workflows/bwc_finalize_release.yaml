@@ -1,0 +1,72 @@
+version: '2.0'
+st2cd.bwc_finalize_release:
+    description: Finalize bwc release
+    input:
+        - version
+        - fork
+        - host
+        - cwd
+        - local_repo_sfx: null
+
+    task-defaults:
+        on-error:
+            - cleanup_on_failure: <% $.local_repo_sfx != null %>
+
+    tasks:
+        init:
+            action: core.local
+            input:
+                cmd: "echo `date +'%s'`_`awk -v min=100 -v max=999 'BEGIN{srand(); print int(min+rand()*(max-min+1))}'`"
+            publish:
+                local_repo_sfx: <% task(init).result.stdout %>
+                next_patch_version: <% $.version.split('.')[0] + '.' + $.version.split('.')[1] + '.' + str(int($.version.split('.')[2]) + 1) %>
+                major_minor_version: <% $.version.split('.')[0] + '.' + $.version.split('.')[1] %>
+            on-success:
+                - get_host: <% $.host = null %>
+                - finalize: <% $.host != null %>
+
+
+        get_host:
+            action: linux.dig
+            input:
+                hostname: st2-build-slave-ubuntu.service.consul
+                rand: true
+                count: 1
+            publish:
+                host: <% task(get_host).result.result[0] %>
+            on-success:
+                - finalize
+
+
+        finalize:
+            on-complete:
+                - make_bwc_docs_stable
+
+        make_bwc_docs_stable:
+            action: st2cd.bwc_docs
+            input:
+                branch: v<% $.major_minor_version %>
+            on-success:
+                - make_bwc_docs_latest
+        make_bwc_docs_latest:
+            action: st2cd.bwc_docs
+        #     on-success:
+        #         - push_bwc_client
+        # push_bwc_client:
+        #     action: st2cd.pypi_upload
+        #     input:
+        #         repo: bwc-cli
+        #         version: <% $.version %>
+        #         fork: <% $.fork %>
+        #         local_repo: <% 'bwc_cli_' + $.local_repo_sfx %>
+        #         hosts: <% $.host %>
+        #         cwd: <% $.cwd %>
+
+
+        cleanup_on_failure:
+            action: core.remote
+            input:
+                cmd: <% 'rm -rf ' + $.cwd + '/bwc*' + $.local_repo_sfx + ' && rm -rf ~/.pypirc' %>
+                hosts: <% $.host %>
+            on-complete:
+                - fail

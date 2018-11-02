@@ -1,9 +1,10 @@
 ---
     name: "st2_docs_prod"
+    pack: "st2cd"
     description: "Build st2 packages after tests succeed and push them to staging"
     enabled: true
     trigger:
-        type: "GitHubWebhook.github_event"
+        type: "githubwebhook.github_event"
     criteria:
         trigger.body.ref:
             pattern: "refs/heads/master"
@@ -19,5 +20,4 @@
             revision: "{{trigger.body.head_commit.id}}"
             author: "{{trigger.body.head_commit.author.username}}"
             environment: "production"
-            docs_url: "{{system.s3_bucket_docs_production}}"
-    pack: "st2cd"
+            docs_url: "{{st2kv.system.s3_bucket_docs_production}}"

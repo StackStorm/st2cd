@@ -1,0 +1,19 @@
+---
+name: bwc_release_packages
+pack: st2cd
+description: Promote all stable bwc packages from staging to production for all supported distros
+enabled: true
+runner_type: mistral-v2
+entry_point: workflows/bwc_release_packages.yaml
+parameters:
+    distros:
+        type: array
+        immutable: true
+        default:
+            - RHEL6
+            - RHEL7
+            - UBUNTU14
+            - UBUNTU16
+    version:
+        type: string
+        required: true

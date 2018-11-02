@@ -1,6 +1,6 @@
 ---
   name: "git_branch"
-  runner_type: "run-remote-script"
+  runner_type: remote-shell-script
   description: "Branch st2 repo and push to remote."
   enabled: true
   entry_point: "git_branch.sh"

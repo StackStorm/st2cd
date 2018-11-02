@@ -55,7 +55,7 @@ fi
 CHANGELOG_VERSION_MATCH=`grep "${VERSION} - " ${CHANGELOG_FILE} || true`
 if [[ -z "${CHANGELOG_VERSION_MATCH}" ]]; then
     echo "Setting version in ${CHANGELOG_FILE} to ${VERSION}..."
-    sed -i "s/in development/${RELEASE_STRING}/g" ${CHANGELOG_FILE}
+    sed -i "s/^in development/${RELEASE_STRING}/Ig" ${CHANGELOG_FILE}
     sed -i "/${RELEASE_STRING}/!b;n;c${DASH_HEADER}" ${CHANGELOG_FILE}
     sed -i "/${RELEASE_STRING}/i \in development\n--------------\n\n" ${CHANGELOG_FILE}
 fi
@@ -72,12 +72,17 @@ fi
 echo "Creating new branch ${BRANCH}..."
 git checkout -b ${BRANCH} origin/master
 
-files=(
+COMMON_INIT_FILES=(
     "st2common/st2common/__init__.py"
     "st2client/st2client/__init__.py"
 )
 
-for f in "${files[@]}"
+# Add all the runners
+RUNNER_INIT_FILES=($(find contrib/runners -maxdepth 3 -name __init__.py -not -path "*tests*" -not -path "*query*" -not -path "*callback*" -not -path "*functions*"))
+
+ALL_INIT_FILES=("${COMMON_INIT_FILES[@]}" "${RUNNER_INIT_FILES[@]}")
+
+for f in "${init_files[@]}"
 do
     if [[ ! -e "$f" ]]; then
         >&2 echo "ERROR: Version file ${f} does not exist."

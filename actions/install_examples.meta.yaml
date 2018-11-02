@@ -1,6 +1,6 @@
 ---
   name: "install_examples"
-  runner_type: "run-remote-script"
+  runner_type: remote-shell-script
   description: "Install St2 examples"
   enabled: true
   entry_point: "install_examples.sh"

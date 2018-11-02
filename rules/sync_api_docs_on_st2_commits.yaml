@@ -1,0 +1,25 @@
+---
+name: sync_api_docs_on_st2_commits
+description: Sync API documentation on merges to st2 master/release branches
+pack: st2cd
+enabled: true
+
+trigger:
+    type: githubwebhook.github_event
+
+criteria:
+    trigger.body.ref:
+        type: regex
+        pattern: "^refs/heads/master|^refs/heads/v[0-9]+\\.[0-9]+"
+    trigger.body.repository.full_name:
+        type: equals
+        pattern: "StackStorm/st2"
+
+action:
+    ref: circle_ci.run_build
+    parameters:
+      project: st2apidocs
+      username: stackstorm
+      branch: master
+      build_parameters:
+          ST2_BRANCH: "{{ trigger.body.ref.split('/')[2] }}"

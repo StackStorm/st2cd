@@ -69,14 +69,15 @@ echo "Creating new branch ${BRANCH}..."
 git checkout -b ${BRANCH} origin/master
 
 ST2DOCS_VERSION_FILE="version.txt"
-ST2DOCS_VERSION_STR="${SHORT_VERSION}"
 
-ST2DOCS_VERSION_STR_MATCH=`grep "${SHORT_VERSION}" ${ST2DOCS_VERSION_FILE} || true`
+
+# Check if version matches exactly to new short version. If not update it.
+ST2DOCS_VERSION_STR_MATCH=`grep -w "${SHORT_VERSION}" ${ST2DOCS_VERSION_FILE} || true`
 if [[ -z "${ST2DOCS_VERSION_STR_MATCH}" ]]; then
     echo "Setting version in ${ST2DOCS_VERSION_FILE} to ${SHORT_VERSION}..."
     echo "${SHORT_VERSION}" > ${ST2DOCS_VERSION_FILE}
 
-    ST2DOCS_VERSION_STR_MATCH=`grep "${SHORT_VERSION}" ${ST2DOCS_VERSION_FILE} || true`
+    ST2DOCS_VERSION_STR_MATCH=`grep -w "${SHORT_VERSION}" ${ST2DOCS_VERSION_FILE} || true`
     if [[ -z "${ST2DOCS_VERSION_STR_MATCH}" ]]; then
         >&2 echo "ERROR: Unable to update the st2 version in ${ST2DOCS_VERSION_FILE}."
         exit 1

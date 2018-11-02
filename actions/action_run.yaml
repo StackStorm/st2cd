@@ -1,6 +1,6 @@
 ---
   name: "action_run"
-  runner_type: "run-remote-script"
+  runner_type: remote-shell-script
   description: "Run remote st2 action"
   enabled: true
   entry_point: "action_run.py"

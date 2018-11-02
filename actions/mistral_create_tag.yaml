@@ -1,6 +1,6 @@
 ---
   name: "mistral_create_tag"
-  runner_type: "run-remote-script"
+  runner_type: remote-shell-script
   description: "Create a new tag for Mistral."
   enabled: true
   entry_point: "mistral_create_tag.sh"

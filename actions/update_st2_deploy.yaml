@@ -1,6 +1,6 @@
 ---
   name: "update_st2_deploy"
-  runner_type: "run-remote-script"
+  runner_type: remote-shell-script
   description: "Update Downloads URL in st2_deploy"
   enabled: true
   entry_point: "update_st2_deploy.sh"

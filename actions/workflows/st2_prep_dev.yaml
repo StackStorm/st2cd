@@ -6,7 +6,10 @@ st2cd.st2_prep_dev:
         - fork
         - host
         - cwd
-        - local_repo_sfx: null
+
+    vars:
+        dev_version: <% $.version.split('.')[0] + '.' + $.version.split('.')[1] + 'dev' %>
+        local_repo_sfx: null
 
     task-defaults:
         on-error:
@@ -35,15 +38,14 @@ st2cd.st2_prep_dev:
             on-success:
                 - prep
 
-
         prep:
             on-complete:
                 - prep_st2
         prep_st2:
-            action: st2cd.st2_prep_dev_for_st2            
+            action: st2cd.st2_prep_dev_for_st2
             input:
                 project: st2
-                version: <% $.version %>
+                version: <% $.dev_version %>
                 fork: <% $.fork %>
                 local_repo: <% 'st2_' + $.local_repo_sfx %>
                 hosts: <% $.host %>
@@ -54,7 +56,7 @@ st2cd.st2_prep_dev:
             action: st2cd.st2_prep_dev_for_mistral
             input:
                 project: mistral
-                version: <% $.version %>
+                version: <% $.dev_version %>
                 fork: <% $.fork %>
                 local_repo: <% 'mistral_' + $.local_repo_sfx %>
                 hosts: <% $.host %>
@@ -65,7 +67,7 @@ st2cd.st2_prep_dev:
             action: st2cd.st2_prep_dev_for_st2docs
             input:
                 project: st2docs
-                version: <% $.version %>
+                version: <% $.dev_version %>
                 fork: <% $.fork %>
                 local_repo: <% 'st2docs_' + $.local_repo_sfx %>
                 hosts: <% $.host %>
@@ -76,20 +78,9 @@ st2cd.st2_prep_dev:
             action: st2cd.st2_prep_dev_for_gui
             input:
                 project: st2web
-                version: <% $.version %>
+                version: <% $.dev_version %>
                 fork: <% $.fork %>
                 local_repo: <% 'st2web_' + $.local_repo_sfx %>
-                hosts: <% $.host %>
-                cwd: <% $.cwd %>
-            on-success:
-                - prep_st2flow
-        prep_st2flow:
-            action: st2cd.st2_prep_dev_for_gui
-            input:
-                project: st2flow
-                version: <% $.version %>
-                fork: <% $.fork %>
-                local_repo: <% 'st2flow_' + $.local_repo_sfx %>
                 hosts: <% $.host %>
                 cwd: <% $.cwd %>
             on-success:
@@ -98,33 +89,57 @@ st2cd.st2_prep_dev:
             action: st2cd.st2_prep_dev_for_gui
             input:
                 project: st2chatops
-                version: <% $.version %>
+                version: <% $.dev_version %>
                 fork: <% $.fork %>
                 local_repo: <% 'st2chatops_' + $.local_repo_sfx %>
                 hosts: <% $.host %>
                 cwd: <% $.cwd %>
             on-success:
-                - prep_st2enterprise_pkg
-        prep_st2enterprise_pkg:
-            action: st2cd.st2_prep_dev_for_enterprise_pkg
+                - prep_st2flow
+        prep_st2flow:
+            action: st2cd.st2_prep_dev_for_gui
             input:
-                project: st2enterprise-package
-                version: <% $.version %>
+                project: st2flow
+                version: <% $.dev_version %>
                 fork: <% $.fork %>
-                local_repo: <% 'st2enterprise_package_' + $.local_repo_sfx %>
+                local_repo: <% 'st2flow_' + $.local_repo_sfx %>
                 hosts: <% $.host %>
                 cwd: <% $.cwd %>
             on-success:
-                - prep_st2enterprise_ldap
-        prep_st2enterprise_ldap:
-            action: st2cd.st2_prep_dev_for_enterprise_ldap
+                - prep_st2_dockerfiles
+        prep_st2_dockerfiles:
+            action: st2cd.st2_prep_dev_for_st2_dockerfiles
             input:
-                project: st2-enterprise-auth-backend-ldap
-                version: <% $.version %>
+                project: st2-dockerfiles
+                version: <% $.dev_version %>
                 fork: <% $.fork %>
-                local_repo: <% 'st2enterprise_auth_ldap_' + $.local_repo_sfx %>
+                local_repo: <% 'st2_' + $.local_repo_sfx %>
                 hosts: <% $.host %>
                 cwd: <% $.cwd %>
+            on-success:
+                - wait_for_community_docker_images
+        wait_for_community_docker_image:
+            action: st2cd.wait_for_docker_image
+            input:
+                org: <% $.fork %>
+                image: st2web
+                version: <% $.version %>
+                tries: 15
+                delay: 60
+                hosts: <% $.host %>
+                cwd: <% $.cwd %>
+            on-success:
+                - prep_st2enterprise_dockerfiles
+        prep_st2enterprise_dockerfiles:
+            action: st2cd.st2_prep_dev_for_st2enterprise_dockerfiles
+            input:
+                project: st2enterprise-dockerfiles
+                version: <% $.dev_version %>
+                fork: <% $.fork %>
+                local_repo: <% 'st2_' + $.local_repo_sfx %>
+                hosts: <% $.host %>
+                cwd: <% $.cwd %>
+
 
 
         cleanup_on_failure:

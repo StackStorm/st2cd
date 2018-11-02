@@ -1,6 +1,6 @@
 ---
   name: "webui_version"
-  runner_type: "run-remote"
+  runner_type: remote-shell-cmd
   description: "Retrieve the WebUI version"
   enabled: true
   entry_point: ""

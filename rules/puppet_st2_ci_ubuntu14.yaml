@@ -4,7 +4,7 @@
     pack: "st2cd"
     enabled: true
     trigger:
-        type: "GitHubWebhook.github_event"
+        type: "githubwebhook.github_event"
     criteria:
         trigger.body.ref:
             pattern: "refs/heads/master"
@@ -18,4 +18,3 @@
             revision: "{{trigger.body.head_commit.id}}"
             hostname: "st2wp-u14-{{trigger.body.head_commit.id | truncate(8, False, '')}}"
             distro: "UBUNTU14"
-            

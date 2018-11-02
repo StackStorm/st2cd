@@ -1,6 +1,6 @@
 ---
   name: "git_push_branch"
-  runner_type: "run-remote-script"
+  runner_type: remote-shell-script
   description: "Pushes a branch upwards to a git repo."
   enabled: true
   entry_point: "git_push_branch.sh"

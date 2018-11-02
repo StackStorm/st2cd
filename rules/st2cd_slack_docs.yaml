@@ -28,6 +28,6 @@
                 {% endif %}
                 BRANCH: {{trigger.parameters.branch}}
                 ````
-                https://st2-build/#/history/{{trigger.execution_id}}/general
+                https://st2cicd.uswest2.stackstorm.net/#/history/{{trigger.execution_id}}/general
 
 

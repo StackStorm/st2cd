@@ -1,6 +1,6 @@
 ---
   name: "run_puppet_bootstrap"
-  runner_type: "run-remote"
+  runner_type: remote-shell-cmd
   description: "Run puppet bootstrap script"
   enabled: true
   entry_point: ""

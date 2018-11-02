@@ -1,0 +1,68 @@
+version: '2.0'
+st2cd.st2_prep_release_rules:
+    description: Prepare st2cd and st2ci rules for next release.
+    input:
+        - version
+        - prev_version
+        - oses
+
+    vars:
+        local_repo_sfx: null
+
+    task-defaults:
+        on-error:
+            - cleanup_on_failure: <% $.local_repo_sfx != null %>
+
+    tasks:
+        init:
+            action: core.local
+            input:
+                cmd: "echo `date +'%s'`_`awk -v min=100 -v max=999 'BEGIN{srand(); print int(min+rand()*(max-min+1))}'`"
+            publish:
+                local_repo_sfx: <% task(init).result.stdout %>
+            on-complete:
+                - get_host
+
+
+        get_host:
+            action: linux.dig
+            input:
+                hostname: st2-build-slave-ubuntu.service.consul
+                rand: true
+                count: 1
+            publish:
+                host: <% task(get_host).result.result[0] %>
+            on-success:
+                - prep
+
+
+        prep:
+            on-complete:
+                - prep_ci_rules
+        prep_ci_rules:
+            action: st2cd.st2_prep_release_ci_rules
+            input:
+                project: st2ci
+                version: <% $.version %>
+                prev_version: <% $.prev_version %>
+                local_repo: <% 'st2ci' + $.local_repo_sfx %>
+                hosts: <% $.host %>
+            on-success:
+                - prep_cd_rules
+        prep_cd_rules:
+            action: st2cd.st2_prep_release_cd_rules
+            input:
+                project: st2cd
+                version: <% $.version %>
+                prev_version: <% $.prev_version %>
+                oses: <% $.oses %>
+                local_repo: <% 'st2cd' + $.local_repo_sfx %>
+                hosts: <% $.host %>
+
+        cleanup_on_failure:
+            action: core.remote
+            input:
+                cmd: <% 'rm -rf ' + $.cwd + '/st2*' + $.local_repo_sfx %>
+                hosts: <% $.host %>
+            on-complete:
+                - fail

@@ -17,6 +17,7 @@
         - "production"
         - "staging"
         - "sandbox"
+        - "public"  # Use this if you want node to be available on public internet. Set up Elastic IP manually.
     key_name:
       type: "string"
       description: "SSH key to use during intial instance creation"
@@ -52,7 +53,9 @@
         - "F20"
         - "F21"
         - "UBUNTU14"
+        - "UBUNTU16"
         - "pkg_UBUNTU14"
+        - "pkg_UBUNTU16"
         - "pkg_RHEL6"
         - "pkg_RHEL7"
         - "pkg_CENTOS6"

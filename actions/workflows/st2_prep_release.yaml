@@ -40,7 +40,7 @@ st2cd.st2_prep_release:
             on-complete:
                 - prep_st2
         prep_st2:
-            action: st2cd.st2_prep_release_for_st2            
+            action: st2cd.st2_prep_release_for_st2
             input:
                 project: st2
                 version: <% $.version %>
@@ -60,6 +60,17 @@ st2cd.st2_prep_release:
                 hosts: <% $.host %>
                 cwd: <% $.cwd %>
             on-success:
+                - prep_st2tests
+        prep_st2tests:
+            action: st2cd.st2_prep_release_for_st2tests
+            input:
+                project: st2tests
+                version: <% $.version %>
+                fork: <% $.fork %>
+                local_repo: <% 'st2tests_' + $.local_repo_sfx %>
+                hosts: <% $.host %>
+                cwd: <% $.cwd %>
+            on-success:
                 - prep_st2web
         prep_st2web:
             action: st2cd.st2_prep_release_for_gui
@@ -68,17 +79,6 @@ st2cd.st2_prep_release:
                 version: <% $.version %>
                 fork: <% $.fork %>
                 local_repo: <% 'st2web_' + $.local_repo_sfx %>
-                hosts: <% $.host %>
-                cwd: <% $.cwd %>
-            on-success:
-                - prep_st2flow
-        prep_st2flow:
-            action: st2cd.st2_prep_release_for_gui
-            input:
-                project: st2flow
-                version: <% $.version %>
-                fork: <% $.fork %>
-                local_repo: <% 'st2flow_' + $.local_repo_sfx %>
                 hosts: <% $.host %>
                 cwd: <% $.cwd %>
             on-success:
@@ -93,6 +93,17 @@ st2cd.st2_prep_release:
                 hosts: <% $.host %>
                 cwd: <% $.cwd %>
             on-success:
+                - prep_st2flow
+        prep_st2flow:
+            action: st2cd.st2_prep_release_for_gui
+            input:
+                project: st2flow
+                version: <% $.version %>
+                fork: <% $.fork %>
+                local_repo: <% 'st2flow_' + $.local_repo_sfx %>
+                hosts: <% $.host %>
+                cwd: <% $.cwd %>
+            on-success:
                 - prep_st2_pkg
         prep_st2_pkg:
             action: st2cd.st2_prep_release_for_st2_pkg
@@ -104,25 +115,37 @@ st2cd.st2_prep_release:
                 hosts: <% $.host %>
                 cwd: <% $.cwd %>
             on-success:
-                - prep_st2enterprise_pkg
-        prep_st2enterprise_pkg:
-            action: st2cd.st2_prep_release_for_enterprise_pkg
+                - prep_st2_dockerfiles
+        prep_st2_dockerfiles:
+            action: st2cd.st2_prep_release_for_st2_dockerfiles
             input:
-                project: st2enterprise-package
+                project: st2-dockerfiles
                 version: <% $.version %>
                 fork: <% $.fork %>
-                local_repo: <% 'st2enterprise_package_' + $.local_repo_sfx %>
+                local_repo: <% 'st2_dockerfiles_' + $.local_repo_sfx %>
                 hosts: <% $.host %>
                 cwd: <% $.cwd %>
             on-success:
-                - prep_st2enterprise_ldap
-        prep_st2enterprise_ldap:
-            action: st2cd.st2_prep_release_for_enterprise_ldap
+                - wait_for_community_docker_images
+        wait_for_community_docker_image:
+            action: st2cd.wait_for_docker_image
             input:
-                project: st2-enterprise-auth-backend-ldap
+                org: <% $.fork %>
+                image: st2web
+                version: <% $.version %>
+                tries: 15
+                delay: 60
+                hosts: <% $.host %>
+                cwd: <% $.cwd %>
+            on-success:
+                - prep_st2enterprise_dockerfiles
+        prep_st2enterprise_dockerfiles:
+            action: st2cd.st2_prep_release_for_st2enterprise_dockerfiles
+            input:
+                project: st2enterprise-dockerfiles
                 version: <% $.version %>
                 fork: <% $.fork %>
-                local_repo: <% 'st2enterprise_auth_ldap_' + $.local_repo_sfx %>
+                local_repo: <% 'st2enterprise_dockerfiles_' + $.local_repo_sfx %>
                 hosts: <% $.host %>
                 cwd: <% $.cwd %>
 

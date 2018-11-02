@@ -1,11 +1,11 @@
 ---
   name: "create_version_release_rule"
-  runner_type: "run-remote-script"
+  runner_type: remote-shell-script
   description: "Create a rule to listen for github events on branch commits."
   enabled: true
   entry_point: "create_version_release_rule.py"
   parameters:
-    st2-base-url:
+    st2_base_url:
       type: "string"
       description: "St2 base url."
       default: "http://localhost:9101/v1/"

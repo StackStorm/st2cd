@@ -1,6 +1,6 @@
 ---
   name: "git_clone"
-  runner_type: "run-remote-script"
+  runner_type: remote-shell-script
   description: "Clone a git repo"
   enabled: true
   entry_point: "git_clone.sh"

@@ -1,6 +1,6 @@
 ---
   name: "get_apt_key"
-  runner_type: "run-remote"
+  runner_type: remote-shell-cmd
   description: "Get key for apt-get repository"
   enabled: true
   entry_point: ""

@@ -16,6 +16,7 @@ parameters:
             - RHEL6
             - RHEL7
             - UBUNTU14
+            - UBUNTU16
         position: 1
     release:
         type: string
@@ -36,23 +37,23 @@ parameters:
         position: 4
     ldap_host:
         type: string
-        default: "{{system.enterprise_ad_host}}"
+        default: "{{st2kv.system.enterprise_ad_host}}"
         position: 5
     ldap_bind_dn:
         type: string
-        default: "{{system.enterprise_ad_bind_dn}}"
+        default: "{{st2kv.system.enterprise_ad_bind_dn}}"
         position: 6
     ldap_bind_passwd:
         type: string
-        default: "{{system.enterprise_ad_bind_passwd}}"
+        default: "{{st2kv.system.enterprise_ad_bind_passwd}}"
         position: 7
     ldap_base_ou:
         type: string
-        default: "{{system.enterprise_ad_base_ou}}"
+        default: "{{st2kv.system.enterprise_ad_base_ou}}"
         position: 8
     ldap_group_dn:
         type: string
-        default: "{{system.enterprise_ad_group_dn}}"
+        default: "{{st2kv.system.enterprise_ad_group_dn}}"
         position: 9
     dir:
         immutable: true

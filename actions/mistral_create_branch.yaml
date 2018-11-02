@@ -1,6 +1,6 @@
 ---
   name: "mistral_create_branch"
-  runner_type: "run-remote-script"
+  runner_type: remote-shell-script
   description: "Create a new branch for Mistral."
   enabled: true
   entry_point: "mistral_create_branch.sh"

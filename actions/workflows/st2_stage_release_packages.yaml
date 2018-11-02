@@ -1,24 +1,19 @@
 version: '2.0'
 name: st2cd.st2_stage_release_packages
-description: Stage and test st2 packages for release.
+description: Stage st2 packages for release.
 
 workflows:
 
     main:
         input:
             - version
+            - projects
             - wait
-            - test
-            - projects:
-                - st2
-                - st2chatops
-                - st2flow
-                - st2-packages
-                - st2-enterprise-auth-backend-ldap
             - distros:
                 RHEL6: el6
                 RHEL7: el7
                 UBUNTU14: u14
+                UBUNTU16: u16
         tasks:
             init:
                 action: core.local
@@ -45,16 +40,6 @@ workflows:
                 input:
                     project: stackstorm/<% $.package_job[0] %>
                     build_number: <% str($.package_job[1]) %>
-                on-success:
-                    - test_all: <% $.test %>
-            test_all:
-                with-items: distro in <% $.distros.items() %>
-                action: st2ci.st2_pkg_e2e_test
-                input:
-                    hostname: st2-pkg-staging-stable-<% $.distro[1] %>
-                    distro: <% $.distro[0] %>
-                    pkg_env: staging
-                    release: stable
 
 
     wait_for_package:

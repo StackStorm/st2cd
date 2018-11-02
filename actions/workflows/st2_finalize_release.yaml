@@ -20,6 +20,7 @@ st2cd.st2_finalize_release:
             publish:
                 local_repo_sfx: <% task(init).result.stdout %>
                 next_patch_version: <% $.version.split('.')[0] + '.' + $.version.split('.')[1] + '.' + str(int($.version.split('.')[2]) + 1) %>
+                major_minor_version: <% $.version.split('.')[0] + '.' + $.version.split('.')[1] %>
             on-success:
                 - get_host: <% $.host = null %>
                 - finalize: <% $.host != null %>
@@ -39,7 +40,17 @@ st2cd.st2_finalize_release:
 
         finalize:
             on-complete:
+                - set_stable_version_datastore
+
+        set_stable_version_datastore:
+            action: st2cd.kvstore
+            input:
+                action: "update"
+                key: "st2_stable_version"
+                value: <% $.major_minor_version %>
+            on-success:
                 - make_st2docs_stable
+
         make_st2docs_stable:
             action: st2cd.st2_make_docs
             input:
@@ -63,12 +74,13 @@ st2cd.st2_finalize_release:
             on-success:
                 - st2_tag_release
         st2_tag_release:
-            action: st2cd.st2_tag_release
+            action: st2cd.tag_release
             input:
                 project: st2
                 version: <% $.version %>
                 fork: <% $.fork %>
                 local_repo: <% 'st2_' + $.local_repo_sfx %>
+                branch: v<% $.major_minor_version %>
                 hosts: <% $.host %>
                 cwd: <% $.cwd %>
             on-success:
@@ -82,17 +94,6 @@ st2cd.st2_finalize_release:
                 hosts: <% $.host %>
                 cwd: <% $.cwd %>
             on-success:
-                - prep_st2_next_patch
-        prep_st2_next_patch:
-            action: st2cd.st2_prep_patch_release
-            input:
-                project: st2
-                version: <% $.next_patch_version %>
-                fork: <% $.fork %>
-                local_repo: <% 'st2_' + $.local_repo_sfx %>
-                hosts: <% $.host %>
-                cwd: <% $.cwd %>
-            on-success:
                 - mistral_tag_release
         mistral_tag_release:
             action: st2cd.mistral_tag_release
@@ -102,15 +103,83 @@ st2cd.st2_finalize_release:
             on-success:
                 - push_st2client
         push_st2client:
-            action: st2cd.pypi_st2client
+            action: st2cd.pypi_upload
             input:
-                project: st2
+                repo: st2
+                project: st2client
                 version: <% $.version %>
                 fork: <% $.fork %>
                 local_repo: <% 'st2_' + $.local_repo_sfx %>
                 hosts: <% $.host %>
                 cwd: <% $.cwd %>
+            on-success:
+                - st2_docker_tag_release
+        st2_docker_tag_release:
+            action: st2cd.tag_release
+            input:
+                project: st2-docker
+                version: <% $.version %>
+                fork: <% $.fork %>
+                local_repo: <% 'st2docker_' + $.local_repo_sfx %>
+                branch: master
+                hosts: <% $.host %>
+                cwd: <% $.cwd %>
+            on-success:
+                - st2_dockerfiles_tag_release
+        st2_dockerfiles_tag_release:
+            action: st2cd.tag_release
+            input:
+                project: st2-dockerfiles
+                version: <% $.version %>
+                fork: <% $.fork %>
+                local_repo: <% 'st2_dockerfiles_' + $.local_repo_sfx %>
+                branch: master
+                hosts: <% $.host %>
+                cwd: <% $.cwd %>
+            on-success:
+                - st2enterprise_dockerfiles_tag_release
+        st2enterprise_dockerfiles_tag_release:
+            action: st2cd.tag_release
+            input:
+                project: st2enterprise-dockerfiles
+                version: <% $.version %>
+                fork: <% $.fork %>
+                local_repo: <% 'st2enterprise_dockerfiles_' + $.local_repo_sfx %>
+                branch: master
+                hosts: <% $.host %>
+                cwd: <% $.cwd %>
+            on-success:
+                - get_utc_date
 
+        get_utc_date:
+            action: core.local
+            input:
+                cmd: "date -u +%Y%m%d"
+            publish:
+                utc_date: <% task(get_utc_date).result.stdout %>
+            on-success:
+                - vagrant_tag_release
+        vagrant_tag_release:
+            action: st2cd.vagrant_tag_release
+            input:
+                project: packer-st2
+                version: <% $.version + '-' + str($.utc_date) %>
+                fork: <% $.fork %>
+                local_repo: <% 'packerst2_' + $.local_repo_sfx %>
+                branch: master
+                hosts: <% $.host %>
+                cwd: <% $.cwd %>
+            on-success:
+                - ship_api_docs
+
+        ship_api_docs:
+            action: circle_ci.run_build
+            input:
+                project: st2apidocs
+                username: stackstorm
+                branch: master
+                build_parameters:
+                    ST2_BRANCH: <% 'v' + $.major_minor_version %>
 
         cleanup_on_failure:
             action: core.remote

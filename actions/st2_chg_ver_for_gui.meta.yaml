@@ -1,0 +1,47 @@
+---
+name: st2_chg_ver_for_gui
+description: Change the version for the GUI repo
+enabled: true
+runner_type: remote-shell-script
+entry_point: st2_chg_ver_for_gui.sh
+parameters:
+    project:
+        type: string
+        description: Project name for st2
+        required: true
+        enum:
+            - st2chatops
+            - st2flow
+            - st2web
+        position: 0
+    version:
+        type: string
+        description: Version to update to. Should include the patch e.g. 0.1.0
+        required: true
+        position: 1
+    fork:
+        type: string
+        description: Fork to use
+        default: StackStorm
+        position: 2
+    branch:
+        type: string
+        description: Branch to update
+        default: master
+        position: 3
+    local_repo:
+        type: string
+        description: Location where to clone the repo. Programmatically determined if not provided.
+        position: 4
+    dir:
+        immutable: true
+        default: /home/stanley/
+    sudo:
+        immutable: true
+        default: false
+    cmd:
+        immutable: true
+        default: ""
+    kwarg_op:
+        immutable: true
+        default: "--"

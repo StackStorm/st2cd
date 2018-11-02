@@ -1,6 +1,6 @@
 ---
   name: "version_hack"
-  runner_type: "run-remote-script"
+  runner_type: remote-shell-script
   description: "Hack version and build number in to proper places"
   enabled: true
   entry_point: "version_hack.sh"

@@ -22,7 +22,7 @@
         parameters:
             repo: "{{trigger.parameters.repo}}"
             branch: "{{trigger.parameters.branch}}"
-            dl_server: "{{system.apt_origin_production}}"
+            dl_server: "{{st2kv.system.apt_origin_production}}"
             environment: "production"
             revision: "{{trigger.parameters.revision}}"
             build: "{{trigger.parameters.build}}"

@@ -1,6 +1,6 @@
 ---
   name: "run_st2_deploy"
-  runner_type: "run-remote-script"
+  runner_type: remote-shell-script
   description: "Run st2 deployment script"
   enabled: true
   entry_point: "st2_deploy.sh"

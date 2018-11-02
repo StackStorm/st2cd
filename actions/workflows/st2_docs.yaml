@@ -26,10 +26,11 @@
       ref: "core.remote"
       params:
         hosts: "{{build_server}}"
-        cmd: "cd /tmp/{{repodir}} && cat version.txt"
+        cmd: "cd /tmp/{{repodir}} && cat version.txt | cut -d '.' -f 1-2"
       publish:
         version: "{{version[build_server].stdout | replace('\n', '')}}"
       on-success: "update_url"
+      on-failure: "clean_repo"
     -
       name: "update_url"
       ref: "core.remote"
@@ -37,24 +38,28 @@
         hosts: "{{build_server}}"
         cmd: "cd /tmp/{{repodir}} && {% if environment == 'production' %}echo 'Production URL is correct in code' {% else %}sed -e 's~docs\\.stackstorm\\.com~{{docs_url}}~g' docs/source/conf.py {% endif %}"
       on-success: "make_docs"
+      on-failure: "clean_repo"
     -
       name: "make_docs"
       ref: "st2cd.make_docs"
       params:
         hosts: "{{build_server}}"
         repo: "{{repodir}}"
-        timeout: 1000
+        timeout: 1500
       on-success: "s3cmd_docs"
+      on-failure: "clean_repo"
     -
       name: "s3cmd_docs"
       ref: "st2cd.s3_docs"
       params:
         hosts: "{{build_server}}"
         repo: "/tmp/{{repodir}}/docs/build/html"
-        location: "{% if branch == 'master' %}/latest/{% elif version|string() == system.st2_stable_version|string() %}/{% endif %}"
+        location: "{% if branch == 'master' %}/latest/{% elif version|string() == st2kv.system.st2_stable_version|string() %}/{% endif %}"
         bucket: "{% if environment == 'production' %}docs.stackstorm.com{% else %}{{docs_url}}{% endif %}"
         version: "/{{version}}/"
+        timeout: 600
       on-success: "clean_repo"
+      on-failure: "clean_repo"
     -
       name: "clean_repo"
       ref: "st2cd.git_clean"

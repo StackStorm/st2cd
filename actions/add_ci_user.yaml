@@ -1,6 +1,6 @@
 ---
   name: "add_ci_user"
-  runner_type: "run-remote-script"
+  runner_type: remote-shell-script
   description: "Add a user to box"
   enabled: true
   entry_point: "add_ci_user.sh"

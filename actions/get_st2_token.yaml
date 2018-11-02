@@ -1,6 +1,6 @@
 ---
   name: "get_st2_token"
-  runner_type: "run-remote"
+  runner_type: remote-shell-cmd
   description: "Authenticate to St2"
   enabled: true
   entry_point: ""
