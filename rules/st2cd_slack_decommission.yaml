@@ -1,7 +1,7 @@
 ---
     name: "st2cd_slack_decommission"
     description: "Post to slack on decommission"
-    enabled: true
+    enabled: false
     trigger:
         type: "core.st2.generic.actiontrigger"
     criteria:
