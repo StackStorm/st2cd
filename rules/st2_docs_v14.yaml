@@ -1,5 +1,6 @@
 ---
     name: "st2_docs_v14"
+    pack: "st2cd"
     description: "Build st2 packages after tests succeed and push them to production"
     enabled: true
     trigger:

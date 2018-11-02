@@ -26,3 +26,4 @@
             environment: "production"
             revision: "{{trigger.parameters.revision}}"
             build: "{{trigger.parameters.build}}"
+    pack: "st2cd"

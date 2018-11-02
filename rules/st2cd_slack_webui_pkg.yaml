@@ -12,3 +12,4 @@
         ref: "slack.post_message"
         parameters:
             message: "```[{{trigger.action_name}} - {{trigger.parameters.environment}}: {{trigger.status.upper()}}]\n    DL_HOST: {{trigger.parameters.dl_server}}\n    BRANCH: {{trigger.parameters.branch}}\n    BUILD: {{trigger.parameters.build}}```"
+    pack: "st2cd"

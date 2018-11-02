@@ -13,3 +13,4 @@
         parameters:
             channel: "{% if trigger.status == 'succeeded' %}#thunderdome{% else %}#stackstorm{% endif %}"
             message: "{% if trigger.status != 'succeeded' %}<!channel>\n{% endif %}```[{{trigger.action_name}}: {{trigger.status.upper()}}]\n    HOST: {{trigger.parameters.hostname}}\n    DISTRO: {{trigger.parameters.distro}}```"
+    pack: "st2cd"
