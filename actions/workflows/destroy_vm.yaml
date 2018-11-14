@@ -55,8 +55,9 @@ st2cd.destroy_vm:
                 - get_volumes: <% $.used_id %>
         deregister_monitor:
             action: sensu.client_delete client=<% $.hostname %>.<% $.dns_zone %>
-            on-error:
-                - notify_deregister_monitor_failure
+            # Do not alert on deregister failure until pysensu-ng can distinguish genuine error from already deleted monitor
+            #on-error:
+            #    - notify_deregister_monitor_failure
             on-complete:
                 - get_volumes
         get_volumes:
@@ -110,7 +111,7 @@ st2cd.destroy_vm:
         notify_success:
             action: slack.post_message
             input:
-                channel: "#opstown"
+                channel: "#thunderdome"
                 message: "[SUCCEEDED] <% $.hostname %> was destroyed"
 
         notify_multiple_instances_failure:
