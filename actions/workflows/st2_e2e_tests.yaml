@@ -74,6 +74,7 @@ workflows:
                 workflow: test_mistral
                 input:
                     host: <% $.host_ip %>
+                    host_fqdn: <% $.host_fqdn %>
                     env: <% $.st2_cli_env %>
                 on-success:
                     - run_inquiry_tests
@@ -318,8 +319,21 @@ workflows:
         type: direct
         input:
             - host
+            - host_fqdn
             - env
         tasks:
+            # Mistral is not available on Ubuntu Bionic (18.04)
+            check_mistral_is_available:
+                action: core.remote
+                input:
+                    hosts: <% $.host %>
+                    env: <% $.env %>
+                    cmd: st2 run core.local "echo <% $.host_fqdn %>" | grep -i ubuntu18
+                on-success:
+                    # Mistral is not available on Bionic
+                    - skip_mistral_tests_mistral_is_not_available
+                on-failure:
+                    - test_mistral_examples
             test_mistral_examples:
                 action: core.remote
                 input:
@@ -327,7 +341,8 @@ workflows:
                     env: <% $.env %>
                     cmd: st2 run examples.mistral_examples
                     timeout: 600
-
+            skip_mistral_tests_mistral_is_not_available:
+                action: core.noop
 
     test_inquiry:
         type: direct
