@@ -328,7 +328,7 @@ workflows:
                 input:
                     hosts: <% $.host %>
                     env: <% $.env %>
-                    cmd: st2 run core.local "echo <% $.host_fqdn %>" | grep -v -i "ubuntu18\|u18"
+                    cmd: st2 run core.local "echo <% $.host_fqdn %> | grep -v -i 'ubuntu18\|u18'"
                 on-success:
                     - test_mistral_examples
                 on-error:
