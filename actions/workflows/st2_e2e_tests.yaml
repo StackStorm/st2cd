@@ -328,7 +328,7 @@ workflows:
                 input:
                     hosts: <% $.host %>
                     env: <% $.env %>
-                    cmd: st2 run core.local "echo <% $.host_fqdn %>" | grep -i ubuntu18
+                    cmd: st2 run core.local "echo <% $.host_fqdn %>" | grep -i "ubuntu18\|u18"
                 on-success:
                     # Mistral is not available on Bionic
                     - skip_mistral_tests_mistral_is_not_available
