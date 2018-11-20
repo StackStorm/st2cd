@@ -328,12 +328,12 @@ workflows:
                 input:
                     hosts: <% $.host %>
                     env: <% $.env %>
-                    cmd: st2 run core.local "echo <% $.host_fqdn %>" | grep -i "ubuntu18\|u18"
+                    cmd: st2 run core.local "echo <% $.host_fqdn %>" | grep -v -i "ubuntu18\|u18"
                 on-success:
+                    - test_mistral_examples
+                on-error:
                     # Mistral is not available on Bionic
                     - skip_mistral_tests_mistral_is_not_available
-                on-error:
-                    - test_mistral_examples
             test_mistral_examples:
                 action: core.remote
                 input:
