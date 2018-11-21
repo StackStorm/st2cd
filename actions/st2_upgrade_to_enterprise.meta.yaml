@@ -17,6 +17,7 @@ parameters:
             - RHEL7
             - UBUNTU14
             - UBUNTU16
+            - UBUNTU18
         position: 1
     release:
         type: string

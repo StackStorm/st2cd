@@ -74,6 +74,7 @@ workflows:
                 workflow: test_mistral
                 input:
                     host: <% $.host_ip %>
+                    host_fqdn: <% $.host_fqdn %>
                     env: <% $.st2_cli_env %>
                 on-success:
                     - run_inquiry_tests
@@ -114,7 +115,7 @@ workflows:
                     hosts: <% $.host_ip %>
                     env: <% $.st2_cli_env %>
                     cmd: "cd /tmp/st2tests && . ./venv/bin/activate && bash /tmp/st2tests/robot_parallel_tests.sh '--processes 1 robotfm_tests/cli/' 0"
-                    timeout: 190
+                    timeout: 230
                 retry:
                     count: 2
                     delay: 10
@@ -318,8 +319,21 @@ workflows:
         type: direct
         input:
             - host
+            - host_fqdn
             - env
         tasks:
+            # Mistral is not available on Ubuntu Bionic (18.04)
+            check_mistral_is_available:
+                action: core.remote
+                input:
+                    hosts: <% $.host %>
+                    env: <% $.env %>
+                    cmd: st2 run core.local "echo <% $.host_fqdn %> | grep -v -i 'ubuntu18\|u18'"
+                on-success:
+                    - test_mistral_examples
+                on-error:
+                    # Mistral is not available on Bionic
+                    - skip_mistral_tests_mistral_is_not_available
             test_mistral_examples:
                 action: core.remote
                 input:
@@ -327,7 +341,8 @@ workflows:
                     env: <% $.env %>
                     cmd: st2 run examples.mistral_examples
                     timeout: 600
-
+            skip_mistral_tests_mistral_is_not_available:
+                action: core.noop
 
     test_inquiry:
         type: direct
