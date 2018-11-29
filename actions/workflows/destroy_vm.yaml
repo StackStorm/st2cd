@@ -122,11 +122,11 @@ st2cd.destroy_vm:
             on-complete:
                 - fail
 
-        notify_deregister_monitor_failure:
-            action: slack.post_message
-            input:
-                channel: "#opstown"
-                message: "[FAILED] Unable to deregister monitoring for <% $.hostname %>"
+        # notify_deregister_monitor_failure:
+        #     action: slack.post_message
+        #     input:
+        #         channel: "#opstown"
+        #         message: "[FAILED] Unable to deregister monitoring for <% $.hostname %>"
 
         notify_destroy_instance_failure:
             action: slack.post_message
