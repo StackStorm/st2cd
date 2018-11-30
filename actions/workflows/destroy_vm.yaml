@@ -30,7 +30,7 @@ st2cd.destroy_vm:
                         ).select($.id)
                     %>
             on-success:
-                - destroy: <% len($.instances) = 1 %>
+                - get_volumes: <% len($.instances) = 1 %>
                 - notify_multiple_instances_failure: <% len($.instances) > 1 and $.instance_id = null %>
                 - noop: <% len($.instances) < 1 and $.instance_id = null %>
                 - get_instances_by_id: <% len($.instances) != 1 and $.instance_id != null %>
@@ -44,14 +44,10 @@ st2cd.destroy_vm:
                         $.id = execution().input.instance_id).select($.id)
                     %>
             on-success:
-                - destroy: <% len($.instances) = 1 %>
+                - get_volumes: <% len($.instances) = 1 %>
                 - notify_multiple_instances_failure: <% len($.instances) > 1 %>
                 - noop: <% len($.instances) < 1 %>
 
-
-        destroy:
-            on-complete:
-                - get_volumes: <% $.used_id %>
         get_volumes:
             action: aws.ec2_get_instance_attribute
             input:
