@@ -51,12 +51,7 @@ st2cd.destroy_vm:
 
         destroy:
             on-complete:
-                - deregister_monitor: <% $.used_dns %>
                 - get_volumes: <% $.used_id %>
-        deregister_monitor:
-            action: sensu.client_delete client=<% $.hostname %>.<% $.dns_zone %>
-            on-complete:
-                - get_volumes
         get_volumes:
             action: aws.ec2_get_instance_attribute
             input:
