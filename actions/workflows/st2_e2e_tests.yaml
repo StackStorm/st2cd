@@ -95,47 +95,7 @@ st2cd.st2_e2e_tests:
                 env: <% $.st2_cli_env %>
                 protocol: <% $.protocol %>
             on-success:
-                - pabot_docs_tests
-        pabot_docs_tests:
-            action: core.remote
-            input:
-                hosts: <% $.host_ip %>
-                env: <% $.st2_cli_env %>
-                cmd: "cd /tmp/st2tests && . ./venv/bin/activate && bash /tmp/st2tests/robot_parallel_tests.sh '--processes 1 robotfm_tests/docs/' 0"
-                timeout: 300
-            publish-on-error:
-                retry_pabot_docs_tests_iteration_count: <% $.retry_pabot_docs_tests_iteration_count + 1 %>
-            on-error:
-                - retry_pabot_docs_tests: <% $.retry_pabot_docs_tests_iteration_count < 2 %>
-            on-success:
-                - pabot_chatops_CLI_tests
-        retry_pabot_docs_tests:
-            action: core.local
-            input:
-                cmd: sleep 30
-                timeout: 60
-            on-success:
-                - pabot_docs_tests
-        pabot_chatops_CLI_tests:
-            action: core.remote
-            input:
-                hosts: <% $.host_ip %>
-                env: <% $.st2_cli_env %>
-                cmd: "cd /tmp/st2tests && . ./venv/bin/activate && bash /tmp/st2tests/robot_parallel_tests.sh '--processes 1 robotfm_tests/cli/ robotfm_tests/chatopsCI/' 0"
-                timeout: 300
-            publish-on-error:
-                retry_pabot_chatops_CLI_tests_iteration_count: <% $.retry_pabot_chatops_CLI_tests_iteration_count + 1 %>
-            on-error:
-                - retry_pabot_chatops_CLI_tests: <% $.retry_pabot_chatops_CLI_tests_iteration_count < 2 %>
-            on-success:
                 - enterprise_tests: <% $.enterprise %>
-        retry_pabot_chatops_CLI_tests:
-            action: core.local
-            input:
-                cmd: sleep 30
-                timeout: 60
-            on-success:
-                - pabot_chatops_CLI_tests
         enterprise_tests:
            action: st2cd.st2_enterprise_tests
            input:
