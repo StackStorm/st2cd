@@ -126,18 +126,6 @@ st2cd.st2_prep_release:
                 hosts: <% $.host %>
                 cwd: <% $.cwd %>
             on-success:
-                - wait_for_community_docker_images
-        wait_for_community_docker_image:
-            action: st2cd.wait_for_docker_image
-            input:
-                org: <% $.fork %>
-                image: st2web
-                version: <% $.version %>
-                tries: 15
-                delay: 60
-                hosts: <% $.host %>
-                cwd: <% $.cwd %>
-            on-success:
                 - prep_st2enterprise_dockerfiles
         prep_st2enterprise_dockerfiles:
             action: st2cd.st2_prep_release_for_st2enterprise_dockerfiles
