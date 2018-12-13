@@ -125,45 +125,7 @@ st2cd.st2_finalize_release:
                 hosts: <% $.host %>
                 cwd: <% $.cwd %>
             on-success:
-                - st2_dockerfiles_tag_release
-        st2_dockerfiles_tag_release:
-            action: st2cd.tag_release
-            input:
-                project: st2-dockerfiles
-                version: <% $.version %>
-                fork: <% $.fork %>
-                local_repo: <% 'st2_dockerfiles_' + $.local_repo_sfx %>
-                branch: master
-                hosts: <% $.host %>
-                cwd: <% $.cwd %>
-            on-success:
-                - wait_for_community_docker_image
-        wait_for_community_docker_image:
-            action: st2cd.wait_for_docker_image
-            input:
-                org: <% $.fork %>
-                image: st2web
-                version: <% $.version %>
-                tries: 15
-                check_delay: 60
-                hosts: <% $.host %>
-                cwd: <% $.cwd %>
-                timeout: 900
-            on-success:
-                - st2enterprise_dockerfiles_tag_release
-        st2enterprise_dockerfiles_tag_release:
-            action: st2cd.tag_release
-            input:
-                project: st2enterprise-dockerfiles
-                version: <% $.version %>
-                fork: <% $.fork %>
-                local_repo: <% 'st2enterprise_dockerfiles_' + $.local_repo_sfx %>
-                branch: master
-                hosts: <% $.host %>
-                cwd: <% $.cwd %>
-            on-success:
                 - get_utc_date
-
         get_utc_date:
             action: core.local
             input:
@@ -184,7 +146,6 @@ st2cd.st2_finalize_release:
                 cwd: <% $.cwd %>
             on-success:
                 - ship_api_docs
-
         ship_api_docs:
             action: circle_ci.run_build
             input:
@@ -193,6 +154,44 @@ st2cd.st2_finalize_release:
                 branch: master
                 build_parameters:
                     ST2_BRANCH: <% 'v' + $.major_minor_version %>
+            on-success:
+                - st2_dockerfiles_tag_release
+
+        st2_dockerfiles_tag_release:
+            action: st2cd.tag_release
+            input:
+                project: st2-dockerfiles
+                version: <% $.version %>
+                fork: <% $.fork %>
+                local_repo: <% 'st2_dockerfiles_' + $.local_repo_sfx %>
+                branch: master
+                hosts: <% $.host %>
+                cwd: <% $.cwd %>
+            on-success:
+                - wait_for_community_docker_image
+        wait_for_community_docker_image:
+            action: st2cd.wait_for_docker_image
+            input:
+                org: <% $.fork %>
+                image: st2web
+                version: <% $.version %>
+                tries: 10
+                check_delay: 60
+                hosts: <% $.host %>
+                cwd: <% $.cwd %>
+                timeout: 650
+            on-success:
+                - st2enterprise_dockerfiles_tag_release
+        st2enterprise_dockerfiles_tag_release:
+            action: st2cd.tag_release
+            input:
+                project: st2enterprise-dockerfiles
+                version: <% $.version %>
+                fork: <% $.fork %>
+                local_repo: <% 'st2enterprise_dockerfiles_' + $.local_repo_sfx %>
+                branch: master
+                hosts: <% $.host %>
+                cwd: <% $.cwd %>
 
         cleanup_on_failure:
             action: core.remote
