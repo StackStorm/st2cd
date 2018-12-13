@@ -137,6 +137,19 @@ st2cd.st2_finalize_release:
                 hosts: <% $.host %>
                 cwd: <% $.cwd %>
             on-success:
+                - wait_for_community_docker_image
+        wait_for_community_docker_image:
+            action: st2cd.wait_for_docker_image
+            input:
+                org: <% $.fork %>
+                image: st2web
+                version: <% $.version %>
+                tries: 15
+                check_delay: 60
+                hosts: <% $.host %>
+                cwd: <% $.cwd %>
+                timeout: 900
+            on-success:
                 - st2enterprise_dockerfiles_tag_release
         st2enterprise_dockerfiles_tag_release:
             action: st2cd.tag_release

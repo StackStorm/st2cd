@@ -9,6 +9,7 @@ FORK=$1
 PROJECT=$2
 ST2_VERSION=$3
 BRANCH=$4
+LOCAL_REPO=$5
 
 GIT_REPO="git@github.com:${FORK}/${PROJECT}.git"
 CWD=`pwd`
@@ -56,10 +57,13 @@ if [[ $rc != 0 ]]; then
     cleanup
     exit $rc
 fi
-git add Makefile
 
-echo "Committing and pushing changes to Makefile"
-git commit -qm "Update version info for release - ${ST2_VERSION}"
-git push -u origin ${BRANCH} -q
+MODIFIED=`git status | grep modified || true`
+if [[ ! -z "${MODIFIED}" ]]; then
+    echo "Committing and pushing changes to Makefile"
+    git add -A
+    git commit -qm "Update version info for release - ${ST2_VERSION}"
+    git push -u origin ${BRANCH} -q
+fi
 
 cleanup
