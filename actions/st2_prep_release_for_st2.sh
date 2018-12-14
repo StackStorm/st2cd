@@ -82,7 +82,7 @@ RUNNER_INIT_FILES=($(find contrib/runners -maxdepth 3 -name __init__.py -not -pa
 
 ALL_INIT_FILES=("${COMMON_INIT_FILES[@]}" "${RUNNER_INIT_FILES[@]}")
 
-for f in "${init_files[@]}"
+for f in "${ALL_INIT_FILES[@]}"
 do
     if [[ ! -e "$f" ]]; then
         >&2 echo "ERROR: Version file ${f} does not exist."
