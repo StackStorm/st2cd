@@ -9,6 +9,7 @@ GIT_REPO="git@github.com:${FORK}/${PROJECT}.git"
 SHORT_VERSION=`echo ${VERSION} | cut -d "." -f1-2`
 BRANCH="v${SHORT_VERSION}"
 CWD=`pwd`
+PUSH=0
 
 
 # CHECK IF BRANCH EXISTS
@@ -62,6 +63,7 @@ fi
 
 MODIFIED=`git status | grep modified || true`
 if [[ ! -z "${MODIFIED}" ]]; then
+    echo "Committing the changelog update to origin master..."
     git add ${CHANGELOG_FILE}
     git commit -qm "Update changelog info for release - ${VERSION}"
     git push origin master -q
@@ -106,9 +108,10 @@ done
 
 MODIFIED=`git status | grep modified || true`
 if [[ ! -z "${MODIFIED}" ]]; then
+    echo "Committing the st2 version update on branch ${BRANCH}..."
     git add -A
     git commit -qm "Update version info for release - ${VERSION}"
-    git push origin ${BRANCH} -q
+	PUSH=1
 fi
 
 
@@ -168,9 +171,20 @@ fi
 
 MODIFIED=`git status | grep modified || true`
 if [[ ! -z "${MODIFIED}" ]]; then
+	echo "Committing the mistralclient version update on branch ${BRANCH}..."
     git add -A
     git commit -qm "Update mistralclient version - ${MISTRAL_VERSION}"
+	PUSH=1
+fi
+
+
+# PUSH COMMITS TO RELEASE BRANCH
+if [[ ${PUSH} -eq 1 ]]; then
+	echo "Pushing commits to origin ${BRANCH}..."
     git push origin ${BRANCH} -q
+else
+	>&2 echo "ERROR: There are no new commits to push to ${BRANCH}."
+	exit 1
 fi
 
 
