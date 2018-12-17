@@ -79,7 +79,7 @@ if [[ ! -z "${MODIFIED}" ]]; then
 	echo "Committing the st2 version update on branch ${BRANCH}..."
     git add -A
     git commit -qm "Update version to ${VERSION}"
-	PUSH=1
+    PUSH=1
 fi
 
 
@@ -128,7 +128,7 @@ if [ "${UPDATE_MISTRAL}" -eq "1" ]; then
 		echo "Committing the mistralclient version update on branch ${BRANCH}..."
         git add -A
         git commit -qm "Update mistralclient version to ${MISTRAL_VERSION}"
-		PUSH=1
+        PUSH=1
     fi
 fi
 
@@ -160,7 +160,7 @@ if [ "${UPDATE_CHANGELOG}" -eq "1" ]; then
 		echo "Committing the changelog update on branch ${BRANCH}..."
         git add ${CHANGELOG_FILE}
         git commit -qm "Update changelog for ${VERSION}"
-		PUSH=1
+        PUSH=1
     fi
 fi
 

@@ -111,7 +111,7 @@ if [[ ! -z "${MODIFIED}" ]]; then
     echo "Committing the st2 version update on branch ${BRANCH}..."
     git add -A
     git commit -qm "Update version info for release - ${VERSION}"
-	PUSH=1
+    PUSH=1
 fi
 
 
@@ -171,16 +171,16 @@ fi
 
 MODIFIED=`git status | grep modified || true`
 if [[ ! -z "${MODIFIED}" ]]; then
-	echo "Committing the mistralclient version update on branch ${BRANCH}..."
+    echo "Committing the mistralclient version update on branch ${BRANCH}..."
     git add -A
     git commit -qm "Update mistralclient version - ${MISTRAL_VERSION}"
-	PUSH=1
+    PUSH=1
 fi
 
 
 # PUSH COMMITS TO RELEASE BRANCH
 if [[ ${PUSH} -eq 1 ]]; then
-	echo "Pushing commits to origin ${BRANCH}..."
+    echo "Pushing commits to origin ${BRANCH}..."
     git push origin ${BRANCH} -q
 fi
 
