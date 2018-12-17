@@ -10,6 +10,7 @@ UPDATE_CHANGELOG=$6
 LOCAL_REPO=$7
 GIT_REPO="git@github.com:${FORK}/${PROJECT}.git"
 CWD=`pwd`
+PUSH=0
 
 
 # CHECK IF BRANCH EXISTS
@@ -75,9 +76,10 @@ done
 
 MODIFIED=`git status | grep modified || true`
 if [[ ! -z "${MODIFIED}" ]]; then
+	echo "Committing the st2 version update on branch ${BRANCH}..."
     git add -A
     git commit -qm "Update version to ${VERSION}"
-    git push origin ${BRANCH} -q
+	PUSH=1
 fi
 
 
@@ -123,9 +125,10 @@ if [ "${UPDATE_MISTRAL}" -eq "1" ]; then
 
     MODIFIED=`git status | grep modified || true`
     if [[ ! -z "${MODIFIED}" ]]; then
+		echo "Committing the mistralclient version update on branch ${BRANCH}..."
         git add -A
         git commit -qm "Update mistralclient version to ${MISTRAL_VERSION}"
-        git push origin ${BRANCH} -q
+		PUSH=1
     fi
 fi
 
@@ -154,10 +157,18 @@ if [ "${UPDATE_CHANGELOG}" -eq "1" ]; then
 
     MODIFIED=`git status | grep modified || true`
     if [[ ! -z "${MODIFIED}" ]]; then
+		echo "Committing the changelog update on branch ${BRANCH}..."
         git add ${CHANGELOG_FILE}
         git commit -qm "Update changelog for ${VERSION}"
-        git push origin ${BRANCH} -q
+		PUSH=1
     fi
+fi
+
+
+# PUSH COMMITS TO RELEASE BRANCH
+if [[ ${PUSH} -eq 1 ]]; then
+    echo "Pushing commits to origin ${BRANCH}..."
+    git push origin ${BRANCH} -q
 fi
 
 

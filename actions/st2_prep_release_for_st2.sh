@@ -182,9 +182,6 @@ fi
 if [[ ${PUSH} -eq 1 ]]; then
 	echo "Pushing commits to origin ${BRANCH}..."
     git push origin ${BRANCH} -q
-else
-	>&2 echo "ERROR: There are no new commits to push to ${BRANCH}."
-	exit 1
 fi
 
 
