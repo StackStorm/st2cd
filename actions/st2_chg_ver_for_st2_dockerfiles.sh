@@ -8,8 +8,10 @@ set -e
 FORK=$1
 PROJECT=$2
 ST2_VERSION=$3
-BRANCH=$4
-LOCAL_REPO=$5
+LOCAL_REPO=$4
+
+SHORT_VERSION=`echo ${ST2_VERSION} | cut -d "." -f1-2`
+BRANCH="v${SHORT_VERSION}"
 
 GIT_REPO="git@github.com:${FORK}/${PROJECT}.git"
 CWD=`pwd`

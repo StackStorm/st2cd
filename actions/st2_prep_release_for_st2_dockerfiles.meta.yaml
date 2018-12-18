@@ -1,6 +1,6 @@
 ---
 name: st2_prep_release_for_st2_dockerfiles
-description: Prepare the st2-dockerfiles repos for release
+description: Prepare the st2-dockerfiles repo for release
 enabled: true
 runner_type: remote-shell-script
 entry_point: st2_chg_ver_for_st2_dockerfiles.sh
