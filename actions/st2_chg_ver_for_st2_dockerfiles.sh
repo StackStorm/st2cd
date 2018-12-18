@@ -5,13 +5,11 @@ set -e
 #  - if missing, create a branch named ${BRANCH} (i.e., "vX.Y") in ${PROJECT}.
 #  - update the Makefile on this branch to reference $ST2_VERSION (i.e., "X.Y.Z").
 
-FORK=$1
-PROJECT=$2
-ST2_VERSION=$3
-LOCAL_REPO=$4
-
-SHORT_VERSION=`echo ${ST2_VERSION} | cut -d "." -f1-2`
-BRANCH="v${SHORT_VERSION}"
+PROJECT=$1
+ST2_VERSION=$2
+FORK=$3
+BRANCH=$4
+LOCAL_REPO=$5
 
 GIT_REPO="git@github.com:${FORK}/${PROJECT}.git"
 CWD=`pwd`
