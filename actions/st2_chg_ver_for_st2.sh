@@ -108,7 +108,7 @@ if [ "${UPDATE_MISTRAL}" -eq "1" ]; then
         if [[ ! -e "${REQ_FILE}" ]]; then
             >&2 echo "ERROR: Requirement file ${REQ_FILE} does not exist."
             exit 1
-        fi  
+        fi
 
         MISTRAL_REQ_STR_MATCH=`grep "${MISTRAL_REQ_STR}" ${REQ_FILE} || true`
         if [[ -z "${MISTRAL_REQ_STR_MATCH}" ]]; then
