@@ -82,6 +82,9 @@ fi
 echo "Currently at directory `pwd`..."
 sudo pip install -U twine wheel
 
+# Work around for six import failures
+sudo pip install --upgrade "six==1.11.0"
+
 python setup.py sdist bdist_wheel
 
 twine upload dist/* -r pypitest
