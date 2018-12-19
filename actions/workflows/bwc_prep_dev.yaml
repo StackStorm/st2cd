@@ -70,7 +70,7 @@ st2cd.bwc_prep_dev:
                 project: bwc-ui
                 version: <% $.dev_version %>
                 fork: <% $.fork %>
-                local_repo: <% 'bwc-ui_' + $.local_repo_sfx %>
+                local_repo: <% 'bwc_ui_' + $.local_repo_sfx %>
                 hosts: <% $.host %>
                 cwd: <% $.cwd %>
         #    on-success:

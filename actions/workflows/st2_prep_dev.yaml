@@ -113,19 +113,7 @@ st2cd.st2_prep_dev:
                 project: st2-dockerfiles
                 version: <% $.dev_version %>
                 fork: <% $.fork %>
-                local_repo: <% 'st2_' + $.local_repo_sfx %>
-                hosts: <% $.host %>
-                cwd: <% $.cwd %>
-            on-success:
-                - wait_for_community_docker_images
-        wait_for_community_docker_image:
-            action: st2cd.wait_for_docker_image
-            input:
-                org: <% $.fork %>
-                image: st2web
-                version: <% $.version %>
-                tries: 15
-                delay: 60
+                local_repo: <% 'st2dockerfiles_' + $.local_repo_sfx %>
                 hosts: <% $.host %>
                 cwd: <% $.cwd %>
             on-success:
@@ -136,7 +124,7 @@ st2cd.st2_prep_dev:
                 project: st2enterprise-dockerfiles
                 version: <% $.dev_version %>
                 fork: <% $.fork %>
-                local_repo: <% 'st2_' + $.local_repo_sfx %>
+                local_repo: <% 'st2enterprisedockerfiles_' + $.local_repo_sfx %>
                 hosts: <% $.host %>
                 cwd: <% $.cwd %>
 

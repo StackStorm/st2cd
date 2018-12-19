@@ -9,8 +9,7 @@ parameters:
         type: string
         description: Project name for st2
         required: true
-        enum:
-            - bwc-ui
+        default: bwc-ui
         position: 0
     version:
         type: string

@@ -25,3 +25,7 @@ parameters:
         description: Branch to update
         default: master
         position: 3
+    local_repo:
+        type: string
+        description: Location where to clone the repo. Programmatically determined if not provided.
+        position: 4
