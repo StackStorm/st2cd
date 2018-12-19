@@ -123,6 +123,7 @@ st2cd.st2_prep_release:
                 version: <% $.version %>
                 fork: <% $.fork %>
                 local_repo: <% 'st2_dockerfiles_' + $.local_repo_sfx %>
+                branch: v<% $.version.substring(0, $.version.lastIndexOf('.')) %>
                 hosts: <% $.host %>
                 cwd: <% $.cwd %>
             on-success:
@@ -134,6 +135,7 @@ st2cd.st2_prep_release:
                 version: <% $.version %>
                 fork: <% $.fork %>
                 local_repo: <% 'st2enterprise_dockerfiles_' + $.local_repo_sfx %>
+                branch: v<% $.version.substring(0, $.version.lastIndexOf('.')) %>
                 hosts: <% $.host %>
                 cwd: <% $.cwd %>
 
