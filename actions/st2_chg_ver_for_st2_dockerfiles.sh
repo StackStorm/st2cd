@@ -5,9 +5,9 @@ set -e
 #  - if missing, create a branch named ${BRANCH} (i.e., "vX.Y") in ${PROJECT}.
 #  - update the Makefile on this branch to reference $ST2_VERSION (i.e., "X.Y.Z").
 
-FORK=$1
-PROJECT=$2
-ST2_VERSION=$3
+PROJECT=$1
+ST2_VERSION=$2
+FORK=$3
 BRANCH=$4
 LOCAL_REPO=$5
 

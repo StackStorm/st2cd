@@ -5,20 +5,20 @@ enabled: true
 runner_type: remote-shell-script
 entry_point: st2_chg_ver_for_st2_dockerfiles.sh
 parameters:
+    project:
+        type: string
+        description: Project name for st2enterprise-dockerfiles
+        default: st2enterprise-dockerfiles
+        position: 0
+    version:
+        type: string
+        description: ST2 version to use
+        required: true
+        position: 1
     fork:
         type: string
         description: Fork to use
         default: StackStorm
-        position: 0
-    project:
-        type: string
-        description: Project name for st2-dockerfiles
-        default: st2enterprise-dockerfiles
-        position: 1
-    version:
-        type: string
-        description: Version to use for the next release. Should include the patch e.g. 0.1.0
-        required: true
         position: 2
     branch:
         type: string
