@@ -114,6 +114,7 @@ st2cd.st2_prep_dev:
                 version: <% $.dev_version %>
                 fork: <% $.fork %>
                 local_repo: <% 'st2dockerfiles_' + $.local_repo_sfx %>
+                branch: master
                 hosts: <% $.host %>
                 cwd: <% $.cwd %>
             on-success:
@@ -125,6 +126,7 @@ st2cd.st2_prep_dev:
                 version: <% $.dev_version %>
                 fork: <% $.fork %>
                 local_repo: <% 'st2enterprisedockerfiles_' + $.local_repo_sfx %>
+                branch: master
                 hosts: <% $.host %>
                 cwd: <% $.cwd %>
 
