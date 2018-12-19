@@ -14,7 +14,8 @@ parameters:
             - RHEL7
             - UBUNTU14
             - UBUNTU16
-            - UBUNTU18
+# TODO: Uncomment once we make Bionic support GA
+#            - UBUNTU18
     version:
         type: string
         required: true
