@@ -9,6 +9,7 @@ REPO_ACTION=$4
 GIT=`which git`
 
 BRANCH=st2-${VERSION}
+TAGGED_VERSION=${BRANCH}
 echo "Tagging release for version ${BRANCH}..."
 
 REGEX="^([0-9])+.([0-9])+.([0-9])+$"
@@ -44,6 +45,14 @@ for REPO in "${REPOS[@]}"
 do
     echo "Creating tag in ${REPO}..."
     cd ${REPO}
-    ${GIT} tag -a ${BRANCH} -m "Release for st2 v${VERSION}"
-    ${GIT} push --tags
+
+    TAGGED=`git tag -l ${TAGGED_VERSION} || true`
+    if [[ -z "${TAGGED}" ]]; then
+        # TAG RELEASE
+        echo "Tagging release ${TAGGED_VERSION} for ${REPO}..."
+        ${GIT} tag -a ${BRANCH} -m "Release for st2 v${VERSION}"
+        ${GIT} push --tags
+    else
+        echo "Tag ${TAGGED_VERSION} already exists."
+    fi
 done
