@@ -13,9 +13,6 @@ input:
   - windows_password
   - version
   - enterprise
-vars:
-  - retry_pabot_docs_tests_iteration_count: 0
-  - retry_pabot_chatops_CLI_tests_iteration_count: 0
 tasks:
   init:
     action: core.noop
@@ -58,6 +55,11 @@ tasks:
     input:
       host: <% ctx().host_ip %>
       env: <% ctx().st2_cli_env %>
+  # Commented out in the original workflow
+  # next:
+  #   - when: <% succeeded() %>
+  #     do:
+  #       - run_quickstart_tests
   run_quickstart_tests:
     action: st2cd.st2_e2e_tests_test_quickstart
     input:

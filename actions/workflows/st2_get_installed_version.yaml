@@ -10,15 +10,6 @@ output:
   - distro: <% str(ctx().distro) %>
   - versions: <% dict(ctx().packages.zip(ctx().result.select($.values().first().get(stdout)))) %>
 tasks:
-  init:
-    action: core.noop
-    next:
-      - when: <% succeeded() %>
-        publish:
-          - distro: indeterminate
-          - versions: indeterminate
-        do:
-          - get_distro
   get_distro:
     action: st2cd.get_distro hosts=<% ctx().host %>
     next:

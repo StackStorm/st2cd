@@ -100,6 +100,8 @@ tasks:
         do:
           - wait_for_password_data
   wait_for_password_data:
+    # Note: AWS EC2 says it may take up to 15 minutes for password data to become
+    # available
     action: aws.ec2_get_password_data
     input:
       instance_id: <% ctx().ec2_instance_id %>

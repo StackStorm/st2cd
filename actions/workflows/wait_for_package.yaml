@@ -32,6 +32,4 @@ tasks:
           - noop
       - when: <% succeeded() and (ctx().status.failed) %>
         do:
-          - notify_failure
-  notify_failure:
-    action: fail
+          - fail
