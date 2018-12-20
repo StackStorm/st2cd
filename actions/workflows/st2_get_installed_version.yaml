@@ -5,7 +5,7 @@ input:
   - packages
 output:
   - distro: <% ctx().distro %>
-  - versions: <% dict(ctx().packages.zip(ctx().result.select(ctx().values().first().get(stdout)))) %>
+  - versions: <% dict(ctx().packages.zip(ctx().result.select($.values().first().get(stdout)))) %>
 tasks:
   init:
     action: core.noop

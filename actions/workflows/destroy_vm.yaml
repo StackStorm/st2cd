@@ -31,7 +31,7 @@ tasks:
       - when: <% succeeded() %>
         publish:
           - used_dns: true
-          - instances: <% result().result.where( ctx().private_dns_name + '.' = result().result[0] or ctx().private_ip_address = result().result[0] ).select(ctx().id) %>
+          - instances: <% result().result.where($.private_dns_name + '.' = result().result[0] or $.private_ip_address = result().result[0]).select($.id) %>
       - when: <% succeeded() and (len(ctx().instances) = 1) %>
         do:
           - get_volumes
@@ -51,7 +51,7 @@ tasks:
         publish:
           - used_dns: false
           - used_id: true
-          - instances: <% result().result.where( ctx().id = execution().input.instance_id).select(ctx().id) %>
+          - instances: <% result().result.where($.id = ctx().instance_id).select($.id) %>
       - when: <% succeeded() and (len(ctx().instances) = 1) %>
         do:
           - get_volumes
@@ -69,7 +69,7 @@ tasks:
     next:
       - when: <% succeeded() %>
         publish:
-          - volumes: <% result().result.first().get( blockDeviceMapping, {}).values().where( not ctx().get(delete_on_termination, True)).select(ctx().volume_id) %>
+          - volumes: <% result().result.first().get( blockDeviceMapping, {}).values().where( not $.get(delete_on_termination, True)).select($.volume_id) %>
         do:
           - destroy_instance
       - when: <% failed() %>

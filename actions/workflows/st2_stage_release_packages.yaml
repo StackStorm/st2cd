@@ -32,7 +32,7 @@ tasks:
     next:
       - when: <% succeeded() %>
         publish:
-          - package_jobs: <% result().select( [ctx().result.reponame, ctx().result.build_num]) %>
+          - package_jobs: <% result().select( [$.result.reponame, $.result.build_num]) %>
       - when: <% succeeded() and (ctx().wait) %>
         do:
           - wait_for_packages
