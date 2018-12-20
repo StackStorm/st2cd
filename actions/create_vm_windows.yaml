@@ -44,6 +44,7 @@
       default: "default"
     creator:
       type: "string"
+      # TODO: Convert this to {{ action_context.api_user|default(action_context.user) }} ?
       default: "{{ 'api_user' in action_context and action_context.api_user or action_context.user }}"
       immutable: true
     purpose:
