@@ -54,7 +54,7 @@ tasks:
     action: slack.chat.postMessage
     input:
       channel: <% item(channel) %>
-      text: ''
+      text: 'st2cd.mistral_release_candidate: SUCCEEDED'
       attachments: '[{"fallback": "[st2cd.mistral_release_candidate: SUCCEEDED]", "title": "[st2cd.mistral_release_candidate: SUCCEEDED]", "title_link": "<% ctx().webui_base_url %>/#/history/<% ctx(st2).action_execution_id %>/general", "text": "Release candidate <% ctx().version %> is available.", "color": "#008000"}]'
   notify_failure:
     with:
@@ -62,5 +62,5 @@ tasks:
     action: slack.chat.postMessage
     input:
       channel: <% item(channel) %>
-      text: ''
+      text: 'st2cd.mistral_release_candidate: FAILED'
       attachments: '[{"fallback": "[st2cd.mistral_release_candidate: FAILED]", "title": "[st2cd.mistral_release_candidate: FAILED]", "title_link": "<% ctx().webui_base_url %>/#/history/<% ctx(st2).action_execution_id %>/general", "text": "Error releasing candidate <% ctx().version %>.", "color": "#FF0000"}]'
