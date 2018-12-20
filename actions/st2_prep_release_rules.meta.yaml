@@ -1,5 +1,4 @@
 ---
-parameters:
 name: st2_prep_release_rules
 runner_type: mistral-v2
 description: Create and update rules for st2cd and st2ci.
