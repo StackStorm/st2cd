@@ -17,8 +17,15 @@ vars:
   - wait_for_password_data_iteration_count: 0
   - ec2_instance_id:
   - ec2_instance_user_data: "<powershell>\n# download the script\n(New-Object System.Net.WebClient).DownloadFile('https://raw.githubusercontent.com/ansible/ansible/devel/examples/scripts/ConfigureRemotingForAnsible.ps1', './ConfigureRemotingForAnsible.ps1')\n# execute the script\n./ConfigureRemotingForAnsible.ps1\n</powershell>"
+  - vm_info:
+      id:
+      private_ip_address:
+      private_dns_name:
 output:
-  - vm_info: <% result().result[0] %>
+  - vm_info:
+      id: <% ctx().vm_info.id %>
+      private_ip_address: <% ctx().vm_info.private_ip_address %>
+      private_dns_name: <% ctx().vm_info.private_dns_name %>
   - vm_username: <% ctx().username %>
   - vm_password: <% ctx().ec2_instance_password %>
 tasks:
@@ -64,6 +71,7 @@ tasks:
           - ec2_instance_id: <% result().result[0].id %>
           - ec2_instance_private_ip: <% result().result[0].private_ip_address %>
           - ec2_instance_private_dns: <% result().result[0].private_dns_name %>
+          - vm_info: <% result().result[0] %>
         do:
           - wait_for_instance
   wait_for_instance:

@@ -3,8 +3,11 @@ version: '1.0'
 input:
   - host
   - packages
+vars:
+  - distro: indeterminate
+  - versions: indeterminate
 output:
-  - distro: <% ctx().distro %>
+  - distro: <% str(ctx().distro) %>
   - versions: <% dict(ctx().packages.zip(ctx().result.select($.values().first().get(stdout)))) %>
 tasks:
   init:

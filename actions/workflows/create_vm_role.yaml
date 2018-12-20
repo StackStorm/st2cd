@@ -14,8 +14,15 @@ input:
   - distro
 vars:
   - ec2_instance_id:
+  - vm_info:
+      id:
+      private_ip_address:
+      private_dns_name:
 output:
-  - vm_info: <% result().result[0] %>
+  - vm_info:
+      id: <% ctx().vm_info.id %>
+      private_ip_address: <% ctx().vm_info.private_ip_address %>
+      private_dns_name: <% ctx().vm_info.private_dns_name %>
 tasks:
   get_subnet_id:
     action: st2.kv.get
@@ -58,6 +65,7 @@ tasks:
           - ec2_instance_id: <% result().result[0].id %>
           - ec2_instance_private_ip: <% result().result[0].private_ip_address %>
           - ec2_instance_private_dns: <% result().result[0].private_dns_name %>
+          - vm_info: <% result().result[0] %>
         do:
           - wait_for_instance
   wait_for_instance:
