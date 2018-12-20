@@ -133,7 +133,11 @@ tasks:
     input:
       resource_ids:
         - <% ctx().ec2_instance_id %>
-      tags: Name=<% ctx().hostname %>,Creator=<% ctx().creator %>,Role=<% ctx().role %>,Purpose=<% switch(isEmpty(ctx().purpose) => "No Description", ctx().purpose => ctx().purpose) %>
+      tags: "Name=<% ctx().hostname %>,\
+        Creator=<% ctx().creator %>,\
+        Role=<% ctx().role %>,\
+        Purpose=<% switch(isEmpty(ctx().purpose) => \"No Description\",\
+                          ctx().purpose => ctx().purpose) %>"
     next:
       - when: <% succeeded() %>
         do:

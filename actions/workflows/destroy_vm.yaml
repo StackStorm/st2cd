@@ -31,7 +31,11 @@ tasks:
       - when: <% succeeded() %>
         publish:
           - used_dns: true
-          - instances: <% result().result.where($.private_dns_name + '.' = result().result[0] or $.private_ip_address = result().result[0]).select($.id) %>
+          - instances: <%
+              result().result.where(
+                $.private_dns_name + '.' = result().result[0] or
+                $.private_ip_address = result().result[0]
+              ).select($.id) %>
       - when: <% succeeded() and (len(ctx().instances) = 1) %>
         do:
           - get_volumes

@@ -40,7 +40,10 @@ tasks:
           - clone_repos
   clone_repos:
     with:
-      items: proj, repo in <% zip(list(mistral, mistralclient, st2mistral), list(ctx().repo_main, ctx().repo_client, ctx().repo_action)) %>
+      items: proj, repo in <% zip(list(mistral, mistralclient, st2mistral),
+                                  list(ctx().repo_main,
+                                       ctx().repo_client,
+                                       ctx().repo_action)) %>
     action: st2cd.git_clone
     input:
       hosts: <% ctx().host %>
@@ -50,7 +53,9 @@ tasks:
     next:
       - when: <% succeeded() %>
         publish:
-          - clone_paths: <% dict(mistral=>result()[0].get(ctx().host).stdout, mistralclient=>result()[1].get(ctx().host).stdout, st2mistral=>result()[2].get(ctx().host).stdout) %>
+          - clone_paths: <% dict(mistral => result()[0].get(ctx().host).stdout,
+                                 mistralclient => result()[1].get(ctx().host).stdout,
+                                 st2mistral => result()[2].get(ctx().host).stdout) %>
         do:
           - tag_release
       - when: <% failed() %>
