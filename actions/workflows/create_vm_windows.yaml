@@ -74,9 +74,9 @@ tasks:
   run_instance:
     action: aws.ec2_run_instances
     input:
-      image_id: <% result().result %>
+      image_id: <% task(get_ami).result.result %>
       instance_type: <% ctx().instance_type %>
-      subnet_id: <% result().result %>
+      subnet_id: <% task(get_subnet_id).result.result %>
       key_name: <% ctx().key_name %>
       user_data: <% ctx().ec2_instance_user_data %>
     next:

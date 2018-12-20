@@ -69,9 +69,9 @@ tasks:
   run_instance:
     action: aws.ec2_run_instances
     input:
-      image_id: <% result().result %>
+      image_id: <% task(get_ami).result.result %>
       instance_type: <% ctx().instance_type %>
-      subnet_id: <% result().result %>
+      subnet_id: <% task(get_subnet_id).result.result %>
       key_name: <% ctx().key_name %>
     next:
       - when: <% succeeded() %>
@@ -138,7 +138,7 @@ tasks:
     input:
       hosts: <% ctx().ec2_instance_private_ip %>
       hostname: <% ctx().cname %>
-      distro: <% result().get(ctx().ec2_instance_private_ip).stdout %>
+      distro: <% task(get_distro).result.get(ctx().ec2_instance_private_ip).stdout %>
       timeout: 300
     next:
       - when: <% succeeded() %>

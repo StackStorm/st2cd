@@ -31,8 +31,8 @@ tasks:
       - publish:
           - instances: <%
               result().result.where(
-                $.private_dns_name + '.' = result().result[0] or
-                $.private_ip_address = result().result[0]
+                $.private_dns_name + '.' = task(get_instance_dns).result.result[0] or
+                $.private_ip_address = task(get_instance_dns).result.result[0]
               ).select($.id) %>
       - when: <% succeeded() and (len(ctx().instances) = 1) %>
         publish:
