@@ -6,7 +6,7 @@ enabled: true
 runner_type: mistral-v2
 entry_point: workflows/st2_e2e_tests_test_mistral.yaml
 parameters:
-    host:
+    host_fqdn:
         type: string
         required: true
     env:
