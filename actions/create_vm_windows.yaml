@@ -1,70 +1,70 @@
 ---
-  name: "create_vm_windows"
-  runner_type: "mistral-v2"
-  description: "Create a Windows VM, add DNS"
-  enabled: true
-  entry_point: "workflows/create_vm_windows.yaml"
-  parameters:
-    instance_type:
-      type: "string"
-      description: "Flavor of to use for instance creation"
-      default: "t2.micro"
-    environment:
-      type: "string"
-      description: "Environment to deploy to"
-      default: "staging"
-      enum:
-        - "production"
-        - "staging"
-        - "sandbox"
-        - "public"  # Use this if you want node to be available on public internet. Set up Elastic IP manually.
-    key_name:
-      type: "string"
-      description: "Windows key to use during intial instance creation. This is important as it's used to encrypt the randmly generated password when the VM is created."
-      default: "st2_deploy_windows"
-    keyfile:
-      type: "string"
-      description: "Path to local private key that corresponds to {{key_name}}"
-      default: "/home/stanley/st2_deploy_windows.pem"
-    dns_zone:
-      type: "string"
-      description: "Route53 DNS Zone to add host to"
-      default: "uswest2.stackstorm.net"
-    hostname:
-      type: "string"
-      description: "Short hostname"
-      required: true
-    username:
-      type: "string"
-      description: "Windows username to use for authentication"
-      default: "Administrator"
-    role:
-      type: "string"
-      description: "Role to use during puppet apply"
-      default: "default"
-    creator:
-      type: "string"
+name: create_vm_windows
+runner_type: orquesta
+description: Create a Windows VM, add DNS
+enabled: true
+entry_point: workflows/create_vm_windows.yaml
+parameters:
+  instance_type:
+    type: string
+    description: Flavor of to use for instance creation
+    default: t2.micro
+  environment:
+    type: string
+    description: Environment to deploy to
+    default: staging
+    enum:
+      - production
+      - staging
+      - sandbox
+      - public      # Use this if you want node to be available on public internet. Set up Elastic IP manually.
+  key_name:
+    type: string
+    description: Windows key to use during intial instance creation. This is important as it's used to encrypt the randmly generated password when the VM is created.
+    default: st2_deploy_windows
+  keyfile:
+    type: string
+    description: Path to local private key that corresponds to {{key_name}}
+    default: /home/stanley/st2_deploy_windows.pem
+  dns_zone:
+    type: string
+    description: Route53 DNS Zone to add host to
+    default: uswest2.stackstorm.net
+  hostname:
+    type: string
+    description: Short hostname
+    required: true
+  username:
+    type: string
+    description: Windows username to use for authentication
+    default: Administrator
+  role:
+    type: string
+    description: Role to use during puppet apply
+    default: default
+  creator:
+    type: string
       # TODO: Convert this to {{ action_context.api_user|default(action_context.user) }} ?
-      default: "{{ 'api_user' in action_context and action_context.api_user or action_context.user }}"
-      immutable: true
-    purpose:
-      type: "string"
-      description: "Planned purpose of the VM"
-    distro:
-      default: "windows2016"
-      enum:
-        - "windows2016"
-    skip_notify:
-      default:
-        - get_subnet_id
-        - get_ami
-        - get_distro
-        - run_instance
-        - wait_for_instance
-        - wait_for_ssh
-        - add_tags
-        - add_cname
-        - set_hostname
-        - reboot
-        - wait_for_ssh_post_reboot
-        - puppet_bootstrap
+    default: "{{ 'api_user' in action_context and action_context.api_user or action_context.user }}"
+    immutable: true
+  purpose:
+    type: string
+    description: Planned purpose of the VM
+  distro:
+    default: windows2016
+    enum:
+      - windows2016
+  skip_notify:
+    default:
+      - get_subnet_id
+      - get_ami
+      - get_distro
+      - run_instance
+      - wait_for_instance
+      - wait_for_ssh
+      - add_tags
+      - add_cname
+      - set_hostname
+      - reboot
+      - wait_for_ssh_post_reboot
+      - puppet_bootstrap

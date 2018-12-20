@@ -1,81 +1,81 @@
 ---
-  name: "create_vm_role"
-  runner_type: "mistral-v2"
-  description: "Create a VM, add DNS, bootstrap puppet"
-  enabled: true
-  entry_point: "workflows/create_vm_role.yaml"
-  parameters:
-    instance_type:
-      type: "string"
-      description: "Flavor of to use for instance creation"
-      default: "t2.medium"
-    environment:
-      type: "string"
-      description: "Environment to deploy to"
-      default: "staging"
-      enum:
-        - "production"
-        - "staging"
-        - "sandbox"
-        - "public"  # Use this if you want node to be available on public internet. Set up Elastic IP manually.
-    key_name:
-      type: "string"
-      description: "SSH key to use during intial instance creation"
-      default: "st2_deploy"
-    keyfile:
-      type: "string"
-      description: "Path to local private key that corresponds to {{key_name}}"
-      default: "/home/stanley/.ssh/stanley_rsa"
-    dns_zone:
-      type: "string"
-      description: "Route53 DNS Zone to add host to"
-      default: "uswest2.stackstorm.net"
-    hostname:
-      type: "string"
-      description: "Short hostname"
-      required: true
-    role:
-      type: "string"
-      description: "Role to use during puppet apply"
-      default: "default"
-    creator:
-      type: "string"
-      default: "{{ 'api_user' in action_context and action_context.api_user or action_context.user }}"
-      immutable: true
-    purpose:
-      type: "string"
-      description: "Planned purpose of the VM"
-    distro:
-      default: "UBUNTU14"
-      enum:
-        - "RHEL6"
-        - "RHEL7"
-        - "F20"
-        - "F21"
-        - "UBUNTU14"
-        - "UBUNTU16"
-        - "UBUNTU18"
-        - "pkg_UBUNTU14"
-        - "pkg_UBUNTU16"
-        - "pkg_UBUNTU18"
-        - "pkg_RHEL6"
-        - "pkg_RHEL7"
-        - "pkg_CENTOS6"
-        - "pkg_CENTOS7"
-        - "ubuntu"
-        - "centos6"
-        - "centos7"
-    skip_notify:
-      default:
-        - get_subnet_id
-        - get_ami
-        - get_distro
-        - run_instance
-        - wait_for_instance
-        - wait_for_ssh
-        - add_tags
-        - add_cname
-        - set_hostname
-        - reboot
-        - wait_for_ssh_post_reboot
-        - puppet_bootstrap
+name: create_vm_role
+runner_type: orquesta
+description: Create a VM, add DNS, bootstrap puppet
+enabled: true
+entry_point: workflows/create_vm_role.yaml
+parameters:
+  instance_type:
+    type: string
+    description: Flavor of to use for instance creation
+    default: t2.medium
+  environment:
+    type: string
+    description: Environment to deploy to
+    default: staging
+    enum:
+      - production
+      - staging
+      - sandbox
+      - public      # Use this if you want node to be available on public internet. Set up Elastic IP manually.
+  key_name:
+    type: string
+    description: SSH key to use during intial instance creation
+    default: st2_deploy
+  keyfile:
+    type: string
+    description: Path to local private key that corresponds to {{key_name}}
+    default: /home/stanley/.ssh/stanley_rsa
+  dns_zone:
+    type: string
+    description: Route53 DNS Zone to add host to
+    default: uswest2.stackstorm.net
+  hostname:
+    type: string
+    description: Short hostname
+    required: true
+  role:
+    type: string
+    description: Role to use during puppet apply
+    default: default
+  creator:
+    type: string
+    default: "{{ 'api_user' in action_context and action_context.api_user or action_context.user }}"
+    immutable: true
+  purpose:
+    type: string
+    description: Planned purpose of the VM
+  distro:
+    default: UBUNTU14
+    enum:
+      - RHEL6
+      - RHEL7
+      - F20
+      - F21
+      - UBUNTU14
+      - UBUNTU16
+      - UBUNTU18
+      - pkg_UBUNTU14
+      - pkg_UBUNTU16
+      - pkg_UBUNTU18
+      - pkg_RHEL6
+      - pkg_RHEL7
+      - pkg_CENTOS6
+      - pkg_CENTOS7
+      - ubuntu
+      - centos6
+      - centos7
+  skip_notify:
+    default:
+      - get_subnet_id
+      - get_ami
+      - get_distro
+      - run_instance
+      - wait_for_instance
+      - wait_for_ssh
+      - add_tags
+      - add_cname
+      - set_hostname
+      - reboot
+      - wait_for_ssh_post_reboot
+      - puppet_bootstrap

@@ -3,18 +3,18 @@ name: st2_e2e_tests_test_quickstart
 pack: st2cd
 description: Run the set of st2 end to end tests
 enabled: true
-runner_type: mistral-v2
+runner_type: orquesta
 entry_point: workflows/st2_e2e_tests_test_quickstart.yaml
 parameters:
-    host:
-        type: string
-        required: true
-    env:
-        type: object
-        required: true
-    protocol:
-        type: string
-        enum:
-            - http
-            - https
-        default: http
+  host:
+    type: string
+    required: true
+  env:
+    type: object
+    required: true
+  protocol:
+    type: string
+    enum:
+      - http
+      - https
+    default: http

@@ -3,28 +3,28 @@ name: st2_e2e_tests_test_windows
 pack: st2cd
 description: Run the set of st2 end to end tests
 enabled: true
-runner_type: mistral-v2
+runner_type: orquesta
 entry_point: workflows/st2_e2e_tests_test_windows.yaml
 parameters:
-    host:
-        type: string
-        required: true
-    windows_host:
-        type: string
-        required: true
-    windows_username:
-        type: string
-        description: Username to authenticate to the Windows server
-    windows_password:
-        type: string
-        secret: true
-        description: Password to authenticate to the Windows server
-    env:
-        type: object
-        required: true
-    protocol:
-        type: string
-        enum:
-            - http
-            - https
-        default: http
+  host:
+    type: string
+    required: true
+  windows_host:
+    type: string
+    required: true
+  windows_username:
+    type: string
+    description: Username to authenticate to the Windows server
+  windows_password:
+    type: string
+    secret: true
+    description: Password to authenticate to the Windows server
+  env:
+    type: object
+    required: true
+  protocol:
+    type: string
+    enum:
+      - http
+      - https
+    default: http

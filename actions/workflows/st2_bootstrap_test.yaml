@@ -1,73 +1,63 @@
 ---
-version: '2.0'
-
-st2cd.st2_bootstrap_test:
-    type: direct
+version: '1.0'
+input:
+  - distro
+  - environment
+  - hostname
+  - instance_type
+  - key_name
+  - keyfile
+  - role
+  - version
+  - version_arg
+  - release
+  - st2_username: test
+  - st2_password: Ch@ngeMe
+tasks:
+  create_vm:
+    action: st2cd.create_vm_role
     input:
-      - distro
-      - environment
-      - hostname
-      - instance_type 
-      - key_name
-      - keyfile
-      - role
-      - version
-      - version_arg
-      - release
-      - st2_username: test
-      - st2_password: Ch@ngeMe
-    tasks:
-      create_vm:
-        # [105, 26]
-        action: st2cd.create_vm_role
-        input:
-          hostname: <% $.hostname %>
-          instance_type: <% $.instance_type %>
-          environment: <% $.environment %>
-          key_name: <% $.key_name %>
-          keyfile: <% $.keyfile %>
-          distro: <% $.distro %>
-          role: <% $.role %>
-
-        on-success:
+      hostname: <% ctx().hostname %>
+      instance_type: <% ctx().instance_type %>
+      environment: <% ctx().environment %>
+      key_name: <% ctx().key_name %>
+      keyfile: <% ctx().keyfile %>
+      distro: <% ctx().distro %>
+      role: <% ctx().role %>
+    next:
+      - when: <% succeeded() %>
+        do:
           - get_bootstrap_script
-      run_bootstrap_script:
-        # [105, 230]
-        action: core.remote_sudo
-        input:
-          hosts: <% $.hostname %>
-          cmd: bash /tmp/st2_bootstrap.sh --<% $.release %> <% $.version_arg %>
-          timeout: 600
-        on-success:
+  run_bootstrap_script:
+    action: core.remote_sudo
+    input:
+      hosts: <% ctx().hostname %>
+      cmd: bash /tmp/st2_bootstrap.sh --<% ctx().release %> <% ctx().version_arg %>
+      timeout: 600
+    next:
+      - when: <% succeeded() %>
+        do:
           - end_to_end_tests
-      end_to_end_tests:
-        # [105, 332]
-        action: st2cd.e2e_bootstrap_tests
-        input:
-          hostname: <% $.hostname %>
-          st2_username: <% $.st2_username %>
-          st2_password: <% $.st2_password %>
-
-        on-success:
+  end_to_end_tests:
+    action: st2cd.e2e_bootstrap_tests
+    input:
+      hostname: <% ctx().hostname %>
+      st2_username: <% ctx().st2_username %>
+      st2_password: <% ctx().st2_password %>
+    next:
+      - when: <% succeeded() %>
+        do:
           - destroy_vm
-      get_bootstrap_script:
-        # [105, 128]
-        action: core.remote_sudo
-        input:
-          hosts: <% $.hostname %>
-          cmd: curl -Ss -k -o /tmp/st2_bootstrap.sh https://raw.githubusercontent.com/StackStorm/st2-packages/bootstrap_script/scripts/st2_bootstrap_deb.sh
-        on-success:
+  get_bootstrap_script:
+    action: core.remote_sudo
+    input:
+      hosts: <% ctx().hostname %>
+      cmd: curl -Ss -k -o /tmp/st2_bootstrap.sh https://raw.githubusercontent.com/StackStorm/st2-packages/bootstrap_script/scripts/st2_bootstrap_deb.sh
+    next:
+      - when: <% succeeded() %>
+        do:
           - run_bootstrap_script
-      destroy_vm:
-        # [105, 434]
-        action: st2cd.destroy_vm
-        input:
-          hostname: <% $.hostname %>
-
-
-
-
-
-
-
-
+  destroy_vm:
+    action: st2cd.destroy_vm
+    input:
+      hostname: <% ctx().hostname %>

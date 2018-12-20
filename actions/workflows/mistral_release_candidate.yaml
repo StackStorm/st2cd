@@ -1,68 +1,66 @@
-version: '2.0'
-st2cd.mistral_release_candidate:
-    description: Run the pipeline to release candidate for Mistral.
+---
+version: '1.0'
+description: Run the pipeline to release candidate for Mistral.
+input:
+  - version
+  - test_host
+  - build_host
+  - mis_repo_main
+  - mis_repo_client
+  - mis_repo_action
+  - mis_repo_branch
+  - mis_repo_dir
+  - st2_repo_branch
+  - debug
+  - notify_channels:
+      - '#thunderdome'
+  - notify_failure_channels:
+      - '#thunderdome'
+      - '#stackstorm'
+  - webui_base_url: https://st2cicd.uswest2.stackstorm.net
+tasks:
+  test:
+    action: st2ci.mistral
     input:
-        - version
-        - test_host
-        - build_host
-        - mis_repo_main
-        - mis_repo_client
-        - mis_repo_action
-        - mis_repo_branch
-        - mis_repo_dir
-        - st2_repo_branch
-        - debug
-        - notify_channels:
-            - "#thunderdome"
-        - notify_failure_channels:
-            - "#thunderdome"
-            - "#stackstorm"
-        - webui_base_url: "https://st2cicd.uswest2.stackstorm.net"
-
-    task-defaults:
-        on-error:
-            - notify_failure
-
-    tasks:
-        test:
-            action: st2ci.mistral
-            input:
-                test_host: <% $.test_host %>
-                build_host: <% $.build_host %>
-                mis_repo_branch: <% $.mis_repo_branch %>
-                st2_repo_branch: <% $.st2_repo_branch %>
-            publish:
-                shas: <% task(test).result.shas %>
-                deps: <% task(test).result.deps %>
-            on-success:
-                - branch
-        branch:
-            action: st2cd.mistral_branch_candidate
-            input:
-                host: <% $.build_host %>
-                version: <% $.version %>
-                repo_main: <% $.mis_repo_main %>
-                repo_client: <% $.mis_repo_client %>
-                repo_action: <% $.mis_repo_action %>
-                repo_branch: <% $.mis_repo_branch %>
-                repo_dir: <% $.mis_repo_dir %>
-                requirements: <% $.deps %>
-            on-success:
-                - notify_success
-
-
-        notify_success:
-            with-items: channel in <% $.notify_channels %>
-            action: slack.chat.postMessage
-            input:
-                channel: <% $.channel %>
-                text: ""
-                attachments: '[{"fallback": "[st2cd.mistral_release_candidate: SUCCEEDED]", "title": "[st2cd.mistral_release_candidate: SUCCEEDED]", "title_link": "<% $.webui_base_url %>/#/history/<% env().st2_execution_id %>/general", "text": "Release candidate <% $.version %> is available.", "color": "#008000"}]' 
-
-        notify_failure:
-            with-items: channel in <% $.notify_failure_channels %>
-            action: slack.chat.postMessage
-            input:
-                channel: <% $.channel %>
-                text: ""
-                attachments: '[{"fallback": "[st2cd.mistral_release_candidate: FAILED]", "title": "[st2cd.mistral_release_candidate: FAILED]", "title_link": "<% $.webui_base_url %>/#/history/<% env().st2_execution_id %>/general", "text": "Error releasing candidate <% $.version %>.", "color": "#FF0000"}]'
+      test_host: <% ctx().test_host %>
+      build_host: <% ctx().build_host %>
+      mis_repo_branch: <% ctx().mis_repo_branch %>
+      st2_repo_branch: <% ctx().st2_repo_branch %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - shas: <% result().shas %>
+          - deps: <% result().deps %>
+        do:
+          - branch
+  branch:
+    action: st2cd.mistral_branch_candidate
+    input:
+      host: <% ctx().build_host %>
+      version: <% ctx().version %>
+      repo_main: <% ctx().mis_repo_main %>
+      repo_client: <% ctx().mis_repo_client %>
+      repo_action: <% ctx().mis_repo_action %>
+      repo_branch: <% ctx().mis_repo_branch %>
+      repo_dir: <% ctx().mis_repo_dir %>
+      requirements: <% ctx().deps %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - notify_success
+  notify_success:
+    with:
+      items: channel in <% ctx().notify_channels %>
+    action: slack.chat.postMessage
+    input:
+      channel: <% item(channel) %>
+      text: ''
+      attachments: '[{"fallback": "[st2cd.mistral_release_candidate: SUCCEEDED]", "title": "[st2cd.mistral_release_candidate: SUCCEEDED]", "title_link": "<% ctx().webui_base_url %>/#/history/<% env().st2_execution_id %>/general", "text": "Release candidate <% ctx().version %> is available.", "color": "#008000"}]'
+  notify_failure:
+    with:
+      items: channel in <% ctx().notify_failure_channels %>
+    action: slack.chat.postMessage
+    input:
+      channel: <% item(channel) %>
+      text: ''
+      attachments: '[{"fallback": "[st2cd.mistral_release_candidate: FAILED]", "title": "[st2cd.mistral_release_candidate: FAILED]", "title_link": "<% ctx().webui_base_url %>/#/history/<% env().st2_execution_id %>/general", "text": "Error releasing candidate <% ctx().version %>.", "color": "#FF0000"}]'

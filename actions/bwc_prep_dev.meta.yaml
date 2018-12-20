@@ -1,22 +1,22 @@
 ---
 name: bwc_prep_dev
-runner_type: mistral-v2
+runner_type: orquesta
 description: Prepare bwc for next iteration of development
 enabled: true
 entry_point: workflows/bwc_prep_dev.yaml
 parameters:
-    version:
-        type: string
-        description: Version to use for the next release. Should include the patch e.g. 0.1.0
-        required: true
-    fork:
-        type: string
-        description: Fork to use
-        default: StackStorm    
-    host:
-        type: string
-        description: Host where to run the release process.
-    cwd:
-        type: string
-        description: Working directory where remote shell scripts use
-        default: /home/stanley
+  version:
+    type: string
+    description: Version to use for the next release. Should include the patch e.g. 0.1.0
+    required: true
+  fork:
+    type: string
+    description: Fork to use
+    default: StackStorm
+  host:
+    type: string
+    description: Host where to run the release process.
+  cwd:
+    type: string
+    description: Working directory where remote shell scripts use
+    default: /home/stanley

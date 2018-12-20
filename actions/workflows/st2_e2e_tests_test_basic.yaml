@@ -1,27 +1,24 @@
 ---
-version: '2.0'
-
-st2cd.st2_e2e_tests_test_basic:
-    type: direct
+version: '1.0'
+input:
+  - host
+  - env
+tasks:
+  test_core_local:
+    action: core.remote
     input:
-        - host
-        - env
-    tasks:
-        test_core_local:
-            action: core.remote
-            input:
-                hosts: <% $.host %>
-                env: <% $.env %>
-                cmd: st2 run core.local date
-        test_core_http:
-            action: core.remote
-            input:
-                hosts: <% $.host %>
-                env: <% $.env %>
-                cmd: st2 run core.http url=https://www.google.com
-        test_core_remote_single_host:
-            action: core.remote
-            input:
-                hosts: <% $.host %>
-                env: <% $.env %>
-                cmd: st2 run core.remote hosts=<% $.host %> hostname
+      hosts: <% ctx().host %>
+      env: <% ctx().env %>
+      cmd: st2 run core.local date
+  test_core_http:
+    action: core.remote
+    input:
+      hosts: <% ctx().host %>
+      env: <% ctx().env %>
+      cmd: st2 run core.http url=https://www.google.com
+  test_core_remote_single_host:
+    action: core.remote
+    input:
+      hosts: <% ctx().host %>
+      env: <% ctx().env %>
+      cmd: st2 run core.remote hosts=<% ctx().host %> hostname

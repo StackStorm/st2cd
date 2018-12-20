@@ -1,32 +1,32 @@
 ---
 name: destroy_vm
-runner_type: mistral-v2
+runner_type: orquesta
 description: Destroys a VM and removes it from Route53
 enabled: true
 entry_point: workflows/destroy_vm.yaml
 parameters:
-    hostname:
-        type: string
-        description: Short hostname
-        required: true
-    dns_zone:
-        type: string
-        description: Route53 DNS zone where the VM is deployed
-        default: uswest2.stackstorm.net
-    instance_id:
-        type: string
-        description: Provider specific instance ID for the VM. If hostname not found, then ID is used to find the VM.
-    skip_notify:
-        immutable: true
-        default:
-            - get_instance_dns
-            - get_instances
-            - get_volumes
-            - destroy_instance
-            - delete_cname
-            - delete_volumes
-            - notify_success
-            - notify_multiple_instances_failure
-            - notify_destroy_instance_failure
-            - notify_delete_cname_failure
-            - notify_delete_volumes_failure
+  hostname:
+    type: string
+    description: Short hostname
+    required: true
+  dns_zone:
+    type: string
+    description: Route53 DNS zone where the VM is deployed
+    default: uswest2.stackstorm.net
+  instance_id:
+    type: string
+    description: Provider specific instance ID for the VM. If hostname not found, then ID is used to find the VM.
+  skip_notify:
+    immutable: true
+    default:
+      - get_instance_dns
+      - get_instances
+      - get_volumes
+      - destroy_instance
+      - delete_cname
+      - delete_volumes
+      - notify_success
+      - notify_multiple_instances_failure
+      - notify_destroy_instance_failure
+      - notify_delete_cname_failure
+      - notify_delete_volumes_failure

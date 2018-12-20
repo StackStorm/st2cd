@@ -3,43 +3,43 @@ name: st2_e2e_tests
 pack: st2cd
 description: Run the set of st2 end to end tests
 enabled: true
-runner_type: mistral-v2
+runner_type: orquesta
 entry_point: workflows/st2_e2e_tests.yaml
 parameters:
-    host_ip:
-        type: string
-        required: true
-    host_fqdn:
-        type: string
-        required: true
-    protocol:
-        type: string
-        enum:
-            - http
-            - https
-        default: http
-    st2_username:
-        type: string
-        description: Username to authenticate to the st2 server
-    st2_password:
-        type: string
-        description: Password to authenticate to the st2 server
-    windows_host_ip:
-        type: string
-        required: true
-    windows_host_fqdn:
-        type: string
-        required: true
-    windows_username:
-        type: string
-        description: Username to authenticate to the Windows server
-    windows_password:
-        type: string
-        secret: true
-        description: Password to authenticate to the Windows server
-    version:
-        type: string
-        description: Version used for the release. Should include the patch e.g. 0.1.0
-    enterprise:
-        type: boolean
-        default: false
+  host_ip:
+    type: string
+    required: true
+  host_fqdn:
+    type: string
+    required: true
+  protocol:
+    type: string
+    enum:
+      - http
+      - https
+    default: http
+  st2_username:
+    type: string
+    description: Username to authenticate to the st2 server
+  st2_password:
+    type: string
+    description: Password to authenticate to the st2 server
+  windows_host_ip:
+    type: string
+    required: true
+  windows_host_fqdn:
+    type: string
+    required: true
+  windows_username:
+    type: string
+    description: Username to authenticate to the Windows server
+  windows_password:
+    type: string
+    secret: true
+    description: Password to authenticate to the Windows server
+  version:
+    type: string
+    description: Version used for the release. Should include the patch e.g. 0.1.0
+  enterprise:
+    type: boolean
+    default: false

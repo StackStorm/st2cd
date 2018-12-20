@@ -2,7 +2,7 @@
 name: mistral_branch_candidate
 description: Create a new release candidate for Mistral.
 enabled: true
-runner_type: mistral-v2
+runner_type: orquesta
 entry_point: workflows/mistral_branch_candidate.yaml
 parameters:
   host:
@@ -30,7 +30,7 @@ parameters:
   requirements:
     type: string
     description: List of python dependencies from pip freeze.
-    default: ""
+    default: ''
   debug:
     type: boolean
     default: false

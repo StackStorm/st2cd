@@ -1,81 +1,82 @@
-version: '2.0'
-st2cd.bwc_prep_patch:
-    description: Prepare bwc for patch release.
+---
+version: '1.0'
+description: Prepare bwc for patch release.
+input:
+  - version
+  - fork
+  - host
+  - cwd
+vars:
+  - local_repo_sfx:
+tasks:
+  init:
+    action: core.local
     input:
-        - version
-        - fork
-        - host
-        - cwd
-
-    vars:
-        local_repo_sfx: null
-
-    task-defaults:
-        on-error:
-            - cleanup_on_failure: <% $.local_repo_sfx != null %>
-
-    tasks:
-        init:
-            action: core.local
-            input:
-                cmd: "echo `date +'%s'`_`awk -v min=100 -v max=999 'BEGIN{srand(); print int(min+rand()*(max-min+1))}'`"
-            publish:
-                local_repo_sfx: <% task(init).result.stdout %>
-            on-success:
-                - get_host: <% $.host = null %>
-                - prep: <% $.host != null %>
-
-
-        get_host:
-            action: linux.dig
-            input:
-                hostname: st2-build-slave-ubuntu.service.consul
-                rand: true
-                count: 1
-            publish:
-                host: <% task(get_host).result.result[0] %>
-            on-success:
-                - prep
-
-
-        prep:
-            on-complete:
-                - prep_bwc_enterprise_pkg
-        prep_bwc_enterprise_pkg:
-            action: st2cd.bwc_prep_patch_for_enterprise_pkg
-            input:
-                project: bwc-enterprise-package
-                version: <% $.version %>
-                fork: <% $.fork %>
-                local_repo: <% 'bwc_enterprise_package_' + $.local_repo_sfx %>
-                hosts: <% $.host %>
-                cwd: <% $.cwd %>
-            on-success:
-                - prep_st2enterprise_ldap
-        prep_st2enterprise_ldap:
-            action: st2cd.st2_prep_patch_for_enterprise_ldap
-            input:
-                project: st2-enterprise-auth-backend-ldap
-                version: <% $.version %>
-                fork: <% $.fork %>
-                local_repo: <% 'st2enterprise_auth_ldap_' + $.local_repo_sfx %>
-                hosts: <% $.host %>
-                cwd: <% $.cwd %>
-            on-success:
-                - prep_bwc_ui
-        prep_bwc_ui:
-            action: st2cd.bwc_stage_release_packages
-            input:
-                version: <% $.version %>
-                projects:
-                    - bwc-ui
-                wait: False
-
-
-        cleanup_on_failure:
-            action: core.remote
-            input:
-                cmd: <% 'rm -rf ' + $.cwd + '/st2*' + $.local_repo_sfx + ' ' + $.cwd + '/bwc*' + $.local_repo_sfx %>
-                hosts: <% $.host %>
-            on-complete:
-                - fail
+      cmd: echo `date +'%s'`_`awk -v min=100 -v max=999 'BEGIN{srand(); print int(min+rand()*(max-min+1))}'`
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - local_repo_sfx: <% result().stdout %>
+      - when: <% succeeded() and (ctx().host = null) %>
+        do:
+          - get_host
+      - when: <% succeeded() and (ctx().host != null) %>
+        do:
+          - prep
+  get_host:
+    action: linux.dig
+    input:
+      hostname: st2-build-slave-ubuntu.service.consul
+      rand: true
+      count: 1
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - host: <% result().result[0] %>
+        do:
+          - prep
+  prep:
+    next:
+      - do:
+          - prep_bwc_enterprise_pkg
+  prep_bwc_enterprise_pkg:
+    action: st2cd.bwc_prep_patch_for_enterprise_pkg
+    input:
+      project: bwc-enterprise-package
+      version: <% ctx().version %>
+      fork: <% ctx().fork %>
+      local_repo: <% 'bwc_enterprise_package_' + ctx().local_repo_sfx %>
+      hosts: <% ctx().host %>
+      cwd: <% ctx().cwd %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - prep_st2enterprise_ldap
+  prep_st2enterprise_ldap:
+    action: st2cd.st2_prep_patch_for_enterprise_ldap
+    input:
+      project: st2-enterprise-auth-backend-ldap
+      version: <% ctx().version %>
+      fork: <% ctx().fork %>
+      local_repo: <% 'st2enterprise_auth_ldap_' + ctx().local_repo_sfx %>
+      hosts: <% ctx().host %>
+      cwd: <% ctx().cwd %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - prep_bwc_ui
+  prep_bwc_ui:
+    action: st2cd.bwc_stage_release_packages
+    input:
+      version: <% ctx().version %>
+      projects:
+        - bwc-ui
+      wait: false
+  cleanup_on_failure:
+    action: core.remote
+    input:
+      cmd: <% 'rm -rf ' + ctx().cwd + '/st2*' + ctx().local_repo_sfx + ' ' + ctx().cwd + '/bwc*' + ctx().local_repo_sfx %>
+      hosts: <% ctx().host %>
+    next:
+      - do:
+          - fail

@@ -1,46 +1,46 @@
 ---
-  enabled: true
-  entry_point: "workflows/st2_bootstrap_test.yaml"
-  description: "New bootstrap script test"
-  name: "st2_bootstrap_test"
-  pack: "st2cd"
-  parameters:
-    distro:
-      default: "UBUNTU14"
-      type: "string"
-    environment:
-      type: "string"
-      enum:
-        - "sandbox"
-        - "staging"
-        - "production"
-      default: "sandbox"
-    hostname:
-      required: true
-      type: "string"
-    instance_type:
-      default: "m3.large"
-      type: "string"
-    key_name:
-      default: "st2_deploy"
-      type: "string"
-    keyfile:
-      default: "/home/stanley/.ssh/stanley_rsa"
-      type: "string"
-    role:
-      default: "default"
-      type: "string"
-    version:
-      type: "string"
-      default: ""
-    version_arg:
-      type: "string"
-      immutable: true
-      default: "{% if version != '' %}--version={{version}}{% endif %}"
-    release:
-      type: "string"
-      enum:
-        - "stable"
-        - "unstable"
-      default: "stable"
-  runner_type: "mistral-v2"
+enabled: true
+entry_point: workflows/st2_bootstrap_test.yaml
+description: New bootstrap script test
+name: st2_bootstrap_test
+pack: st2cd
+parameters:
+  distro:
+    default: UBUNTU14
+    type: string
+  environment:
+    type: string
+    enum:
+      - sandbox
+      - staging
+      - production
+    default: sandbox
+  hostname:
+    required: true
+    type: string
+  instance_type:
+    default: m3.large
+    type: string
+  key_name:
+    default: st2_deploy
+    type: string
+  keyfile:
+    default: /home/stanley/.ssh/stanley_rsa
+    type: string
+  role:
+    default: default
+    type: string
+  version:
+    type: string
+    default: ''
+  version_arg:
+    type: string
+    immutable: true
+    default: "{% if version != '' %}--version={{version}}{% endif %}"
+  release:
+    type: string
+    enum:
+      - stable
+      - unstable
+    default: stable
+runner_type: orquesta

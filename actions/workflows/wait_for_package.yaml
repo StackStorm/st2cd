@@ -1,32 +1,35 @@
-version: '2.0'
-
-st2cd.wait_for_package:
-    description: Subworkflow from st2cd.st2_stage_release_packages
-    type: direct
+---
+version: '1.0'
+description: Subworkflow from st2cd.st2_stage_release_packages
+input:
+  - project
+  - build_number
+  - username
+tasks:
+  wait_build_completion:
+    action: circle_ci.wait_until_build_finishes
     input:
-        - project
-        - build_number
-        - username
-    tasks:
-        wait_build_completion:
-            action: circle_ci.wait_until_build_finishes
-            input:
-                project: <% $.project %>
-                username: <% $.username %>
-                build_num: <% $.build_number %>
-                wait_timeout: 3600
-                timeout: 3600
-            on-success:
-                - check_build_status
-        check_build_status:
-            action: circle_ci.get_build_info
-            input:
-                project: <% $.project %>
-                username: <% $.username %>
-                build_num: <% int($.build_number) %>
-            publish:
-                status: <% task(check_build_status).result.result %>
-            on-success:
-                - notify_failure: <% $.status.failed %>
-        notify_failure:
-            action: std.fail
+      project: <% ctx().project %>
+      username: <% ctx().username %>
+      build_num: <% ctx().build_number %>
+      wait_timeout: 3600
+      timeout: 3600
+    next:
+      - when: <% succeeded() %>
+        do:
+          - check_build_status
+  check_build_status:
+    action: circle_ci.get_build_info
+    input:
+      project: <% ctx().project %>
+      username: <% ctx().username %>
+      build_num: <% int(ctx().build_number) %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - status: <% result().result %>
+      - when: <% succeeded() and (ctx().status.failed) %>
+        do:
+          - notify_failure
+  notify_failure:
+    action: fail
