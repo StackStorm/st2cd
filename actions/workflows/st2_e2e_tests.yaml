@@ -36,7 +36,6 @@ st2cd.st2_e2e_tests:
                 env: <% $.st2_cli_env %>
                 st2_username: <% $.st2_username %>
                 st2_password: <% $.st2_password %>
-                env: <% $.st2_cli_env %>
             publish:
                 st2_cli_env: <% $.st2_cli_env.set(
                                     ST2_AUTH_TOKEN,
