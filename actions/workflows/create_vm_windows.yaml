@@ -15,7 +15,9 @@ input:
   - distro
 vars:
   - check_cname_count: 0
-  - wait_for_password_data_iteration_count: 0
+  - wait_for_password_iteration_count: 0
+  - wait_for_winrm_count: 0
+  - ec2_instance_password: ""
   - ec2_instance_id:
   - ec2_instance_user_data: "<powershell>\n# download the script\n(New-Object System.Net.WebClient).DownloadFile('https://raw.githubusercontent.com/ansible/ansible/devel/examples/scripts/ConfigureRemotingForAnsible.ps1', './ConfigureRemotingForAnsible.ps1')\n# execute the script\n./ConfigureRemotingForAnsible.ps1\n</powershell>"
   - vm_info:
@@ -102,23 +104,23 @@ tasks:
     input:
       instance_id: <% ctx().ec2_instance_id %>
     next:
-      - when: <% succeeded() %>
+      - when: <% succeeded() and not result().result[0].isEmpty() %>
         publish:
           - ec2_instance_password_data: <% result().result[0] %>
         do:
           - decrypt_password_data
-      - when: <% failed() and (ctx().wait_for_password_data_iteration_count < 15) %>
-        publish:
-          - wait_for_password_data_iteration_count: <% ctx().wait_for_password_data_iteration_count + 1 %>
-        do:
-          - sleep_for_password_data
-      - when: <% failed() and (ctx().wait_for_password_data_iteration_count >= 15) %>
+      - when: <% failed() and (ctx().wait_for_password_iteration_count >= 15) %>
         do:
           - destroy_vm_on_failure
+      - when: <% (failed() or result().result[0].isEmpty()) and (ctx().wait_for_password_iteration_count < 15) %>
+        publish:
+          - wait_for_password_iteration_count: <% ctx().wait_for_password_iteration_count + 1 %>
+        do:
+          - sleep_for_password_data
   sleep_for_password_data:
     action: core.local
     input:
-      command: sleep 60
+      cmd: sleep 60
       timeout: 120
     next:
       - when: <% succeeded() %>
@@ -149,6 +151,23 @@ tasks:
       - when: <% succeeded() %>
         do:
           - add_tags
+      - when: <% failed() and (ctx().wait_for_winrm_count >= 5) %>
+        do:
+          - fail
+      - when: <% failed() and (ctx().wait_for_winrm_count < 5) %>
+        publish:
+          - wait_for_winrm_count: <% ctx().wait_for_winrm_count + 1 %>
+        do:
+          - sleep_for_wait_for_winrm
+  sleep_for_wait_for_winrm:
+    action: core.local
+    input:
+      cmd: sleep 60
+      timeout: 120
+    next:
+      - when: <% succeeded() %>
+        do:
+          - wait_for_winrm
   add_tags:
     action: aws.ec2_create_tags
     input:
