@@ -20,7 +20,7 @@ parameters:
         secret: true
         description: Password to authenticate to the Windows server
     env:
-        type: string
+        type: object
         required: true
     protocol:
         type: string

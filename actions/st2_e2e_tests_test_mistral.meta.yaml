@@ -10,5 +10,5 @@ parameters:
         type: string
         required: true
     env:
-        type: string
+        type: object
         required: true
