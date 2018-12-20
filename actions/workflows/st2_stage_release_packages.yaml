@@ -30,10 +30,9 @@ tasks:
       project: stackstorm/<% item(project) %>
       branch: <% ctx().branch %>
     next:
-      - when: <% succeeded() %>
+      - when: <% succeeded() and (ctx().wait) %>
         publish:
           - package_jobs: <% result().select( [$.result.reponame, $.result.build_num]) %>
-      - when: <% succeeded() and (ctx().wait) %>
         do:
           - wait_for_packages
   wait_for_packages:

@@ -17,13 +17,14 @@ tasks:
     input:
       cmd: echo `date +'%s'`_`awk -v min=100 -v max=999 'BEGIN{srand(); print int(min+rand()*(max-min+1))}'`
     next:
-      - when: <% succeeded() %>
+      - when: <% succeeded() and (ctx().host = null) %>
         publish:
           - local_repo_sfx: <% result().stdout %>
-      - when: <% succeeded() and (ctx().host = null) %>
         do:
           - get_host
       - when: <% succeeded() and (ctx().host != null) %>
+        publish:
+          - local_repo_sfx: <% result().stdout %>
         do:
           - clone_repos
   get_host:
@@ -73,7 +74,10 @@ tasks:
       - when: <% succeeded() %>
         publish:
           - tagged: true
-      - do:
+        do:
+          - cleanup
+      - when: <% failed() %>
+        do:
           - cleanup
   cleanup:
     action: core.remote

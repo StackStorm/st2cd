@@ -28,6 +28,8 @@ tasks:
       - when: <% succeeded() %>
         publish:
           - status: <% result().result %>
+        do:
+          - noop
       - when: <% succeeded() and (ctx().status.failed) %>
         do:
           - notify_failure

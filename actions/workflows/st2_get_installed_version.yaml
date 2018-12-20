@@ -19,16 +19,19 @@ tasks:
   get_distro:
     action: st2cd.get_distro hosts=<% ctx().host %>
     next:
-      - when: <% succeeded() %>
+      - when: <% succeeded() and (result().get(ctx().host).stdout.toLower() = centos) %>
         publish:
           - distro: <% result().get(ctx().host).stdout %>
-      - when: <% succeeded() and (ctx().distro.toLower() = centos) %>
         do:
           - get_version_centos
-      - when: <% succeeded() and (ctx().distro.toLower() = redhat) %>
+      - when: <% succeeded() and (result().get(ctx().host).stdout.toLower() = redhat) %>
+        publish:
+          - distro: <% result().get(ctx().host).stdout %>
         do:
           - get_version_redhat
-      - when: <% succeeded() and (ctx().distro.toLower() = ubuntu) %>
+      - when: <% succeeded() and (result().get(ctx().host).stdout.toLower() = ubuntu) %>
+        publish:
+          - distro: <% result().get(ctx().host).stdout %>
         do:
           - get_version_ubuntu
   get_version_centos:
@@ -43,6 +46,8 @@ tasks:
       - when: <% succeeded() %>
         publish:
           - result: <% result() %>
+        do:
+          - noop
   get_version_redhat:
     with:
       items: package in <% ctx().packages %>
@@ -55,6 +60,8 @@ tasks:
       - when: <% succeeded() %>
         publish:
           - result: <% result() %>
+        do:
+          - noop
   get_version_ubuntu:
     with:
       items: package in <% ctx().packages %>
@@ -67,3 +74,5 @@ tasks:
       - when: <% succeeded() %>
         publish:
           - result: <% result() %>
+        do:
+          - noop

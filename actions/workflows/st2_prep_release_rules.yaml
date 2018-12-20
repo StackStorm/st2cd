@@ -16,7 +16,7 @@ tasks:
       - when: <% succeeded() %>
         publish:
           - local_repo_sfx: <% result().stdout %>
-      - do:
+        do:
           - get_host
   get_host:
     action: linux.dig

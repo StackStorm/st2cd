@@ -28,15 +28,15 @@ tasks:
   get_instances_by_dns:
     action: aws.ec2_get_only_instances
     next:
-      - when: <% succeeded() %>
-        publish:
-          - used_dns: true
+      - publish:
           - instances: <%
               result().result.where(
                 $.private_dns_name + '.' = result().result[0] or
                 $.private_ip_address = result().result[0]
               ).select($.id) %>
       - when: <% succeeded() and (len(ctx().instances) = 1) %>
+        publish:
+          - used_dns: true
         do:
           - get_volumes
       - when: <% succeeded() and (len(ctx().instances) > 1 and ctx().instance_id = null) %>
@@ -51,12 +51,11 @@ tasks:
   get_instances_by_id:
     action: aws.ec2_get_only_instances
     next:
-      - when: <% succeeded() %>
-        publish:
-          - used_dns: false
-          - used_id: true
+      - publish:
           - instances: <% result().result.where($.id = ctx().instance_id).select($.id) %>
       - when: <% succeeded() and (len(ctx().instances) = 1) %>
+        publish:
+          - used_id: true
         do:
           - get_volumes
       - when: <% succeeded() and (len(ctx().instances) > 1) %>
@@ -120,13 +119,12 @@ tasks:
       - when: <% succeeded() %>
         do:
           - notify_success
-      - when: <% failed() %>
-        publish:
-          - volume_to_delete_iteration_count: <% ctx().volume_to_delete_iteration_count + 1 %>
       - when: <% failed() and (ctx().volume_to_delete_iteration_count >= 10) %>
         do:
           - notify_delete_volumes_failure
       - when: <% failed() and (ctx().volume_to_delete_iteration_count < 10) %>
+        publish:
+          - volume_to_delete_iteration_count: <% ctx().volume_to_delete_iteration_count + 1 %>
         do:
           - wait_for_volume_to_delete
   wait_for_volume_to_delete:

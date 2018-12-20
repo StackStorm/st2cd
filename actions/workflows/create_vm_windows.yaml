@@ -85,10 +85,9 @@ tasks:
           - ec2_instance_password_data: <% result().result[0] %>
         do:
           - decrypt_password_data
-      - when: <% failed() %>
+      - when: <% failed() and (ctx().wait_for_password_data_iteration_count < 15) %>
         publish:
           - wait_for_password_data_iteration_count: <% ctx().wait_for_password_data_iteration_count + 1 %>
-      - when: <% failed() and (ctx().wait_for_password_data_iteration_count < 15) %>
         do:
           - sleep_for_password_data
       - when: <% failed() and (ctx().wait_for_password_data_iteration_count >= 15) %>
