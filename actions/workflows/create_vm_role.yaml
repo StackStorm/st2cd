@@ -13,6 +13,7 @@ input:
   - purpose
   - distro
 vars:
+  - check_cname_count: 0
   - ec2_instance_id:
   - vm_info:
       id:
@@ -49,9 +50,22 @@ tasks:
       - when: <% succeeded() and (result().result[0] = null) %>
         do:
           - run_instance
-      - when: <% succeeded() and (result().result[0] != null) %>
+      - when: <% succeeded() and (result().result[0] != null) and ctx().check_cname_count < 10 %>
+        publish:
+          - check_cname_count: <% ctx().check_cname_count + 1 %>
+        do:
+          - remove_cname
+      - when: <% failed() or ctx().check_cname_count > 10 %>
         do:
           - fail
+  remove_cname:
+    action: aws.r53_zone_delete_cname
+    input:
+      name: <% ctx().hostname %>.<% ctx().dns_zone %>
+      zone: <% ctx().dns_zone %>
+    next:
+      - do:
+          - check_cname
   run_instance:
     action: aws.ec2_run_instances
     input:

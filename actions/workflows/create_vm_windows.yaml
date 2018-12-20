@@ -14,6 +14,7 @@ input:
   - purpose
   - distro
 vars:
+  - check_cname_count: 0
   - wait_for_password_data_iteration_count: 0
   - ec2_instance_id:
   - ec2_instance_user_data: "<powershell>\n# download the script\n(New-Object System.Net.WebClient).DownloadFile('https://raw.githubusercontent.com/ansible/ansible/devel/examples/scripts/ConfigureRemotingForAnsible.ps1', './ConfigureRemotingForAnsible.ps1')\n# execute the script\n./ConfigureRemotingForAnsible.ps1\n</powershell>"
@@ -54,9 +55,22 @@ tasks:
       - when: <% succeeded() and (result().result[0] = null) %>
         do:
           - run_instance
-      - when: <% succeeded() and (result().result[0] != null) %>
+      - when: <% succeeded() and (result().result[0] != null) and (ctx().check_cname_count < 10) %>
+        publish:
+          - check_cname_count: <% ctx().check_cname_count + 1 %>
+        do:
+          - remove_cname
+      - when: <% failed() %>
         do:
           - fail
+  remove_cname:
+    action: aws.r53_zone_delete_cname
+    input:
+      name: <% ctx().hostname %>.<% ctx().dns_zone %>
+      zone: <% ctx().dns_zone %>
+    next:
+      - do:
+          - check_cname
   run_instance:
     action: aws.ec2_run_instances
     input:
