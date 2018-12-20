@@ -57,7 +57,7 @@ tasks:
           - remove_cname
       - when: <% failed() or ctx().check_cname_count > 10 %>
         do:
-          - fail
+          - fail_workflow
   remove_cname:
     action: aws.r53_zone_delete_cname
     input:
@@ -82,6 +82,9 @@ tasks:
           - vm_info: <% result().result[0] %>
         do:
           - wait_for_instance
+      - when: <% failed() %>
+        do:
+          - fail_workflow
   wait_for_instance:
     action: aws.ec2_wait_for_state
     input:
@@ -91,6 +94,9 @@ tasks:
       - when: <% succeeded() %>
         do:
           - wait_for_ssh
+      - when: <% failed() %>
+        do:
+          - fail_workflow
   wait_for_ssh:
     action: linux.wait_for_ssh
     input:
@@ -103,6 +109,9 @@ tasks:
       - when: <% succeeded() %>
         do:
           - add_tags
+      - when: <% failed() %>
+        do:
+          - fail_workflow
   add_tags:
     action: aws.ec2_create_tags
     input:
@@ -113,6 +122,9 @@ tasks:
       - when: <% succeeded() %>
         do:
           - add_cname
+      - when: <% failed() %>
+        do:
+          - fail_workflow
   add_cname:
     action: aws.r53_zone_add_cname
     input:
@@ -125,6 +137,9 @@ tasks:
           - cname: <% ctx().hostname %>.<% ctx().dns_zone %>
         do:
           - get_distro
+      - when: <% failed() %>
+        do:
+          - fail_workflow
   get_distro:
     action: st2cd.get_distro
     input:
@@ -133,6 +148,9 @@ tasks:
       - when: <% succeeded() %>
         do:
           - set_hostname
+      - when: <% failed() %>
+        do:
+          - fail_workflow
   set_hostname:
     action: st2cd.set_hostname
     input:
@@ -144,6 +162,9 @@ tasks:
       - when: <% succeeded() %>
         do:
           - reboot
+      - when: <% failed() %>
+        do:
+          - fail_workflow
   reboot:
     action: core.remote_sudo
     input:
@@ -153,6 +174,9 @@ tasks:
       - when: <% succeeded() %>
         do:
           - wait_for_ssh_post_reboot
+      - when: <% failed() %>
+        do:
+          - fail_workflow
   wait_for_ssh_post_reboot:
     action: linux.wait_for_ssh
     input:
@@ -161,6 +185,19 @@ tasks:
       keyfile: <% ctx().keyfile %>
       ssh_timeout: 30
       retries: 10
+    next:
+      - when: <% failed() %>
+        do:
+          - fail_workflow
+  fail_workflow:
+    next:
+      - when: <% ctx().ec2_instance_id != null %>
+        do:
+          - destroy_vm_on_failure
+          - fail
+      - when: <% ctx().ec2_instance_id = null %>
+        do:
+          - fail
   destroy_vm_on_failure:
     action: st2cd.destroy_vm
     input:

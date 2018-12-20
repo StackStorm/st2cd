@@ -128,6 +128,9 @@ tasks:
       - when: <% succeeded() %>
         do:
           - st2_docker_tag_release
+      - when: <% failed() %>
+        do:
+          - cleanup_on_failure
   st2_docker_tag_release:
     action: st2cd.tag_release
     input:
@@ -142,6 +145,9 @@ tasks:
       - when: <% succeeded() %>
         do:
           - get_utc_date
+      - when: <% failed() %>
+        do:
+          - cleanup_on_failure
   get_utc_date:
     action: core.local
     input:
@@ -152,6 +158,9 @@ tasks:
           - utc_date: <% result().stdout %>
         do:
           - vagrant_tag_release
+      - when: <% failed() %>
+        do:
+          - cleanup_on_failure
   vagrant_tag_release:
     action: st2cd.vagrant_tag_release
     input:
@@ -166,6 +175,9 @@ tasks:
       - when: <% succeeded() %>
         do:
           - ship_api_docs
+      - when: <% failed() %>
+        do:
+          - cleanup_on_failure
   ship_api_docs:
     action: circle_ci.run_build
     input:
@@ -178,6 +190,9 @@ tasks:
       - when: <% succeeded() %>
         do:
           - st2_dockerfiles_tag_release
+      - when: <% failed() %>
+        do:
+          - cleanup_on_failure
   st2_dockerfiles_tag_release:
     action: st2cd.tag_release
     input:
@@ -192,6 +207,9 @@ tasks:
       - when: <% succeeded() %>
         do:
           - wait_for_community_docker_image
+      - when: <% failed() %>
+        do:
+          - cleanup_on_failure
   wait_for_community_docker_image:
     action: st2cd.wait_for_docker_image
     input:
@@ -207,6 +225,9 @@ tasks:
       - when: <% succeeded() %>
         do:
           - st2enterprise_dockerfiles_tag_release
+      - when: <% failed() %>
+        do:
+          - cleanup_on_failure
   st2enterprise_dockerfiles_tag_release:
     action: st2cd.tag_release
     input:
@@ -217,6 +238,11 @@ tasks:
       branch: master
       hosts: <% ctx().host %>
       cwd: <% ctx().cwd %>
+    next:
+      - when: <% failed() %>
+        do:
+          - cleanup_on_failure
+
   cleanup_on_failure:
     action: core.remote
     input:
