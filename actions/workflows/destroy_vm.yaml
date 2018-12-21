@@ -9,6 +9,8 @@ input:
   - used_id: false
 vars:
   - volume_to_delete_iteration_count: 0
+  - notify_channel: '#thunderdome'
+  - notify_failure_channel: '#opstown'
 tasks:
   get_instance_dns:
     action: linux.dig
@@ -150,12 +152,12 @@ tasks:
   notify_success:
     action: slack.post_message
     input:
-      channel: '#thunderdome'
+      channel: <% ctx().notify_channel %>
       message: '[SUCCEEDED] <% ctx().hostname %> was destroyed'
   notify_multiple_instances_failure:
     action: slack.post_message
     input:
-      channel: '#opstown'
+      channel: <% ctx().notify_failure_channel %>
       message: '[FAILED] More than one instance for <% ctx().hostname %> were identified'
     next:
       - do:
@@ -163,7 +165,7 @@ tasks:
   notify_destroy_instance_failure:
     action: slack.post_message
     input:
-      channel: '#opstown'
+      channel: <% ctx().notify_failure_channel %>
       message: '[FAILED] <% ctx().hostname %> was not destroyed'
     next:
       - do:
@@ -171,12 +173,12 @@ tasks:
   notify_delete_cname_failure:
     action: slack.post_message
     input:
-      channel: '#opstown'
+      channel: <% ctx().notify_failure_channel %>
       message: '[FAILED] <% ctx().hostname %> was destroyed but CNAME was not deleted'
   notify_delete_volumes_failure:
     action: slack.post_message
     input:
-      channel: '#opstown'
+      channel: <% ctx().notify_failure_channel %>
       message: '[FAILED] <% ctx().hostname %> was destroyed but volumes were not deleted'
     next:
       - do:

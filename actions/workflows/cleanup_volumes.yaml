@@ -3,6 +3,8 @@ version: '1.0'
 description: Clean up volumes
 input:
   - age
+vars:
+  - notify_channel: '#opstown'
 tasks:
   get_volumes:
     action: aws.ec2_get_all_volumes
@@ -40,12 +42,12 @@ tasks:
   notify_success:
     action: slack.post_message
     input:
-      channel: '#opstown'
+      channel: <% ctx().notify_channel %>
       message: '[SUCCEEDED] Unused volumes older than <% ctx().age %> seconds are deleted'
   notify_failure:
     action: slack.post_message
     input:
-      channel: '#opstown'
+      channel: <% ctx().notify_channel %>
       message: '[FAILED] Unable to delete unused volumes'
     next:
       - do:
