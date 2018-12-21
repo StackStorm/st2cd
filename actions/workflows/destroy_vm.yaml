@@ -112,11 +112,15 @@ tasks:
       zone: <% ctx().dns_zone %>
       name: <% ctx().hostname %>.<% ctx().dns_zone %>
     next:
+      - when: <% len(ctx().volumes) = 0 %>
+        do:
+          - notify_success
+      - when: <% len(ctx().volumes) > 0 %>
+        do:
+          - delete_volumes
       - when: <% failed() %>
         do:
           - notify_delete_cname_failure
-      - do:
-          - delete_volumes
   delete_volumes:
     with:
       items: volume in <% ctx().volumes %>
