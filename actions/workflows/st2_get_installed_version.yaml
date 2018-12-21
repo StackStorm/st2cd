@@ -34,7 +34,7 @@ tasks:
   get_version_centos:
     with:
       items: package in <% ctx().packages %>
-      concurrency: <% $.packages.count() %>
+      concurrency: <% ctx().packages.count() %>
     action: core.remote_sudo
     input:
       hosts: <% ctx().host %>
@@ -46,7 +46,7 @@ tasks:
   get_version_redhat:
     with:
       items: package in <% ctx().packages %>
-      concurrency: <% $.packages.count() %>
+      concurrency: <% ctx().packages.count() %>
     action: core.remote_sudo
     input:
       hosts: <% ctx().host %>
@@ -58,7 +58,7 @@ tasks:
   get_version_ubuntu:
     with:
       items: package in <% ctx().packages %>
-      concurrency: <% $.packages.count() %>
+      concurrency: <% ctx().packages.count() %>
     action: core.remote_sudo
     input:
       hosts: <% ctx().host %>
