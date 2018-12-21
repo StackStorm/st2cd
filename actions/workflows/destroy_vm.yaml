@@ -34,6 +34,10 @@ tasks:
                 $.private_dns_name + '.' = task(get_instance_dns).result.result[0] or
                 $.private_ip_address = task(get_instance_dns).result.result[0]
               ).select($.id) %>
+        do:
+          - switch_on_dns
+  switch_on_dns:
+    next:
       - when: <% succeeded() and (len(ctx().instances) = 1) %>
         publish:
           - used_dns: true
@@ -53,6 +57,10 @@ tasks:
     next:
       - publish:
           - instances: <% result().result.where($.id = ctx().instance_id).select($.id) %>
+        do:
+          - switch_on_id
+  switch_on_id:
+    next:
       - when: <% succeeded() and (len(ctx().instances) = 1) %>
         publish:
           - used_id: true
