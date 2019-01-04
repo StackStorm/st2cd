@@ -94,6 +94,7 @@ tasks:
     action: st2cd.st2_e2e_tests_test_inquiry
     input:
       host: <% ctx().host_ip %>
+      host_fqdn: <% ctx().host_fqdn %>
       env: <% ctx().st2_cli_env %>
       protocol: <% ctx().protocol %>
     next:
