@@ -77,71 +77,9 @@ tasks:
       hosts: <% ctx().host %>
       cwd: <% ctx().cwd %>
     next:
-      # Commented out in the original workflow
-      # - when: <% succeeded() %>
-      #   do:
-      #     - prep_bwc_ipfabric_suite
       - when: <% failed() %>
         do:
           - cleanup_on_failure
-  # Commented out in the original workflow
-  # prep_bwc_ipfabric_suite:
-  #   action: st2cd.bwc_prep_dev_for_bwc_ipfabric_suite
-  #   input:
-  #     version: <% ctx().version %>
-  #     fork: <% ctx().fork %>
-  #     local_repo: <% 'bwc_ipfabric_suite_' + ctx().local_repo_sfx %>
-  #     hosts: <% ctx().host %>
-  #     cwd: <% ctx().cwd %>
-  #   next:
-  #     - when: <% succeeded() %>
-  #       do:
-  #         - prep_bwc_ipfabric_packs
-  #     - when: <% failed() %>
-  #       do:
-  #         - cleanup_on_failure
-  # prep_bwc_ipfabric_packs:
-  #   action: st2cd.bwc_prep_dev_for_bwc_ipfabric_packs
-  #   input:
-  #     version: <% ctx().dev_version %>
-  #     fork: <% ctx().fork %>
-  #     local_repo: <% 'bwc_ipfabric_packs_' + ctx().local_repo_sfx %>
-  #     hosts: <% ctx().host %>
-  #     cwd: <% ctx().cwd %>
-  #   next:
-  #     - when: <% succeeded() %>
-  #       do:
-  #         - prep_bwc_topology
-  #     - when: <% failed() %>
-  #       do:
-  #         - cleanup_on_failure
-  # prep_bwc_topology:
-  #   action: st2cd.bwc_prep_dev_for_bwc_topology
-  #   input:
-  #     version: <% ctx().dev_version %>
-  #     fork: <% ctx().fork %>
-  #     local_repo: <% 'bwc_topology_' + ctx().local_repo_sfx %>
-  #     hosts: <% ctx().host %>
-  #     cwd: <% ctx().cwd %>
-  #   next:
-  #     - when: <% succeeded() %>
-  #       do:
-  #         - prep_bwc_cli
-  #     - when: <% failed() %>
-  #       do:
-  #         - cleanup_on_failure
-  # prep_bwc_cli:
-  #   action: st2cd.bwc_prep_dev_for_bwc_cli
-  #   input:
-  #     version: <% ctx().dev_version %>
-  #     fork: <% ctx().fork %>
-  #     local_repo: <% 'bwc_cli_' + ctx().local_repo_sfx %>
-  #     hosts: <% ctx().host %>
-  #     cwd: <% ctx().cwd %>
-  #   next:
-  #     - when: <% failed() %>
-  #       do:
-  #         - cleanup_on_failure
 
   cleanup_on_failure:
     action: core.remote
