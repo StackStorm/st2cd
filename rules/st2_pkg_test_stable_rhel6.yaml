@@ -21,4 +21,4 @@ action:
     distro: RHEL6
     pkg_env: production
     release: stable
-    version: "2.10.0"
+    version: "2.10.1"
