@@ -82,6 +82,7 @@ workflows:
                 workflow: test_inquiry
                 input:
                     host: <% $.host_ip %>
+                    host_fqdn: <% $.host_fqdn %>
                     env: <% $.st2_cli_env %>
                     protocol: <% $.protocol %>
                 on-success:
