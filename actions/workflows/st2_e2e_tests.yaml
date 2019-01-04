@@ -312,6 +312,7 @@ workflows:
         type: direct
         input:
             - host
+            - host_fqdn
             - env
             - protocol
         tasks:
