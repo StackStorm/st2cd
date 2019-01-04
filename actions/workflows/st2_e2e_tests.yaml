@@ -330,7 +330,20 @@ workflows:
                     cmd: st2 run tests.test_inquiry_chain <% $.st2_cli_args %>
                     timeout: 180
                 on-success:
+                    - check_mistral_is_available
+
+            # Mistral is not available on Ubuntu Bionic (18.04)
+            check_mistral_is_available:
+                action: core.remote
+                input:
+                    hosts: <% $.host %>
+                    env: <% $.env %>
+                    cmd: st2 run core.local "echo <% $.host_fqdn %> | grep -v -i 'ubuntu18\|u18'"
+                on-success:
                     - test_inquiry_mistral
+                on-error:
+                    # Mistral is not available on Bionic
+                    - skip_mistral_tests_mistral_is_not_available
 
             test_inquiry_mistral:
                 action: core.remote
@@ -339,6 +352,9 @@ workflows:
                     env: <% $.env %>
                     cmd: st2 run tests.test_inquiry_mistral <% $.st2_cli_args %>
                     timeout: 180
+
+            skip_mistral_tests_mistral_is_not_available:
+                action: core.noop
 
     test_windows:
         type: direct
