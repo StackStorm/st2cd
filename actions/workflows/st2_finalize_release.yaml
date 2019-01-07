@@ -6,6 +6,7 @@ input:
   - fork
   - host
   - cwd
+vars:
   - local_repo_sfx:
 tasks:
   init:

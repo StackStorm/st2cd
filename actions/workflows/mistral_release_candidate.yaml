@@ -33,6 +33,9 @@ tasks:
           - deps: <% result().deps %>
         do:
           - branch
+      - when: <% failed() %>
+        do:
+          - notify_failure
   branch:
     action: st2cd.mistral_branch_candidate
     input:
@@ -48,6 +51,10 @@ tasks:
       - when: <% succeeded() %>
         do:
           - notify_success
+      - when: <% failed() %>
+        do:
+          - notify_failure
+
   notify_success:
     with:
       items: channel in <% ctx().notify_channels %>
@@ -56,6 +63,7 @@ tasks:
       channel: <% item(channel) %>
       text: 'st2cd.mistral_release_candidate: SUCCEEDED'
       attachments: '[{"fallback": "[st2cd.mistral_release_candidate: SUCCEEDED]", "title": "[st2cd.mistral_release_candidate: SUCCEEDED]", "title_link": "<% ctx().webui_base_url %>/#/history/<% ctx(st2).action_execution_id %>/general", "text": "Release candidate <% ctx().version %> is available.", "color": "#008000"}]'
+
   notify_failure:
     with:
       items: channel in <% ctx().notify_failure_channels %>

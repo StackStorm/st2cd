@@ -6,6 +6,7 @@ input:
   - fork
   - host
   - cwd
+vars:
   - local_repo_sfx:
 tasks:
   init:
@@ -52,6 +53,9 @@ tasks:
       - when: <% succeeded() %>
         do:
           - prep_st2enterprise_ldap
+      - when: <% failed() %>
+        do:
+          - cleanup_on_failure
   prep_st2enterprise_ldap:
     action: st2cd.st2_prep_release_for_enterprise_ldap
     input:
@@ -65,6 +69,9 @@ tasks:
       - when: <% succeeded() %>
         do:
           - prep_bwc_ui
+      - when: <% failed() %>
+        do:
+          - cleanup_on_failure
   prep_bwc_ui:
     action: st2cd.bwc_prep_release_for_gui
     input:
@@ -78,6 +85,9 @@ tasks:
       - when: <% succeeded() %>
         do:
           - prep_bwc_docs
+      - when: <% failed() %>
+        do:
+          - cleanup_on_failure
   prep_bwc_docs:
     action: st2cd.bwc_prep_release_for_ipfabric_docs
     input:
@@ -91,6 +101,9 @@ tasks:
       - when: <% succeeded() %>
         do:
           - prep_bwc_installer
+      - when: <% failed() %>
+        do:
+          - cleanup_on_failure
   prep_bwc_installer:
     action: st2cd.bwc_prep_release_for_bwc_installer
     input:
@@ -100,7 +113,20 @@ tasks:
       local_repo: <% 'bwc-installer_' + ctx().local_repo_sfx %>
       hosts: <% ctx().host %>
       cwd: <% ctx().cwd %>
+    next:
+      - when: <% failed() %>
+        do:
+          - cleanup_on_failure
+
   cleanup_on_failure:
+    next:
+      - when: <% ctx().local_repo_sfx != null %>
+        do:
+          - cleanup
+      - when: <% ctx().local_repo_sfx = null %>
+        do:
+          - fail
+  cleanup:
     action: core.remote
     input:
       cmd: <% 'rm -rf ' + ctx().cwd + '/st2*' + ctx().local_repo_sfx + ' ' + ctx().cwd + '/bwc*' + ctx().local_repo_sfx %>

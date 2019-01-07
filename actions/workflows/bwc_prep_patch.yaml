@@ -53,6 +53,9 @@ tasks:
       - when: <% succeeded() %>
         do:
           - prep_st2enterprise_ldap
+      - when: <% failed() %>
+        do:
+          - cleanup_on_failure
   prep_st2enterprise_ldap:
     action: st2cd.st2_prep_patch_for_enterprise_ldap
     input:
@@ -66,6 +69,9 @@ tasks:
       - when: <% succeeded() %>
         do:
           - prep_bwc_ui
+      - when: <% failed() %>
+        do:
+          - cleanup_on_failure
   prep_bwc_ui:
     action: st2cd.bwc_stage_release_packages
     input:
@@ -73,7 +79,20 @@ tasks:
       projects:
         - bwc-ui
       wait: false
+    next:
+      - when: <% failed() %>
+        do:
+          - cleanup_on_failure
+
   cleanup_on_failure:
+    next:
+      - when: <% ctx().local_repo_sfx != null %>
+        do:
+          - cleanup
+      - when: <% ctx().local_repo_sfx = null %>
+        do:
+          - fail
+  cleanup:
     action: core.remote
     input:
       cmd: <% 'rm -rf ' + ctx().cwd + '/st2*' + ctx().local_repo_sfx + ' ' + ctx().cwd + '/bwc*' + ctx().local_repo_sfx %>

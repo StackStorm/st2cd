@@ -6,6 +6,7 @@ input:
   - fork
   - host
   - cwd
+vars:
   - local_repo_sfx:
 tasks:
   init:
@@ -51,8 +52,16 @@ tasks:
       - when: <% succeeded() %>
         do:
           - make_bwc_docs_latest
+      - when: <% failed() %>
+        do:
+          - cleanup_on_failure
   make_bwc_docs_latest:
     action: st2cd.bwc_docs
+    next:
+      - when: <% failed() %>
+        do:
+          - cleanup_on_failure
+
   cleanup_on_failure:
     action: core.remote
     input:

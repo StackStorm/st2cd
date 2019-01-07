@@ -139,6 +139,9 @@ tasks:
           - ec2_instance_password: <% result().result %>
         do:
           - wait_for_winrm
+      - when: <% failed() %>
+        do:
+          - destroy_vm_on_failure
   wait_for_winrm:
     action: windows.wait_for_winrm
     input:
@@ -155,7 +158,7 @@ tasks:
           - add_tags
       - when: <% failed() and (ctx().wait_for_winrm_count >= 5) %>
         do:
-          - fail
+          - destroy_vm_on_failure
       - when: <% failed() and (ctx().wait_for_winrm_count < 5) %>
         publish:
           - wait_for_winrm_count: <% ctx().wait_for_winrm_count + 1 %>
@@ -184,6 +187,9 @@ tasks:
       - when: <% succeeded() %>
         do:
           - add_cname
+      - when: <% failed() %>
+        do:
+          - destroy_vm_on_failure
   add_cname:
     action: aws.r53_zone_add_cname
     input:
@@ -194,7 +200,19 @@ tasks:
       - when: <% succeeded() %>
         publish:
           - cname: <% ctx().hostname %>.<% ctx().dns_zone %>
+      - when: <% failed() %>
+        do:
+          - destroy_vm_on_failure
+
   destroy_vm_on_failure:
+    next:
+      - when: <% ctx().ec2_instance_id != null %>
+        do:
+          - destroy
+      - when: <% ctx().ec2_instance_id = null %>
+        do:
+          - fail
+  destroy:
     action: st2cd.destroy_vm
     input:
       hostname: <% ctx().hostname %>

@@ -14,10 +14,9 @@ tasks:
     input:
       cmd: echo `date +'%s'`_`awk -v min=100 -v max=999 'BEGIN{srand(); print int(min+rand()*(max-min+1))}'`
     next:
-      - when: <% succeeded() %>
+      - when: <% succeeded() and (ctx().host = null) %>
         publish:
           - local_repo_sfx: <% result().stdout %>
-      - when: <% succeeded() and (ctx().host = null) %>
         do:
           - get_host
       - when: <% succeeded() and (ctx().host != null) %>
@@ -54,6 +53,9 @@ tasks:
       - when: <% succeeded() %>
         do:
           - prep_mistral
+      - when: <% failed() %>
+        do:
+          - cleanup_on_failure
   prep_mistral:
     action: st2cd.st2_prep_patch_for_mistral
     input:
@@ -67,6 +69,9 @@ tasks:
       - when: <% succeeded() %>
         do:
           - prep_mistralclient
+      - when: <% failed() %>
+        do:
+          - cleanup_on_failure
   prep_mistralclient:
     action: st2cd.st2_prep_patch_for_mistralclient
     input:
@@ -80,6 +85,9 @@ tasks:
       - when: <% succeeded() %>
         do:
           - prep_st2docs
+      - when: <% failed() %>
+        do:
+          - cleanup_on_failure
   prep_st2docs:
     action: st2cd.st2_prep_patch_for_st2docs
     input:
@@ -93,6 +101,9 @@ tasks:
       - when: <% succeeded() %>
         do:
           - prep_st2web
+      - when: <% failed() %>
+        do:
+          - cleanup_on_failure
   prep_st2web:
     action: st2cd.st2_prep_patch_for_gui
     input:
@@ -106,6 +117,9 @@ tasks:
       - when: <% succeeded() %>
         do:
           - prep_st2chatops
+      - when: <% failed() %>
+        do:
+          - cleanup_on_failure
   prep_st2chatops:
     action: st2cd.st2_prep_patch_for_gui
     input:
@@ -119,6 +133,9 @@ tasks:
       - when: <% succeeded() %>
         do:
           - prep_st2flow
+      - when: <% failed() %>
+        do:
+          - cleanup_on_failure
   prep_st2flow:
     action: st2cd.st2_prep_patch_for_gui
     input:
@@ -132,6 +149,9 @@ tasks:
       - when: <% succeeded() %>
         do:
           - prep_st2_pkg
+      - when: <% failed() %>
+        do:
+          - cleanup_on_failure
   prep_st2_pkg:
     action: st2cd.st2_prep_patch_for_st2_pkg
     input:
@@ -141,7 +161,21 @@ tasks:
       local_repo: <% 'st2_packages_' + ctx().local_repo_sfx %>
       hosts: <% ctx().host %>
       cwd: <% ctx().cwd %>
+    next:
+      - when: <% failed() %>
+        do:
+          - cleanup_on_failure
+
   cleanup_on_failure:
+    action: core.noop
+    next:
+      - when: <% ctx().local_repo_sfx %>
+        do:
+          - cleanup
+      - when: <% not ctx().local_repo_sfx %>
+        do:
+          - fail
+  cleanup:
     action: core.remote
     input:
       cmd: <% 'rm -rf ' + ctx().cwd + '/st2*' + ctx().local_repo_sfx %>

@@ -57,7 +57,7 @@ tasks:
           - remove_cname
       - when: <% failed() or ctx().check_cname_count > 10 %>
         do:
-          - fail_workflow
+          - destroy_vm_on_failure
   remove_cname:
     action: aws.r53_zone_delete_cname
     input:
@@ -84,7 +84,7 @@ tasks:
           - wait_for_instance
       - when: <% failed() %>
         do:
-          - fail_workflow
+          - destroy_vm_on_failure
   wait_for_instance:
     action: aws.ec2_wait_for_state
     input:
@@ -96,7 +96,7 @@ tasks:
           - wait_for_ssh
       - when: <% failed() %>
         do:
-          - fail_workflow
+          - destroy_vm_on_failure
   wait_for_ssh:
     action: linux.wait_for_ssh
     input:
@@ -111,7 +111,7 @@ tasks:
           - add_tags
       - when: <% failed() %>
         do:
-          - fail_workflow
+          - destroy_vm_on_failure
   add_tags:
     action: aws.ec2_create_tags
     input:
@@ -124,7 +124,7 @@ tasks:
           - add_cname
       - when: <% failed() %>
         do:
-          - fail_workflow
+          - destroy_vm_on_failure
   add_cname:
     action: aws.r53_zone_add_cname
     input:
@@ -139,7 +139,7 @@ tasks:
           - get_distro
       - when: <% failed() %>
         do:
-          - fail_workflow
+          - destroy_vm_on_failure
   get_distro:
     action: st2cd.get_distro
     input:
@@ -150,7 +150,7 @@ tasks:
           - set_hostname
       - when: <% failed() %>
         do:
-          - fail_workflow
+          - destroy_vm_on_failure
   set_hostname:
     action: st2cd.set_hostname
     input:
@@ -164,7 +164,7 @@ tasks:
           - reboot
       - when: <% failed() %>
         do:
-          - fail_workflow
+          - destroy_vm_on_failure
   reboot:
     action: core.remote_sudo
     input:
@@ -176,7 +176,7 @@ tasks:
           - wait_for_ssh_post_reboot
       - when: <% failed() %>
         do:
-          - fail_workflow
+          - destroy_vm_on_failure
   wait_for_ssh_post_reboot:
     action: linux.wait_for_ssh
     input:
@@ -188,17 +188,17 @@ tasks:
     next:
       - when: <% failed() %>
         do:
-          - fail_workflow
-  fail_workflow:
+          - destroy_vm_on_failure
+
+  destroy_vm_on_failure:
     next:
       - when: <% ctx().ec2_instance_id != null %>
         do:
-          - destroy_vm_on_failure
-          - fail
+          - destroy
       - when: <% ctx().ec2_instance_id = null %>
         do:
           - fail
-  destroy_vm_on_failure:
+  destroy:
     action: st2cd.destroy_vm
     input:
       hostname: <% ctx().hostname %>

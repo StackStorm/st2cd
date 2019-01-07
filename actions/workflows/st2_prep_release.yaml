@@ -6,6 +6,7 @@ input:
   - fork
   - host
   - cwd
+vars:
   - local_repo_sfx:
 tasks:
   init:
@@ -52,6 +53,9 @@ tasks:
       - when: <% succeeded() %>
         do:
           - prep_st2docs
+      - when: <% failed() %>
+        do:
+          - cleanup_on_failure
   prep_st2docs:
     action: st2cd.st2_prep_release_for_st2docs
     input:
@@ -65,6 +69,9 @@ tasks:
       - when: <% succeeded() %>
         do:
           - prep_st2tests
+      - when: <% failed() %>
+        do:
+          - cleanup_on_failure
   prep_st2tests:
     action: st2cd.st2_prep_release_for_st2tests
     input:
@@ -78,6 +85,9 @@ tasks:
       - when: <% succeeded() %>
         do:
           - prep_st2web
+      - when: <% failed() %>
+        do:
+          - cleanup_on_failure
   prep_st2web:
     action: st2cd.st2_prep_release_for_gui
     input:
@@ -91,6 +101,9 @@ tasks:
       - when: <% succeeded() %>
         do:
           - prep_st2chatops
+      - when: <% failed() %>
+        do:
+          - cleanup_on_failure
   prep_st2chatops:
     action: st2cd.st2_prep_release_for_gui
     input:
@@ -104,6 +117,9 @@ tasks:
       - when: <% succeeded() %>
         do:
           - prep_st2flow
+      - when: <% failed() %>
+        do:
+          - cleanup_on_failure
   prep_st2flow:
     action: st2cd.st2_prep_release_for_gui
     input:
@@ -117,6 +133,9 @@ tasks:
       - when: <% succeeded() %>
         do:
           - prep_st2_pkg
+      - when: <% failed() %>
+        do:
+          - cleanup_on_failure
   prep_st2_pkg:
     action: st2cd.st2_prep_release_for_st2_pkg
     input:
@@ -130,6 +149,9 @@ tasks:
       - when: <% succeeded() %>
         do:
           - prep_st2_dockerfiles
+      - when: <% failed() %>
+        do:
+          - cleanup_on_failure
   prep_st2_dockerfiles:
     action: st2cd.st2_prep_release_for_st2_dockerfiles
     input:
@@ -144,6 +166,9 @@ tasks:
       - when: <% succeeded() %>
         do:
           - prep_st2enterprise_dockerfiles
+      - when: <% failed() %>
+        do:
+          - cleanup_on_failure
   prep_st2enterprise_dockerfiles:
     action: st2cd.st2_prep_release_for_st2enterprise_dockerfiles
     input:
@@ -154,7 +179,21 @@ tasks:
       branch: v<% ctx().version.substring(0, ctx().version.lastIndexOf('.')) %>
       hosts: <% ctx().host %>
       cwd: <% ctx().cwd %>
+    next:
+      - when: <% failed() %>
+        do:
+          - cleanup_on_failure
+
   cleanup_on_failure:
+    action: core.noop
+    next:
+      - when: <% ctx().local_repo_sfx %>
+        do:
+          - cleanup
+      - when: <% not ctx().local_repo_sfx %>
+        do:
+          - fail
+  cleanup:
     action: core.remote
     input:
       cmd: <% 'rm -rf ' + ctx().cwd + '/st2*' + ctx().local_repo_sfx %>
