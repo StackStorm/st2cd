@@ -205,14 +205,6 @@ tasks:
           - destroy_vm_on_failure
 
   destroy_vm_on_failure:
-    next:
-      - when: <% ctx().ec2_instance_id != null %>
-        do:
-          - destroy
-      - when: <% ctx().ec2_instance_id = null %>
-        do:
-          - fail
-  destroy:
     action: st2cd.destroy_vm
     input:
       hostname: <% ctx().hostname %>
