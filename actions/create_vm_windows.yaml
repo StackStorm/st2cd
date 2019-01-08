@@ -54,17 +54,3 @@ parameters:
     default: windows2016
     enum:
       - windows2016
-  skip_notify:
-    default:
-      - get_subnet_id
-      - get_ami
-      - get_distro
-      - run_instance
-      - wait_for_instance
-      - wait_for_ssh
-      - add_tags
-      - add_cname
-      - set_hostname
-      - reboot
-      - wait_for_ssh_post_reboot
-      - puppet_bootstrap
