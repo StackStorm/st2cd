@@ -1,49 +1,54 @@
-version: '2.0'
-
-st2cd.cleanup_volumes:
-    description: Clean up volumes
-    type: direct
+---
+version: '1.0'
+description: Clean up volumes
+input:
+  - age
+vars:
+  - notify_channel: '#opstown'
+tasks:
+  get_volumes:
+    action: aws.ec2_get_all_volumes
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - volumes: <% result().result %>
+        do:
+          - select_volumes
+  select_volumes:
+    action: st2cd.ec2_filter_volumes
     input:
-        - age
-    tasks:
-        get_volumes:
-            action: aws.ec2_get_all_volumes
-            publish:
-                volumes: <% task(get_volumes).result.result %>
-            on-success:
-                - select_volumes
-        select_volumes:
-            action: st2cd.ec2_filter_volumes
-            input:
-                volumes: <% $.volumes %>
-                status: available
-                age: <% $.age %>
-            publish:
-                candidates: <% task(select_volumes).result.result %>
-            on-success:
-                - delete_volumes
-        delete_volumes:
-            with-items: volume in <% $.candidates %>
-            action: aws.ec2_delete_volume
-            input:
-                volume_id: <% $.volume.get(id) %>
-            on-error:
-                - notify_failure
-            on-success:
-                - notify_success
-
-
-        notify_success:
-            action: slack.post_message
-            input:
-                channel: "#opstown"
-                message: "[SUCCEEDED] Unused volumes older than <% $.age %> seconds are deleted"
-
-        notify_failure:
-            action: slack.post_message
-            input:
-                channel: "#opstown"
-                message: "[FAILED] Unable to delete unused volumes"
-            on-complete:
-                - fail
-
+      volumes: <% ctx().volumes %>
+      status: available
+      age: <% ctx().age %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - candidates: <% result().result %>
+        do:
+          - delete_volumes
+  delete_volumes:
+    with:
+      items: volume in <% ctx().candidates %>
+    action: aws.ec2_delete_volume
+    input:
+      volume_id: <% item(volume).get(id) %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - notify_success
+      - when: <% failed() %>
+        do:
+          - notify_failure
+  notify_success:
+    action: slack.post_message
+    input:
+      channel: <% ctx().notify_channel %>
+      message: '[SUCCEEDED] Unused volumes older than <% ctx().age %> seconds are deleted'
+  notify_failure:
+    action: slack.post_message
+    input:
+      channel: <% ctx().notify_channel %>
+      message: '[FAILED] Unable to delete unused volumes'
+    next:
+      - do:
+          - fail

@@ -1,0 +1,44 @@
+---
+version: '1.0'
+input:
+  - host
+  - host_fqdn
+  - env
+  - protocol
+tasks:
+  init:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - st2_cli_args: token=<% ctx().env.get(ST2_AUTH_TOKEN) %> protocol=<% ctx().protocol %>
+        do:
+          - test_inquiry_chain
+  test_inquiry_chain:
+    action: core.remote
+    input:
+      hosts: <% ctx().host %>
+      env: <% ctx().env %>
+      cmd: st2 run tests.test_inquiry_chain <% ctx().st2_cli_args %>
+      timeout: 180
+    next:
+      - when: <% succeeded() %>
+        do:
+          - check_if_mistral_is_available
+  check_if_mistral_is_available:
+    action: core.noop
+    next:
+      - when: <% succeeded() and 'u18' in ctx().host_fqdn.toLower() %>
+        do:
+          # Mistral is not available on Ubuntu Bionic, so skip Mistral tests
+          - noop
+      - when: <% succeeded() and not 'u18' in ctx().host_fqdn.toLower() %>
+        do:
+          - test_inquiry_mistral
+  test_inquiry_mistral:
+    action: core.remote
+    input:
+      hosts: <% ctx().host %>
+      env: <% ctx().env %>
+      cmd: st2 run tests.test_inquiry_mistral <% ctx().st2_cli_args %>
+      timeout: 180

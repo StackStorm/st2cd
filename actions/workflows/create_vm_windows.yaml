@@ -1,146 +1,214 @@
-version: '2.0'
-
-st2cd.create_vm_windows:
-    description: Create a Windows VM in AWS
-    type: direct
+---
+version: '1.0'
+description: Create a Windows VM in AWS
+input:
+  - instance_type
+  - environment
+  - key_name
+  - keyfile
+  - dns_zone
+  - hostname
+  - username
+  - role
+  - creator
+  - purpose
+  - distro
+vars:
+  - check_cname_count: 0
+  - wait_for_password_iteration_count: 0
+  - wait_for_winrm_count: 0
+  - ec2_instance_password: ""
+  - ec2_instance_id:
+  - ec2_instance_user_data: "<powershell>\n# download the script\n(New-Object System.Net.WebClient).DownloadFile('https://raw.githubusercontent.com/ansible/ansible/devel/examples/scripts/ConfigureRemotingForAnsible.ps1', './ConfigureRemotingForAnsible.ps1')\n# execute the script\n./ConfigureRemotingForAnsible.ps1\n</powershell>"
+  - vm_info:
+      id:
+      private_ip_address:
+      private_dns_name:
+output:
+  - vm_info:
+      id: <% ctx().vm_info.id %>
+      private_ip_address: <% ctx().vm_info.private_ip_address %>
+      private_dns_name: <% ctx().vm_info.private_dns_name %>
+  - vm_username: <% ctx().username %>
+  - vm_password: <% ctx().ec2_instance_password %>
+tasks:
+  get_subnet_id:
+    action: st2.kv.get
     input:
-        - instance_type
-        - environment
-        - key_name
-        - keyfile
-        - dns_zone
-        - hostname
-        - username
-        - role
-        - creator
-        - purpose
-        - distro
+      key: <% ctx().environment %>_subnet
+    next:
+      - when: <% succeeded() %>
+        do:
+          - get_ami
+  get_ami:
+    action: st2.kv.get
+    input:
+      key: ami_<% ctx().distro %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - check_cname
+  check_cname:
+    action: aws.r53_zone_get_cname
+    input:
+      name: <% ctx().hostname %>.<% ctx().dns_zone %>
+      zone: <% ctx().dns_zone %>
+    next:
+      - when: <% succeeded() and (result().result[0] = null) %>
+        do:
+          - run_instance
+      - when: <% succeeded() and (result().result[0] != null) and (ctx().check_cname_count < 10) %>
+        publish:
+          - check_cname_count: <% ctx().check_cname_count + 1 %>
+        do:
+          - remove_cname
+      - when: <% failed() %>
+        do:
+          - fail
+  remove_cname:
+    action: aws.r53_zone_delete_cname
+    input:
+      name: <% ctx().hostname %>.<% ctx().dns_zone %>
+      zone: <% ctx().dns_zone %>
+    next:
+      - do:
+          - check_cname
+  run_instance:
+    action: aws.ec2_run_instances
+    input:
+      image_id: <% task(get_ami).result.result %>
+      instance_type: <% ctx().instance_type %>
+      subnet_id: <% task(get_subnet_id).result.result %>
+      key_name: <% ctx().key_name %>
+      user_data: <% ctx().ec2_instance_user_data %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - ec2_instance_id: <% result().result[0].id %>
+          - ec2_instance_private_ip: <% result().result[0].private_ip_address %>
+          - ec2_instance_private_dns: <% result().result[0].private_dns_name %>
+          - vm_info: <% result().result[0] %>
+        do:
+          - wait_for_instance
+  wait_for_instance:
+    action: aws.ec2_wait_for_state
+    input:
+      instance_id: <% ctx().ec2_instance_id %>
+      state: running
+    next:
+      - when: <% succeeded() %>
+        do:
+          - wait_for_password_data
+  wait_for_password_data:
+    # Note: AWS EC2 says it may take up to 15 minutes for password data to become
+    # available
+    action: aws.ec2_get_password_data
+    input:
+      instance_id: <% ctx().ec2_instance_id %>
+    next:
+      - when: <% succeeded() and not result().result[0].isEmpty() %>
+        publish:
+          - ec2_instance_password_data: <% result().result[0] %>
+        do:
+          - decrypt_password_data
+      - when: <% failed() and (ctx().wait_for_password_iteration_count >= 15) %>
+        do:
+          - destroy_vm_on_failure
+      - when: <% (failed() or result().result[0].isEmpty()) and (ctx().wait_for_password_iteration_count < 15) %>
+        publish:
+          - wait_for_password_iteration_count: <% ctx().wait_for_password_iteration_count + 1 %>
+        do:
+          - sleep_for_password_data
+  sleep_for_password_data:
+    action: core.local
+    input:
+      cmd: sleep 60
+      timeout: 120
+    next:
+      - when: <% succeeded() %>
+        do:
+          - wait_for_password_data
+  decrypt_password_data:
+    action: st2cd.aws_decrypt_password_data
+    input:
+      keyfile: <% ctx().keyfile %>
+      password_data: <% ctx().ec2_instance_password_data %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - ec2_instance_password: <% result().result %>
+        do:
+          - wait_for_winrm
+      - when: <% failed() %>
+        do:
+          - destroy_vm_on_failure
+  wait_for_winrm:
+    action: windows.wait_for_winrm
+    input:
+      host: <% ctx().ec2_instance_private_ip %>
+      username: <% ctx().username %>
+      password: <% ctx().ec2_instance_password %>
+      verify_ssl_cert: false
+      winrm_timeout: 10
+      retries: 10
+      timeout: 120
+    next:
+      - when: <% succeeded() %>
+        do:
+          - add_tags
+      - when: <% failed() and (ctx().wait_for_winrm_count >= 5) %>
+        do:
+          - destroy_vm_on_failure
+      - when: <% failed() and (ctx().wait_for_winrm_count < 5) %>
+        publish:
+          - wait_for_winrm_count: <% ctx().wait_for_winrm_count + 1 %>
+        do:
+          - sleep_for_wait_for_winrm
+  sleep_for_wait_for_winrm:
+    action: core.local
+    input:
+      cmd: sleep 60
+      timeout: 120
+    next:
+      - when: <% succeeded() %>
+        do:
+          - wait_for_winrm
+  add_tags:
+    action: aws.ec2_create_tags
+    input:
+      resource_ids:
+        - <% ctx().ec2_instance_id %>
+      tags: "Name=<% ctx().hostname %>,\
+        Creator=<% ctx().creator %>,\
+        Role=<% ctx().role %>,\
+        Purpose=<% switch(isEmpty(ctx().purpose) => \"No Description\",\
+                          ctx().purpose => ctx().purpose) %>"
+    next:
+      - when: <% succeeded() %>
+        do:
+          - add_cname
+      - when: <% failed() %>
+        do:
+          - destroy_vm_on_failure
+  add_cname:
+    action: aws.r53_zone_add_cname
+    input:
+      name: <% ctx().hostname %>.<% ctx().dns_zone %>
+      value: <% ctx().ec2_instance_private_dns %>
+      zone: <% ctx().dns_zone %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - cname: <% ctx().hostname %>.<% ctx().dns_zone %>
+      - when: <% failed() %>
+        do:
+          - destroy_vm_on_failure
 
-    vars:
-        ec2_instance_id: null
-        # User data script which configures firewall and enables WinRM over https
-        ec2_instance_user_data: "<powershell>\n# download the script\n(New-Object System.Net.WebClient).DownloadFile('https://raw.githubusercontent.com/ansible/ansible/devel/examples/scripts/ConfigureRemotingForAnsible.ps1', './ConfigureRemotingForAnsible.ps1')\n# execute the script\n./ConfigureRemotingForAnsible.ps1\n</powershell>"
-
-    output:
-        vm_info: <% task(run_instance).result.result[0] %>
-        vm_username: <% $.username %>
-        vm_password: <% $.ec2_instance_password %>
-
-    task-defaults:
-        on-error:
-            - destroy_vm_on_failure: <% $.ec2_instance_id != null %>
-            - fail: <% $.ec2_instance_id = null %>
-
-    tasks:
-        get_subnet_id:
-            action: st2.kv.get
-            input:
-                key: <% $.environment %>_subnet
-            on-success:
-                - get_ami
-
-        get_ami:
-            action: st2.kv.get
-            input:
-                key: ami_<% $.distro %>
-            on-success:
-                - check_cname
-
-        check_cname:
-            action: aws.r53_zone_get_cname
-            input:
-                name: <% $.hostname %>.<% $.dns_zone %>
-                zone: <% $.dns_zone %>
-            on-success:
-                - run_instance: <% task(check_cname).result.result[0] = null %>
-                - fail: <% task(check_cname).result.result[0] != null %>
-
-        run_instance:
-            action: aws.ec2_run_instances
-            input:
-                image_id: <% task(get_ami).result.result %>
-                instance_type: <% $.instance_type %>
-                subnet_id: <% task(get_subnet_id).result.result %>
-                key_name: <% $.key_name %>
-                user_data: <% $.ec2_instance_user_data %>
-            publish:
-                ec2_instance_id: <% task(run_instance).result.result[0].id %>
-                ec2_instance_private_ip: <% task(run_instance).result.result[0].private_ip_address %>
-                ec2_instance_private_dns: <% task(run_instance).result.result[0].private_dns_name %>
-            on-success:
-                - wait_for_instance
-
-        wait_for_instance:
-            action: aws.ec2_wait_for_state
-            input:
-                instance_id: <% $.ec2_instance_id %>
-                state: running
-            on-success:
-                - wait_for_password_data
-
-        wait_for_password_data:
-            action: aws.ec2_get_password_data
-            input:
-                instance_id: <% $.ec2_instance_id %>
-            retry:
-                # Note: AWS EC2 says it may take up to 15 minutes for password data to become
-                # available
-                count: 15
-                delay: 40
-                continue-on: <% task(wait_for_password_data).result.result[0].isEmpty() %>
-            publish:
-                ec2_instance_password_data: <% task(wait_for_password_data).result.result[0] %>
-            on-success:
-                - decrypt_password_data
-
-        decrypt_password_data:
-            action: st2cd.aws_decrypt_password_data
-            input:
-                keyfile: <% $.keyfile %>
-                password_data: <% $.ec2_instance_password_data %>
-            publish:
-                ec2_instance_password: <% task(decrypt_password_data).result.result %>
-            on-success:
-                - wait_for_winrm
-
-        wait_for_winrm:
-            action: windows.wait_for_winrm
-            input:
-                # Note: need to wait at _least_ 4 minutes, this is the time that AWS
-                # claims it takes just to initialize Windows after it's transitioned
-                # to the 'running' state
-                host: <% $.ec2_instance_private_ip %>
-                username: <% $.username %>
-                password: <% $.ec2_instance_password %>
-                verify_ssl_cert: false
-                winrm_timeout: 10
-                retries: 10
-                timeout: 120
-            on-success:
-                - add_tags
-
-        add_tags:
-            action: aws.ec2_create_tags
-            input:
-                resource_ids: [<% $.ec2_instance_id %>]
-                tags: Name=<% $.hostname %>,Creator=<% $.creator %>,Role=<% $.role %>,Purpose=<% switch(isEmpty($.purpose) => "No Description", $.purpose => $.purpose) %>
-            on-success:
-                - add_cname
-
-        add_cname:
-            action: aws.r53_zone_add_cname
-            input:
-                name: <% $.hostname %>.<% $.dns_zone %>
-                value: <% $.ec2_instance_private_dns %>
-                zone: <% $.dns_zone %>
-            publish:
-                cname: <% $.hostname %>.<% $.dns_zone %>
-
-
-        destroy_vm_on_failure:
-            action: st2cd.destroy_vm
-            input:
-                hostname: <% $.hostname %>
-                instance_id: <% $.ec2_instance_id %>
-            on-complete:
-                - fail
+  destroy_vm_on_failure:
+    action: st2cd.destroy_vm
+    input:
+      hostname: <% ctx().hostname %>
+      instance_id: <% ctx().ec2_instance_id %>
+    next:
+      - do:
+          - fail

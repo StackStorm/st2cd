@@ -1,202 +1,254 @@
-version: '2.0'
-st2cd.st2_finalize_release:
-    description: Finalize st2 release
+---
+version: '1.0'
+description: Finalize st2 release
+input:
+  - version
+  - fork
+  - host
+  - cwd
+vars:
+  - local_repo_sfx:
+tasks:
+  init:
+    action: core.local
     input:
-        - version
-        - fork
-        - host
-        - cwd
-        - local_repo_sfx: null
+      cmd: echo `date +'%s'`_`awk -v min=100 -v max=999 'BEGIN{srand(); print int(min+rand()*(max-min+1))}'`
+    next:
+      - when: <% succeeded() and (ctx().host = null) %>
+        publish:
+          - local_repo_sfx: <% result().stdout %>
+          - next_patch_version: <% ctx().version.split('.')[0] + '.' + ctx().version.split('.')[1] + '.' + str(int(ctx().version.split('.')[2]) + 1) %>
+          - major_minor_version: <% ctx().version.split('.')[0] + '.' + ctx().version.split('.')[1] %>
+        do:
+          - get_host
+      - when: <% succeeded() and (ctx().host != null) %>
+        publish:
+          - local_repo_sfx: <% result().stdout %>
+          - next_patch_version: <% ctx().version.split('.')[0] + '.' + ctx().version.split('.')[1] + '.' + str(int(ctx().version.split('.')[2]) + 1) %>
+          - major_minor_version: <% ctx().version.split('.')[0] + '.' + ctx().version.split('.')[1] %>
+        do:
+          - finalize
+  get_host:
+    action: linux.dig
+    input:
+      hostname: st2-build-slave-ubuntu.service.consul
+      rand: true
+      count: 1
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - host: <% result().result[0] %>
+        do:
+          - finalize
+  finalize:
+    next:
+      - do:
+          - set_stable_version_datastore
+  set_stable_version_datastore:
+    action: st2cd.kvstore
+    input:
+      action: update
+      key: st2_stable_version
+      value: <% ctx().major_minor_version %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - make_st2docs_stable
+  make_st2docs_stable:
+    action: st2cd.st2_make_docs
+    input:
+      project: st2docs
+      branch: v<% ctx().version.substring(0, ctx().version.lastIndexOf('.')) %>
+      fork: <% ctx().fork %>
+      local_repo: <% 'st2docs_' + ctx().local_repo_sfx %>
+      hosts: <% ctx().host %>
+      cwd: <% ctx().cwd %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - make_st2docs_latest
+  make_st2docs_latest:
+    action: st2cd.st2_make_docs
+    input:
+      project: st2docs
+      branch: master
+      fork: <% ctx().fork %>
+      local_repo: <% 'st2docs_' + ctx().local_repo_sfx %>
+      hosts: <% ctx().host %>
+      cwd: <% ctx().cwd %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - st2_tag_release
+  st2_tag_release:
+    action: st2cd.tag_release
+    input:
+      project: st2
+      version: <% ctx().version %>
+      fork: <% ctx().fork %>
+      local_repo: <% 'st2_' + ctx().local_repo_sfx %>
+      branch: v<% ctx().major_minor_version %>
+      hosts: <% ctx().host %>
+      cwd: <% ctx().cwd %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - st2_remove_patch_branch
+  st2_remove_patch_branch:
+    action: st2cd.git_delete_branch
+    input:
+      project: st2
+      branch: <% 'v' + ctx().version %>
+      fork: <% ctx().fork %>
+      hosts: <% ctx().host %>
+      cwd: <% ctx().cwd %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - mistral_tag_release
+  mistral_tag_release:
+    action: st2cd.mistral_tag_release
+    input:
+      host: <% ctx().host %>
+      version: <% ctx().version %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - push_st2client
+  push_st2client:
+    action: st2cd.pypi_upload
+    input:
+      repo: st2
+      project: st2client
+      version: <% ctx().version %>
+      fork: <% ctx().fork %>
+      local_repo: <% 'st2_' + ctx().local_repo_sfx %>
+      hosts: <% ctx().host %>
+      cwd: <% ctx().cwd %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - st2_docker_tag_release
+      - when: <% failed() %>
+        do:
+          - cleanup_on_failure
+  st2_docker_tag_release:
+    action: st2cd.tag_release
+    input:
+      project: st2-docker
+      version: <% ctx().version %>
+      fork: <% ctx().fork %>
+      local_repo: <% 'st2docker_' + ctx().local_repo_sfx %>
+      branch: master
+      hosts: <% ctx().host %>
+      cwd: <% ctx().cwd %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - get_utc_date
+      - when: <% failed() %>
+        do:
+          - cleanup_on_failure
+  get_utc_date:
+    action: core.local
+    input:
+      cmd: date -u +%Y%m%d
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - utc_date: <% result().stdout %>
+        do:
+          - vagrant_tag_release
+      - when: <% failed() %>
+        do:
+          - cleanup_on_failure
+  vagrant_tag_release:
+    action: st2cd.vagrant_tag_release
+    input:
+      project: packer-st2
+      version: <% ctx().version + '-' + str(ctx().utc_date) %>
+      fork: <% ctx().fork %>
+      local_repo: <% 'packerst2_' + ctx().local_repo_sfx %>
+      branch: master
+      hosts: <% ctx().host %>
+      cwd: <% ctx().cwd %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - ship_api_docs
+      - when: <% failed() %>
+        do:
+          - cleanup_on_failure
+  ship_api_docs:
+    action: circle_ci.run_build
+    input:
+      project: st2apidocs
+      username: stackstorm
+      branch: master
+      build_parameters:
+        ST2_BRANCH: <% 'v' + ctx().major_minor_version %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - st2_dockerfiles_tag_release
+      - when: <% failed() %>
+        do:
+          - cleanup_on_failure
+  st2_dockerfiles_tag_release:
+    action: st2cd.tag_release
+    input:
+      project: st2-dockerfiles
+      version: <% ctx().version %>
+      fork: <% ctx().fork %>
+      local_repo: <% 'st2_dockerfiles_' + ctx().local_repo_sfx %>
+      branch: master
+      hosts: <% ctx().host %>
+      cwd: <% ctx().cwd %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - wait_for_community_docker_image
+      - when: <% failed() %>
+        do:
+          - cleanup_on_failure
+  wait_for_community_docker_image:
+    action: st2cd.wait_for_docker_image
+    input:
+      org: <% ctx().fork %>
+      image: st2web
+      version: <% ctx().version %>
+      tries: 10
+      check_delay: 60
+      hosts: <% ctx().host %>
+      cwd: <% ctx().cwd %>
+      timeout: 650
+    next:
+      - when: <% succeeded() %>
+        do:
+          - st2enterprise_dockerfiles_tag_release
+      - when: <% failed() %>
+        do:
+          - cleanup_on_failure
+  st2enterprise_dockerfiles_tag_release:
+    action: st2cd.tag_release
+    input:
+      project: st2enterprise-dockerfiles
+      version: <% ctx().version %>
+      fork: <% ctx().fork %>
+      local_repo: <% 'st2enterprise_dockerfiles_' + ctx().local_repo_sfx %>
+      branch: master
+      hosts: <% ctx().host %>
+      cwd: <% ctx().cwd %>
+    next:
+      - when: <% failed() %>
+        do:
+          - cleanup_on_failure
 
-    task-defaults:
-        on-error:
-            - cleanup_on_failure: <% $.local_repo_sfx != null %>
-
-    tasks:
-        init:
-            action: core.local
-            input:
-                cmd: "echo `date +'%s'`_`awk -v min=100 -v max=999 'BEGIN{srand(); print int(min+rand()*(max-min+1))}'`"
-            publish:
-                local_repo_sfx: <% task(init).result.stdout %>
-                next_patch_version: <% $.version.split('.')[0] + '.' + $.version.split('.')[1] + '.' + str(int($.version.split('.')[2]) + 1) %>
-                major_minor_version: <% $.version.split('.')[0] + '.' + $.version.split('.')[1] %>
-            on-success:
-                - get_host: <% $.host = null %>
-                - finalize: <% $.host != null %>
-
-
-        get_host:
-            action: linux.dig
-            input:
-                hostname: st2-build-slave-ubuntu.service.consul
-                rand: true
-                count: 1
-            publish:
-                host: <% task(get_host).result.result[0] %>
-            on-success:
-                - finalize
-
-
-        finalize:
-            on-complete:
-                - set_stable_version_datastore
-
-        set_stable_version_datastore:
-            action: st2cd.kvstore
-            input:
-                action: "update"
-                key: "st2_stable_version"
-                value: <% $.major_minor_version %>
-            on-success:
-                - make_st2docs_stable
-
-        make_st2docs_stable:
-            action: st2cd.st2_make_docs
-            input:
-                project: st2docs
-                branch: v<% $.version.substring(0, $.version.lastIndexOf('.')) %>
-                fork: <% $.fork %>
-                local_repo: <% 'st2docs_' + $.local_repo_sfx %>
-                hosts: <% $.host %>
-                cwd: <% $.cwd %>
-            on-success:
-                - make_st2docs_latest
-        make_st2docs_latest:
-            action: st2cd.st2_make_docs
-            input:
-                project: st2docs
-                branch: master
-                fork: <% $.fork %>
-                local_repo: <% 'st2docs_' + $.local_repo_sfx %>
-                hosts: <% $.host %>
-                cwd: <% $.cwd %>
-            on-success:
-                - st2_tag_release
-        st2_tag_release:
-            action: st2cd.tag_release
-            input:
-                project: st2
-                version: <% $.version %>
-                fork: <% $.fork %>
-                local_repo: <% 'st2_' + $.local_repo_sfx %>
-                branch: v<% $.major_minor_version %>
-                hosts: <% $.host %>
-                cwd: <% $.cwd %>
-            on-success:
-                - st2_remove_patch_branch
-        st2_remove_patch_branch:
-            action: st2cd.git_delete_branch
-            input:
-                project: st2
-                branch: <% 'v' + $.version %>
-                fork: <% $.fork %>
-                hosts: <% $.host %>
-                cwd: <% $.cwd %>
-            on-success:
-                - mistral_tag_release
-        mistral_tag_release:
-            action: st2cd.mistral_tag_release
-            input:
-                host: <% $.host %>
-                version: <% $.version %>
-            on-success:
-                - push_st2client
-        push_st2client:
-            action: st2cd.pypi_upload
-            input:
-                repo: st2
-                project: st2client
-                version: <% $.version %>
-                fork: <% $.fork %>
-                local_repo: <% 'st2_' + $.local_repo_sfx %>
-                hosts: <% $.host %>
-                cwd: <% $.cwd %>
-            on-success:
-                - st2_docker_tag_release
-        st2_docker_tag_release:
-            action: st2cd.tag_release
-            input:
-                project: st2-docker
-                version: <% $.version %>
-                fork: <% $.fork %>
-                local_repo: <% 'st2docker_' + $.local_repo_sfx %>
-                branch: master
-                hosts: <% $.host %>
-                cwd: <% $.cwd %>
-            on-success:
-                - get_utc_date
-        get_utc_date:
-            action: core.local
-            input:
-                cmd: "date -u +%Y%m%d"
-            publish:
-                utc_date: <% task(get_utc_date).result.stdout %>
-            on-success:
-                - vagrant_tag_release
-        vagrant_tag_release:
-            action: st2cd.vagrant_tag_release
-            input:
-                project: packer-st2
-                version: <% $.version + '-' + str($.utc_date) %>
-                fork: <% $.fork %>
-                local_repo: <% 'packerst2_' + $.local_repo_sfx %>
-                branch: master
-                hosts: <% $.host %>
-                cwd: <% $.cwd %>
-            on-success:
-                - ship_api_docs
-        ship_api_docs:
-            action: circle_ci.run_build
-            input:
-                project: st2apidocs
-                username: stackstorm
-                branch: master
-                build_parameters:
-                    ST2_BRANCH: <% 'v' + $.major_minor_version %>
-            on-success:
-                - st2_dockerfiles_tag_release
-
-        st2_dockerfiles_tag_release:
-            action: st2cd.tag_release
-            input:
-                project: st2-dockerfiles
-                version: <% $.version %>
-                fork: <% $.fork %>
-                local_repo: <% 'st2_dockerfiles_' + $.local_repo_sfx %>
-                branch: master
-                hosts: <% $.host %>
-                cwd: <% $.cwd %>
-            on-success:
-                - wait_for_community_docker_image
-        wait_for_community_docker_image:
-            action: st2cd.wait_for_docker_image
-            input:
-                org: <% $.fork %>
-                image: st2web
-                version: <% $.version %>
-                tries: 10
-                check_delay: 60
-                hosts: <% $.host %>
-                cwd: <% $.cwd %>
-                timeout: 650
-            on-success:
-                - st2enterprise_dockerfiles_tag_release
-        st2enterprise_dockerfiles_tag_release:
-            action: st2cd.tag_release
-            input:
-                project: st2enterprise-dockerfiles
-                version: <% $.version %>
-                fork: <% $.fork %>
-                local_repo: <% 'st2enterprise_dockerfiles_' + $.local_repo_sfx %>
-                branch: master
-                hosts: <% $.host %>
-                cwd: <% $.cwd %>
-
-        cleanup_on_failure:
-            action: core.remote
-            input:
-                cmd: <% 'rm -rf ' + $.cwd + '/st2*' + $.local_repo_sfx + ' && rm -rf ~/.pypirc' %>
-                hosts: <% $.host %>
-            on-complete:
-                - fail
+  cleanup_on_failure:
+    action: core.remote
+    input:
+      cmd: <% 'rm -rf ' + ctx().cwd + '/st2*' + ctx().local_repo_sfx + ' && rm -rf ~/.pypirc' %>
+      hosts: <% ctx().host %>
+    next:
+      - do:
+          - fail

@@ -1,11 +1,11 @@
 ---
 name: cleanup_volumes
-runner_type: mistral-v2
+runner_type: orquesta
 description: Clean up volumes
 enabled: true
 entry_point: workflows/cleanup_volumes.yaml
 parameters:
-    age:
-        type: integer
-        description: Number of seconds
-        default: 14400
+  age:
+    type: integer
+    description: Number of seconds
+    default: 14400

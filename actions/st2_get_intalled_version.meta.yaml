@@ -3,19 +3,19 @@ name: st2_get_installed_version
 pack: st2cd
 description: Get the installed version of st2 package
 enabled: true
-runner_type: mistral-v2
+runner_type: orquesta
 entry_point: workflows/st2_get_installed_version.yaml
 parameters:
-    host:
-        type: string
-        required: true
-    packages:
-        type: array
-        required: true
-        default:
-            - st2-auth-ldap
-            - st2flow
-            - st2web
-            - st2mistral
-            - st2chatops
-            - st2
+  host:
+    type: string
+    required: true
+  packages:
+    type: array
+    required: true
+    default:
+      - st2-auth-ldap
+      - st2flow
+      - st2web
+      - st2mistral
+      - st2chatops
+      - st2

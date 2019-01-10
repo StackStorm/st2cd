@@ -1,0 +1,14 @@
+---
+name: st2_e2e_tests_test_mistral
+pack: st2cd
+description: Run the set of st2 end to end tests
+enabled: true
+runner_type: orquesta
+entry_point: workflows/st2_e2e_tests_test_mistral.yaml
+parameters:
+  host_fqdn:
+    type: string
+    required: true
+  env:
+    type: object
+    required: true

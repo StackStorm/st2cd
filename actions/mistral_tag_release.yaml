@@ -2,7 +2,7 @@
 name: mistral_tag_release
 description: Tag the release for Mistral.
 enabled: true
-runner_type: mistral-v2
+runner_type: orquesta
 entry_point: workflows/mistral_tag_release.yaml
 parameters:
   version:

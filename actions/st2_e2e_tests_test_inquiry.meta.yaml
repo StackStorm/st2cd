@@ -1,0 +1,24 @@
+---
+name: st2_e2e_tests_test_inquiry
+pack: st2cd
+description: Run the set of st2 end to end tests
+enabled: true
+runner_type: orquesta
+entry_point: workflows/st2_e2e_tests_test_inquiry.yaml
+parameters:
+  host:
+    type: string
+    required: true
+  host_fqdn:
+    type: string
+    description: FQDN of the ST2 VM under test - used to skip Mistral tests on Ubuntu Bionic
+    required: true
+  env:
+    type: object
+    required: true
+  protocol:
+    type: string
+    enum:
+      - http
+      - https
+    default: http

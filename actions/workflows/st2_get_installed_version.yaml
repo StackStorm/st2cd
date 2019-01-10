@@ -1,58 +1,72 @@
 ---
-version: '2.0'
-
-st2cd.st2_get_installed_version:
-    type: direct
+version: '1.0'
+input:
+  - host
+  - packages
+vars:
+  - distro: indeterminate
+  - versions: indeterminate
+output:
+  - distro: <% str(ctx().distro) %>
+  - versions: <% dict(ctx().packages.zip(ctx().result.select($.values().first().get(stdout)))) %>
+tasks:
+  get_distro:
+    action: st2cd.get_distro hosts=<% ctx().host %>
+    next:
+      - when: <% succeeded() and (result().get(ctx().host).stdout.toLower() = centos) %>
+        publish:
+          - distro: <% result().get(ctx().host).stdout %>
+        do:
+          - get_version_centos
+      - when: <% succeeded() and (result().get(ctx().host).stdout.toLower() = redhat) %>
+        publish:
+          - distro: <% result().get(ctx().host).stdout %>
+        do:
+          - get_version_redhat
+      - when: <% succeeded() and (result().get(ctx().host).stdout.toLower() = ubuntu) %>
+        publish:
+          - distro: <% result().get(ctx().host).stdout %>
+        do:
+          - get_version_ubuntu
+  get_version_centos:
+    with:
+      items: package in <% ctx().packages %>
+      concurrency: <% ctx().packages.count() %>
+    action: core.remote_sudo
     input:
-        - host
-        - packages
-    output:
-        distro: <% $.distro %>
-        versions: <% dict($.packages.zip($.result.select($.values().first().get(stdout)))) %>
-
-    tasks:
-        init:
-            action: std.noop
-            publish:
-                distro: indeterminate
-                versions: indeterminate
-            on-success:
-                - get_distro
-        get_distro:
-            action: st2cd.get_distro hosts=<% $.host %>
-            publish:
-                distro: <% task(get_distro).result.get($.host).stdout %>
-            on-success:
-                - get_version_centos: <% $.distro.toLower() = centos %>
-                - get_version_redhat: <% $.distro.toLower() = redhat %>
-                - get_version_ubuntu: <% $.distro.toLower() = ubuntu %>
-
-        get_version_centos:
-            with-items: package in <% $.packages %>
-            concurrency: <% $.packages.count() %>
-            action: core.remote_sudo
-            input:
-                hosts: <% $.host %>
-                cmd: "if [[ ! -z `yum info installed <% $.package %> -q -e 0 2>/dev/null` ]]; then echo `yum info installed <% $.package %> -q -e 0 2>/dev/null | grep Version | awk '{print $3}'`-`yum info installed <% $.package %> -q -e 0 2>/dev/null | grep Release | awk '{print $3}' || true`; fi"
-            publish:
-                result: <% task(get_version_centos).result %>
-
-        get_version_redhat:
-            with-items: package in <% $.packages %>
-            concurrency: <% $.packages.count() %>
-            action: core.remote_sudo
-            input:
-                hosts: <% $.host %>
-                cmd: "if [[ ! -z `yum info installed <% $.package %> -q -e 0 2>/dev/null` ]]; then echo `yum info installed <% $.package %> -q -e 0 2>/dev/null | grep Version | awk '{print $3}'`-`yum info installed <% $.package %> -q -e 0 2>/dev/null | grep Release | awk '{print $3}' || true`; fi"
-            publish:
-                result: <% task(get_version_redhat).result %>
-
-        get_version_ubuntu:
-            with-items: package in <% $.packages %>
-            concurrency: <% $.packages.count() %>
-            action: core.remote_sudo
-            input:
-                hosts: <% $.host %>
-                cmd: "apt-cache policy <% $.package %> | grep Installed: | grep -oE '[^ ]+$' || true"
-            publish:
-                result: <% task(get_version_ubuntu).result %>
+      hosts: <% ctx().host %>
+      cmd: if [[ ! -z `yum info installed <% item(package) %> -q -e 0 2>/dev/null` ]]; then echo `yum info installed <% item(package) %> -q -e 0 2>/dev/null | grep Version | awk '{print $3}'`-`yum info installed <% item(package) %> -q -e 0 2>/dev/null | grep Release | awk '{print $3}' || true`; fi
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - result: <% result() %>
+        do:
+          - noop
+  get_version_redhat:
+    with:
+      items: package in <% ctx().packages %>
+      concurrency: <% ctx().packages.count() %>
+    action: core.remote_sudo
+    input:
+      hosts: <% ctx().host %>
+      cmd: if [[ ! -z `yum info installed <% item(package) %> -q -e 0 2>/dev/null` ]]; then echo `yum info installed <% item(package) %> -q -e 0 2>/dev/null | grep Version | awk '{print $3}'`-`yum info installed <% item(package) %> -q -e 0 2>/dev/null | grep Release | awk '{print $3}' || true`; fi
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - result: <% result() %>
+        do:
+          - noop
+  get_version_ubuntu:
+    with:
+      items: package in <% ctx().packages %>
+      concurrency: <% ctx().packages.count() %>
+    action: core.remote_sudo
+    input:
+      hosts: <% ctx().host %>
+      cmd: "apt-cache policy <% item(package) %> | grep Installed: | grep -oE '[^ ]+$' || true"
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - result: <% result() %>
+        do:
+          - noop

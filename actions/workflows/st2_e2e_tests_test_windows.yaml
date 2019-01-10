@@ -1,0 +1,40 @@
+---
+version: '1.0'
+input:
+  - host
+  - windows_host
+  - windows_username
+  - windows_password
+  - env
+  - protocol
+tasks:
+  init:
+    action: core.noop
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - st2_cli_args: token=<% ctx().env.get(ST2_AUTH_TOKEN) %> protocol=<% ctx().protocol %>
+        do:
+          - test_winrm_runners_are_available
+  test_winrm_runners_are_available:
+    action: core.remote
+    input:
+      hosts: <% ctx().host %>
+      env: <% ctx().env %>
+      cmd: st2 runner list -w 100; (st2 runner list -w 100 | grep winrm-) || (echo "WinRM runners not available (likely running under StackStorm < 2.9dev, skipping tests...)" ; exit 3)
+    next:
+      - when: <% succeeded() %>
+        do:
+          - test_winrm_runners
+      - when: <% failed() %>
+        do:
+          - skip_winrm_tests_due_to_winrm_runners_not_available
+  test_winrm_runners:
+    action: core.remote
+    input:
+      hosts: <% ctx().host %>
+      env: <% ctx().env %>
+      cmd: st2 run tests.test_winrm_runners winrm_host=<% ctx().windows_host %> winrm_username=<% ctx().windows_username %> winrm_password='<% ctx().windows_password %>' <% ctx().st2_cli_args %>
+      timeout: 180
+  skip_winrm_tests_due_to_winrm_runners_not_available:
+    action: core.noop

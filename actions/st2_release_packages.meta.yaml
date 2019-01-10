@@ -3,19 +3,19 @@ name: st2_release_packages
 pack: st2cd
 description: Promote all stable st2 packages from staging to production for all supported distros
 enabled: true
-runner_type: mistral-v2
+runner_type: orquesta
 entry_point: workflows/st2_release_packages.yaml
 parameters:
-    distros:
-        type: array
-        immutable: true
-        default:
-            - RHEL6
-            - RHEL7
-            - UBUNTU14
-            - UBUNTU16
-            # TODO: Uncomment once we support Bionic
-            #- UBUNTU18
-    version:
-        type: string
-        required: true
+  distros:
+    type: array
+    immutable: true
+    default:
+      - RHEL6
+      - RHEL7
+      - UBUNTU14
+      - UBUNTU16
+      # TODO: Uncomment once we support Bionic
+      #- UBUNTU18
+  version:
+    type: string
+    required: true

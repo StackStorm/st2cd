@@ -1,133 +1,185 @@
-version: '2.0'
-
-st2cd.destroy_vm:
-    description: Destroy VM and associated resources
-    type: direct
+---
+version: '1.0'
+description: Destroy VM and associated resources
+input:
+  - hostname
+  - dns_zone
+  - instance_id
+  - used_dns: false
+  - used_id: false
+vars:
+  - volume_to_delete_iteration_count: 0
+  - notify_channel: '#thunderdome'
+  - notify_failure_channel: '#opstown'
+tasks:
+  get_instance_dns:
+    action: linux.dig
     input:
-        - hostname
-        - dns_zone
-        - instance_id
-        - used_dns: False
-        - used_id: False
-    tasks:
-        get_instance_dns:
-            action: linux.dig
-            input:
-                hostname: <% $.hostname %>.<% $.dns_zone %>
-                count: 1
-            on-success:
-                - get_instances_by_dns: <% len(task(get_instance_dns).result.result) > 0 %>
-                - get_instances_by_id: <% len(task(get_instance_dns).result.result) <= 0 and $.instance_id != null %>
-                - noop: <% len(task(get_instance_dns).result.result) <= 0 and $.instance_id = null %>
-        get_instances_by_dns:
-            action: aws.ec2_get_only_instances
-            publish:
-                used_dns: True
-                instances: <%
-                        task(get_instances_by_dns).result.result.where(
-                            $.private_dns_name + '.' = task(get_instance_dns).result.result[0] or
-                            $.private_ip_address = task(get_instance_dns).result.result[0]
-                        ).select($.id)
-                    %>
-            on-success:
-                - get_volumes: <% len($.instances) = 1 %>
-                - notify_multiple_instances_failure: <% len($.instances) > 1 and $.instance_id = null %>
-                - noop: <% len($.instances) < 1 and $.instance_id = null %>
-                - get_instances_by_id: <% len($.instances) != 1 and $.instance_id != null %>
-        get_instances_by_id:
-            action: aws.ec2_get_only_instances
-            publish:
-                used_dns: False
-                used_id: True
-                instances: <%
-                    task(get_instances_by_id).result.result.where(
-                        $.id = execution().input.instance_id).select($.id)
-                    %>
-            on-success:
-                - get_volumes: <% len($.instances) = 1 %>
-                - notify_multiple_instances_failure: <% len($.instances) > 1 %>
-                - noop: <% len($.instances) < 1 %>
-
-        get_volumes:
-            action: aws.ec2_get_instance_attribute
-            input:
-                attribute: blockDeviceMapping
-                instance_id: <% $.instances[0] %>
-            publish:
-                volumes: <%
-                    task(get_volumes).result.result.first().get(
-                        blockDeviceMapping, {}).values().where(
-                            not $.get(delete_on_termination, True)).select($.volume_id) %>
-            on-error:
-                - notify_destroy_instance_failure
-            on-success:
-                - destroy_instance
-        destroy_instance:
-            action: aws.ec2_terminate_instances
-            input:
-                instance_ids: <% $.instances[0] %>
-            # Give the instance time to terminate and volume(s) to be detached.
-            wait-after: 60
-            on-error:
-                - notify_destroy_instance_failure
-            on-success:
-                - delete_cname
-        delete_cname:
-            action: aws.r53_zone_delete_cname
-            input:
-                zone: <% $.dns_zone %>
-                name: <% $.hostname %>.<% $.dns_zone %> 
-            on-error:
-                - notify_delete_cname_failure
-            on-complete:
-                - delete_volumes
-        delete_volumes:
-            with-items: volume in <% $.volumes %>
-            action: aws.ec2_delete_volume
-            input:
-                volume_id: <% $.volume %>
-            # The instance may still be terminating and volumes are attached.
-            retry:
-                count: 10
-                delay: 60
-            on-error:
-                - notify_delete_volumes_failure
-            on-success:
-                - notify_success
-
-
-        notify_success:
-            action: slack.post_message
-            input:
-                channel: "#thunderdome"
-                message: "[SUCCEEDED] <% $.hostname %> was destroyed"
-
-        notify_multiple_instances_failure:
-            action: slack.post_message
-            input:
-                channel: "#opstown"
-                message: "[FAILED] More than one instance for <% $.hostname %> were identified"
-            on-complete:
-                - fail
-
-        notify_destroy_instance_failure:
-            action: slack.post_message
-            input:
-                channel: "#opstown"
-                message: "[FAILED] <% $.hostname %> was not destroyed"
-            on-complete:
-                - fail
-
-        notify_delete_cname_failure:
-            action: slack.post_message
-            input:
-                channel: "#opstown"
-                message: "[FAILED] <% $.hostname %> was destroyed but CNAME was not deleted"
-
-        notify_delete_volumes_failure:
-            action: slack.post_message
-            input:
-                channel: "#opstown"
-                message: "[FAILED] <% $.hostname %> was destroyed but volumes were not deleted"
-            on-complete:
-                - fail
+      hostname: <% ctx().hostname %>.<% ctx().dns_zone %>
+      count: 1
+    next:
+      - when: <% succeeded() and (len(result().result) > 0) %>
+        do:
+          - get_instances_by_dns
+      - when: <% succeeded() and (len(result().result) <= 0 and ctx().instance_id != null) %>
+        do:
+          - get_instances_by_id
+      - when: <% succeeded() and (len(result().result) <= 0 and ctx().instance_id = null) %>
+        do:
+          - noop
+  get_instances_by_dns:
+    action: aws.ec2_get_only_instances
+    next:
+      - publish:
+          - instances: <%
+              result().result.where(
+                $.private_dns_name + '.' = task(get_instance_dns).result.result[0] or
+                $.private_ip_address = task(get_instance_dns).result.result[0]
+              ).select($.id) %>
+        do:
+          - switch_on_dns
+  switch_on_dns:
+    next:
+      - when: <% succeeded() and (len(ctx().instances) = 1) %>
+        publish:
+          - used_dns: true
+        do:
+          - get_volumes
+      - when: <% succeeded() and (len(ctx().instances) > 1 and ctx().instance_id = null) %>
+        do:
+          - notify_multiple_instances_failure
+      - when: <% succeeded() and (len(ctx().instances) < 1 and ctx().instance_id = null) %>
+        do:
+          - noop
+      - when: <% succeeded() and (len(ctx().instances) != 1 and ctx().instance_id != null) %>
+        do:
+          - get_instances_by_id
+  get_instances_by_id:
+    action: aws.ec2_get_only_instances
+    next:
+      - publish:
+          - instances: <% result().result.where($.id = ctx().instance_id).select($.id) %>
+        do:
+          - switch_on_id
+  switch_on_id:
+    next:
+      - when: <% succeeded() and (len(ctx().instances) = 1) %>
+        publish:
+          - used_id: true
+        do:
+          - get_volumes
+      - when: <% succeeded() and (len(ctx().instances) > 1) %>
+        do:
+          - notify_multiple_instances_failure
+      - when: <% succeeded() and (len(ctx().instances) < 1) %>
+        do:
+          - noop
+  get_volumes:
+    action: aws.ec2_get_instance_attribute
+    input:
+      attribute: blockDeviceMapping
+      instance_id: <% ctx().instances[0] %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - volumes: <% result().result.first().get( blockDeviceMapping, {}).values().where( not $.get(delete_on_termination, True)).select($.volume_id) %>
+        do:
+          - destroy_instance
+      - when: <% failed() %>
+        do:
+          - notify_destroy_instance_failure
+  destroy_instance:
+    action: aws.ec2_terminate_instances
+    input:
+      instance_ids: <% ctx().instances[0] %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - wait_for_instance_to_terminate
+      - when: <% failed() %>
+        do:
+          - notify_destroy_instance_failure
+  wait_for_instance_to_terminate:
+    action: core.local
+    input:
+      cmd: sleep 60
+      timeout: 120
+    next:
+      - when: <% succeeded() %>
+        do:
+          - delete_cname
+  delete_cname:
+    action: aws.r53_zone_delete_cname
+    input:
+      zone: <% ctx().dns_zone %>
+      name: <% ctx().hostname %>.<% ctx().dns_zone %>
+    next:
+      - when: <% len(ctx().volumes) = 0 %>
+        do:
+          - notify_success
+      - when: <% len(ctx().volumes) > 0 %>
+        do:
+          - delete_volumes
+      - when: <% failed() %>
+        do:
+          - notify_delete_cname_failure
+  delete_volumes:
+    with:
+      items: volume in <% ctx().volumes %>
+    action: aws.ec2_delete_volume
+    input:
+      volume_id: <% item(volume) %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - notify_success
+      - when: <% failed() and (ctx().volume_to_delete_iteration_count >= 10) %>
+        do:
+          - notify_delete_volumes_failure
+      - when: <% failed() and (ctx().volume_to_delete_iteration_count < 10) %>
+        publish:
+          - volume_to_delete_iteration_count: <% ctx().volume_to_delete_iteration_count + 1 %>
+        do:
+          - wait_for_volume_to_delete
+  wait_for_volume_to_delete:
+    action: core.local
+    input:
+      cmd: sleep 60
+    next:
+      - when: <% succeeded() %>
+        do:
+          - delete_volumes
+  notify_success:
+    action: slack.post_message
+    input:
+      channel: <% ctx().notify_channel %>
+      message: '[SUCCEEDED] <% ctx().hostname %> was destroyed'
+  notify_multiple_instances_failure:
+    action: slack.post_message
+    input:
+      channel: <% ctx().notify_failure_channel %>
+      message: '[FAILED] More than one instance for <% ctx().hostname %> were identified'
+    next:
+      - do:
+          - fail
+  notify_destroy_instance_failure:
+    action: slack.post_message
+    input:
+      channel: <% ctx().notify_failure_channel %>
+      message: '[FAILED] <% ctx().hostname %> was not destroyed'
+    next:
+      - do:
+          - fail
+  notify_delete_cname_failure:
+    action: slack.post_message
+    input:
+      channel: <% ctx().notify_failure_channel %>
+      message: '[FAILED] <% ctx().hostname %> was destroyed but CNAME was not deleted'
+  notify_delete_volumes_failure:
+    action: slack.post_message
+    input:
+      channel: <% ctx().notify_failure_channel %>
+      message: '[FAILED] <% ctx().hostname %> was destroyed but volumes were not deleted'
+    next:
+      - do:
+          - fail

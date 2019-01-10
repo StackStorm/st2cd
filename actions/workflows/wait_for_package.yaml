@@ -1,0 +1,35 @@
+---
+version: '1.0'
+description: Subworkflow from st2cd.st2_stage_release_packages
+input:
+  - project
+  - build_number
+  - username
+tasks:
+  wait_build_completion:
+    action: circle_ci.wait_until_build_finishes
+    input:
+      project: <% ctx().project %>
+      username: <% ctx().username %>
+      build_num: <% ctx().build_number %>
+      wait_timeout: 3600
+      timeout: 3600
+    next:
+      - when: <% succeeded() %>
+        do:
+          - check_build_status
+  check_build_status:
+    action: circle_ci.get_build_info
+    input:
+      project: <% ctx().project %>
+      username: <% ctx().username %>
+      build_num: <% int(ctx().build_number) %>
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - status: <% result().result %>
+        do:
+          - noop
+      - when: <% succeeded() and (ctx().status.failed) %>
+        do:
+          - fail

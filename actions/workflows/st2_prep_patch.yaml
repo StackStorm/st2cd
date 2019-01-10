@@ -1,140 +1,185 @@
-version: '2.0'
-st2cd.st2_prep_patch:
-    description: Prepare st2 for patch release.
+---
+version: '1.0'
+description: Prepare st2 for patch release.
+input:
+  - version
+  - fork
+  - host
+  - cwd
+vars:
+  - local_repo_sfx:
+tasks:
+  init:
+    action: core.local
     input:
-        - version
-        - fork
-        - host
-        - cwd
+      cmd: echo `date +'%s'`_`awk -v min=100 -v max=999 'BEGIN{srand(); print int(min+rand()*(max-min+1))}'`
+    next:
+      - when: <% succeeded() and (ctx().host = null) %>
+        publish:
+          - local_repo_sfx: <% result().stdout %>
+        do:
+          - get_host
+      - when: <% succeeded() and (ctx().host != null) %>
+        do:
+          - prep
+  get_host:
+    action: linux.dig
+    input:
+      hostname: st2-build-slave-ubuntu.service.consul
+      rand: true
+      count: 1
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - host: <% result().result[0] %>
+        do:
+          - prep
+  prep:
+    next:
+      - do:
+          - prep_st2
+  prep_st2:
+    action: st2cd.st2_prep_patch_for_st2
+    input:
+      project: st2
+      version: <% ctx().version %>
+      fork: <% ctx().fork %>
+      update_mistral: true
+      update_changelog: true
+      local_repo: <% 'st2_' + ctx().local_repo_sfx %>
+      hosts: <% ctx().host %>
+      cwd: <% ctx().cwd %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - prep_mistral
+      - when: <% failed() %>
+        do:
+          - cleanup_on_failure
+  prep_mistral:
+    action: st2cd.st2_prep_patch_for_mistral
+    input:
+      project: mistral
+      version: <% ctx().version %>
+      fork: <% ctx().fork %>
+      local_repo: <% 'mistral_' + ctx().local_repo_sfx %>
+      hosts: <% ctx().host %>
+      cwd: <% ctx().cwd %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - prep_mistralclient
+      - when: <% failed() %>
+        do:
+          - cleanup_on_failure
+  prep_mistralclient:
+    action: st2cd.st2_prep_patch_for_mistralclient
+    input:
+      project: python-mistralclient
+      version: <% ctx().version %>
+      fork: <% ctx().fork %>
+      local_repo: <% 'mistralclient_' + ctx().local_repo_sfx %>
+      hosts: <% ctx().host %>
+      cwd: <% ctx().cwd %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - prep_st2docs
+      - when: <% failed() %>
+        do:
+          - cleanup_on_failure
+  prep_st2docs:
+    action: st2cd.st2_prep_patch_for_st2docs
+    input:
+      project: st2docs
+      version: <% ctx().version %>
+      fork: <% ctx().fork %>
+      local_repo: <% 'st2docs_' + ctx().local_repo_sfx %>
+      hosts: <% ctx().host %>
+      cwd: <% ctx().cwd %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - prep_st2web
+      - when: <% failed() %>
+        do:
+          - cleanup_on_failure
+  prep_st2web:
+    action: st2cd.st2_prep_patch_for_gui
+    input:
+      project: st2web
+      version: <% ctx().version %>
+      fork: <% ctx().fork %>
+      local_repo: <% 'st2web_' + ctx().local_repo_sfx %>
+      hosts: <% ctx().host %>
+      cwd: <% ctx().cwd %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - prep_st2chatops
+      - when: <% failed() %>
+        do:
+          - cleanup_on_failure
+  prep_st2chatops:
+    action: st2cd.st2_prep_patch_for_gui
+    input:
+      project: st2chatops
+      version: <% ctx().version %>
+      fork: <% ctx().fork %>
+      local_repo: <% 'st2chatops_' + ctx().local_repo_sfx %>
+      hosts: <% ctx().host %>
+      cwd: <% ctx().cwd %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - prep_st2flow
+      - when: <% failed() %>
+        do:
+          - cleanup_on_failure
+  prep_st2flow:
+    action: st2cd.st2_prep_patch_for_gui
+    input:
+      project: st2flow
+      version: <% ctx().version %>
+      fork: <% ctx().fork %>
+      local_repo: <% 'st2flow_' + ctx().local_repo_sfx %>
+      hosts: <% ctx().host %>
+      cwd: <% ctx().cwd %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - prep_st2_pkg
+      - when: <% failed() %>
+        do:
+          - cleanup_on_failure
+  prep_st2_pkg:
+    action: st2cd.st2_prep_patch_for_st2_pkg
+    input:
+      project: st2-packages
+      version: <% ctx().version %>
+      fork: <% ctx().fork %>
+      local_repo: <% 'st2_packages_' + ctx().local_repo_sfx %>
+      hosts: <% ctx().host %>
+      cwd: <% ctx().cwd %>
+    next:
+      - when: <% failed() %>
+        do:
+          - cleanup_on_failure
 
-    vars:
-        local_repo_sfx: null
-
-    task-defaults:
-        on-error:
-            - cleanup_on_failure: <% $.local_repo_sfx != null %>
-
-    tasks:
-        init:
-            action: core.local
-            input:
-                cmd: "echo `date +'%s'`_`awk -v min=100 -v max=999 'BEGIN{srand(); print int(min+rand()*(max-min+1))}'`"
-            publish:
-                local_repo_sfx: <% task(init).result.stdout %>
-            on-success:
-                - get_host: <% $.host = null %>
-                - prep: <% $.host != null %>
-
-
-        get_host:
-            action: linux.dig
-            input:
-                hostname: st2-build-slave-ubuntu.service.consul
-                rand: true
-                count: 1
-            publish:
-                host: <% task(get_host).result.result[0] %>
-            on-success:
-                - prep
-
-
-        prep:
-            on-complete:
-                - prep_st2
-        prep_st2:
-            action: st2cd.st2_prep_patch_for_st2            
-            input:
-                project: st2
-                version: <% $.version %>
-                fork: <% $.fork %>
-                update_mistral: true
-                update_changelog: true
-                local_repo: <% 'st2_' + $.local_repo_sfx %>
-                hosts: <% $.host %>
-                cwd: <% $.cwd %>
-            on-success:
-                - prep_mistral
-        prep_mistral:
-            action: st2cd.st2_prep_patch_for_mistral
-            input:
-                project: mistral
-                version: <% $.version %>
-                fork: <% $.fork %>
-                local_repo: <% 'mistral_' + $.local_repo_sfx %>
-                hosts: <% $.host %>
-                cwd: <% $.cwd %>
-            on-success:
-                - prep_mistralclient
-        prep_mistralclient:
-            action: st2cd.st2_prep_patch_for_mistralclient
-            input:
-                project: python-mistralclient
-                version: <% $.version %>
-                fork: <% $.fork %>
-                local_repo: <% 'mistralclient_' + $.local_repo_sfx %>
-                hosts: <% $.host %>
-                cwd: <% $.cwd %>
-            on-success:
-                - prep_st2docs
-        prep_st2docs:
-            action: st2cd.st2_prep_patch_for_st2docs
-            input:
-                project: st2docs
-                version: <% $.version %>
-                fork: <% $.fork %>
-                local_repo: <% 'st2docs_' + $.local_repo_sfx %>
-                hosts: <% $.host %>
-                cwd: <% $.cwd %>
-            on-success:
-                - prep_st2web
-        prep_st2web:
-            action: st2cd.st2_prep_patch_for_gui
-            input:
-                project: st2web
-                version: <% $.version %>
-                fork: <% $.fork %>
-                local_repo: <% 'st2web_' + $.local_repo_sfx %>
-                hosts: <% $.host %>
-                cwd: <% $.cwd %>
-            on-success:
-                - prep_st2chatops
-        prep_st2chatops:
-            action: st2cd.st2_prep_patch_for_gui
-            input:
-                project: st2chatops
-                version: <% $.version %>
-                fork: <% $.fork %>
-                local_repo: <% 'st2chatops_' + $.local_repo_sfx %>
-                hosts: <% $.host %>
-                cwd: <% $.cwd %>
-            on-success:
-                - prep_st2flow
-        prep_st2flow:
-            action: st2cd.st2_prep_patch_for_gui
-            input:
-                project: st2flow
-                version: <% $.version %>
-                fork: <% $.fork %>
-                local_repo: <% 'st2flow_' + $.local_repo_sfx %>
-                hosts: <% $.host %>
-                cwd: <% $.cwd %>
-            on-success:
-                - prep_st2_pkg
-        prep_st2_pkg:
-            action: st2cd.st2_prep_patch_for_st2_pkg
-            input:
-                project: st2-packages
-                version: <% $.version %>
-                fork: <% $.fork %>
-                local_repo: <% 'st2_packages_' + $.local_repo_sfx %>
-                hosts: <% $.host %>
-                cwd: <% $.cwd %>
-
-
-        cleanup_on_failure:
-            action: core.remote
-            input:
-                cmd: <% 'rm -rf ' + $.cwd + '/st2*' + $.local_repo_sfx %>
-                hosts: <% $.host %>
-            on-complete:
-                - fail
+  cleanup_on_failure:
+    action: core.noop
+    next:
+      - when: <% ctx().local_repo_sfx %>
+        do:
+          - cleanup
+      - when: <% not ctx().local_repo_sfx %>
+        do:
+          - fail
+  cleanup:
+    action: core.remote
+    input:
+      cmd: <% 'rm -rf ' + ctx().cwd + '/st2*' + ctx().local_repo_sfx %>
+      hosts: <% ctx().host %>
+    next:
+      - do:
+          - fail
