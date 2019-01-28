@@ -39,6 +39,7 @@ tasks:
         do:
           - switch_on_dns
   switch_on_dns:
+    action: core.noop
     next:
       - when: <% succeeded() and (len(ctx().instances) = 1) %>
         publish:
@@ -62,6 +63,7 @@ tasks:
         do:
           - switch_on_id
   switch_on_id:
+    action: core.noop
     next:
       - when: <% succeeded() and (len(ctx().instances) = 1) %>
         publish:
@@ -123,9 +125,10 @@ tasks:
       - when: <% failed() %>
         do:
           - notify_delete_cname_failure
+          - delete_volumes
   delete_volumes:
-    with:
-      items: volume in <% ctx().volumes %>
+    delay: 120
+    with: volume in <% ctx().volumes %>
     action: aws.ec2_delete_volume
     input:
       volume_id: <% item(volume) %>
@@ -140,20 +143,14 @@ tasks:
         publish:
           - volume_to_delete_iteration_count: <% ctx().volume_to_delete_iteration_count + 1 %>
         do:
-          - wait_for_volume_to_delete
-  wait_for_volume_to_delete:
-    action: core.local
-    input:
-      cmd: sleep 60
-    next:
-      - when: <% succeeded() %>
-        do:
           - delete_volumes
+
   notify_success:
     action: slack.post_message
     input:
       channel: <% ctx().notify_channel %>
       message: '[SUCCEEDED] <% ctx().hostname %> was destroyed'
+
   notify_multiple_instances_failure:
     action: slack.post_message
     input:
@@ -162,6 +159,7 @@ tasks:
     next:
       - do:
           - fail
+
   notify_destroy_instance_failure:
     action: slack.post_message
     input:
@@ -170,11 +168,13 @@ tasks:
     next:
       - do:
           - fail
+
   notify_delete_cname_failure:
     action: slack.post_message
     input:
       channel: <% ctx().notify_failure_channel %>
       message: '[FAILED] <% ctx().hostname %> was destroyed but CNAME was not deleted'
+
   notify_delete_volumes_failure:
     action: slack.post_message
     input:
