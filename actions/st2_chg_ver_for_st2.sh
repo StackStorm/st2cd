@@ -98,10 +98,10 @@ if [ "${IS_DEV_VERSION}" = "false" ]; then
             exit 1
         fi
 
-        VERSION_STR_MATCH=`grep "^version\s+:\s+" ${PACK_METADATA_FILE} || true`
+        VERSION_STR_MATCH=`grep -Po "^version\s*:\s*${VERSION}" ${PACK_METADATA_FILE}`
         if [[ -z "${VERSION_STR_MATCH}" ]]; then
             echo "Setting version in ${PACK_METADATA_FILE} to ${VERSION}..."
-            sed -i -E "s/^version\s+:\s+(.*?)$/version: ${VERSION}/" ${PACK_METADATA_FILE}
+            sed -i -E "s/^version\s*:\s*(.*?)$/version: ${VERSION}/" ${PACK_METADATA_FILE}
 
             VERSION_STR_MATCH=`grep "${VERSION}" ${PACK_METADATA_FILE} || true`
             if [[ -z "${VERSION_STR_MATCH}" ]]; then
