@@ -77,28 +77,42 @@ done
 # Set version attribute for all the bundled packs (core, linux, examples, etc.)
 BUNDLED_PACKS_METADATA_FILES=($(find contrib/ -mindepth 2 -maxdepth 2 -name pack.yaml))
 
-for PACK_METADATA_FILE in "${BUNDLED_PACKS_METADATA_FILES}"
-do
-    echo "Setting pack version in: ${PACK_METADATA_FILE}"
+# NOTE: We don't set dev versions because pack version needs to be a valid semver string
+# (e.g 1.2.3) and Python dev version is not a valid semver string (e.g 2.10dev)
+IS_DEV_VERSION=$(echo ${VERSION} |grep -v "dev$")
+EXIT_CODE=$?
 
-    if [[ ! -e "${PACK_METADATA_FILE}" ]]; then
-        >&2 echo "ERROR: Pack metadata file ${PACK_METADATA_FILE} does not exist."
-        exit 1
-    fi
+if [ ${EXIT_CODE} -eq 1 ]; then
+    IS_DEV_VERSION=true
+else
+    IS_DEV_VERSION=false
+fi
 
-    VERSION_STR_MATCH=`grep "^version\s+:\s+" ${PACK_METADATA_FILE} || true`
-    if [[ -z "${VERSION_STR_MATCH}" ]]; then
-        echo "Setting version in ${PACK_METADATA_FILE} to ${VERSION}..."
-        sed -i -E "s/^version\s+:\s+(.*?)$/version: ${VERSION}/" ${PACK_METADATA_FILE}
+if [ "${IS_DEV_VERSION}" = "false" ]; then
+    for PACK_METADATA_FILE in "${BUNDLED_PACKS_METADATA_FILES}"
+    do
+        echo "Setting pack version in: ${PACK_METADATA_FILE}"
 
-        VERSION_STR_MATCH=`grep "${VERSION}" ${PACK_METADATA_FILE} || true`
-        if [[ -z "${VERSION_STR_MATCH}" ]]; then
-            >&2 echo "ERROR: Unable to update the version in >${PACK_METADATA_FILE}."
+        if [[ ! -e "${PACK_METADATA_FILE}" ]]; then
+            >&2 echo "ERROR: Pack metadata file ${PACK_METADATA_FILE} does not exist."
             exit 1
         fi
-    fi
 
-done
+        VERSION_STR_MATCH=`grep "^version\s+:\s+" ${PACK_METADATA_FILE} || true`
+        if [[ -z "${VERSION_STR_MATCH}" ]]; then
+            echo "Setting version in ${PACK_METADATA_FILE} to ${VERSION}..."
+            sed -i -E "s/^version\s+:\s+(.*?)$/version: ${VERSION}/" ${PACK_METADATA_FILE}
+
+            VERSION_STR_MATCH=`grep "${VERSION}" ${PACK_METADATA_FILE} || true`
+            if [[ -z "${VERSION_STR_MATCH}" ]]; then
+                >&2 echo "ERROR: Unable to update the version in >${PACK_METADATA_FILE}."
+                exit 1
+            fi
+        fi
+    done
+else
+    echo "Skipping setting version attribute in pack.yaml files for dev version"
+fi
 
 MODIFIED=`git status | grep modified || true`
 if [[ ! -z "${MODIFIED}" ]]; then
@@ -151,7 +165,7 @@ if [ "${UPDATE_MISTRAL}" -eq "1" ]; then
 
     MODIFIED=`git status | grep modified || true`
     if [[ ! -z "${MODIFIED}" ]]; then
-		echo "Committing the mistralclient version update on branch ${BRANCH}..."
+        echo "Committing the mistralclient version update on branch ${BRANCH}..."
         git add -A
         git commit -qm "Update mistralclient version to ${MISTRAL_VERSION}"
         PUSH=1
@@ -183,7 +197,7 @@ if [ "${UPDATE_CHANGELOG}" -eq "1" ]; then
 
     MODIFIED=`git status | grep modified || true`
     if [[ ! -z "${MODIFIED}" ]]; then
-		echo "Committing the changelog update on branch ${BRANCH}..."
+        echo "Committing the changelog update on branch ${BRANCH}..."
         git add ${CHANGELOG_FILE}
         git commit -qm "Update changelog for ${VERSION}"
         PUSH=1
