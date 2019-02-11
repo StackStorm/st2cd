@@ -74,9 +74,35 @@ do
     fi
 done
 
+# Set version attribute for all the bundled packs (core, linux, examples, etc.)
+BUNDLED_PACKS_METADATA_FILES=($(find contrib/ -mindepth 2 -maxdepth 2 -name pack.yaml))
+
+for PACK_METADATA_FILE in "${BUNDLED_PACKS_METADATA_FILES}"
+do
+    echo "Setting pack version in: ${PACK_METADATA_FILE}"
+
+    if [[ ! -e "${PACK_METADATA_FILE}" ]]; then
+        >&2 echo "ERROR: Pack metadata file ${PACK_METADATA_FILE} does not exist."
+        exit 1
+    fi
+
+    VERSION_STR_MATCH=`grep "^version\s+:\s+" ${PACK_METADATA_FILE} || true`
+    if [[ -z "${VERSION_STR_MATCH}" ]]; then
+        echo "Setting version in ${PACK_METADATA_FILE} to ${VERSION}..."
+        sed -i -E "s/^version\s+:\s+(.*?)$/version: ${VERSION}/" ${PACK_METADATA_FILE}
+
+        VERSION_STR_MATCH=`grep "${VERSION}" ${PACK_METADATA_FILE} || true`
+        if [[ -z "${VERSION_STR_MATCH}" ]]; then
+            >&2 echo "ERROR: Unable to update the version in >${PACK_METADATA_FILE}."
+            exit 1
+        fi
+    fi
+
+done
+
 MODIFIED=`git status | grep modified || true`
 if [[ ! -z "${MODIFIED}" ]]; then
-	echo "Committing the st2 version update on branch ${BRANCH}..."
+    echo "Committing the st2 version update on branch ${BRANCH}..."
     git add -A
     git commit -qm "Update version to ${VERSION}"
     PUSH=1
