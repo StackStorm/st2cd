@@ -54,6 +54,10 @@ tasks:
         do:
           - create_branch
       - when: <% failed() %>
+        publish:
+          - clone_paths: <% dict(mistral => result()[0].get(ctx().host).stdout,
+                                 mistralclient => result()[1].get(ctx().host).stdout,
+                                 st2mistral => result()[2].get(ctx().host).stdout) %>
         do:
           - remove_repos
           - fail
