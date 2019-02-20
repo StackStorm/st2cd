@@ -29,8 +29,8 @@ tasks:
     next:
       - when: <% succeeded() %>
         publish:
-          - shas: <% result().shas %>
-          - deps: <% result().deps %>
+          - shas: <% result().output.shas %>
+          - deps: <% result().output.deps %>
         do:
           - branch
       - when: <% failed() %>
