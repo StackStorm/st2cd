@@ -26,7 +26,7 @@ parameters:
     default: master
   repo_dir:
     type: string
-    default: /home/stanley
+    default: /mnt/repos
   requirements:
     type: string
     description: List of python dependencies from pip freeze.

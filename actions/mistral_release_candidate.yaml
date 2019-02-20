@@ -29,7 +29,7 @@ parameters:
     default: master
   mis_repo_dir:
     type: string
-    default: /home/stanley
+    default: /mnt/repos
   st2_repo_branch:
     type: string
     default: master
