@@ -32,6 +32,24 @@ tasks:
         publish:
           - host: <% result().result[0] %>
         do:
+          - create_repos_dir
+  create_repos_dir:
+    action: core.remote_sudo
+    input:
+      hosts: <% ctx().host %>
+      cmd: mkdir -p <% ctx().repo_dir %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - change_repos_dir_owner
+  change_repos_dir_owner:
+    action: core.remote_sudo
+    input:
+      hosts: <% ctx().host %>
+      cmd: chown stanley:stanley <% ctx().repo_dir %>
+    next:
+      - when: <% succeeded() %>
+        do:
           - clone_repos
   clone_repos:
     with:
