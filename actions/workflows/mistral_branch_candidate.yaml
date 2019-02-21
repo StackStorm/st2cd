@@ -15,10 +15,10 @@ tasks:
   init:
     action: core.noop
     next:
-      - when: <% ctx().host = null %>
+      - when: <% ctx().host = null or str(ctx().host).toLower() = "none" or str(ctx().host.toLower()) = "null" %>
         do:
           - get_host
-      - when: <% ctx().host != null %>
+      - when: <% ctx().host != null and str(ctx().host).toLower() != "none" and str(ctx().host.toLower()) != "null" %>
         do:
           - clone_repos
   get_host:
