@@ -73,6 +73,10 @@ tasks:
     next:
       - do:
           - remove_repos
+      - when: <% failed() %>
+        do:
+          - fail
+
   remove_repos:
     with:
       items: repo in <% list(ctx().clone_paths.get(mistral),
