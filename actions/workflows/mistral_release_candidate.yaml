@@ -72,3 +72,6 @@ tasks:
       channel: <% item(channel) %>
       text: 'st2cd.mistral_release_candidate: FAILED'
       attachments: '[{"fallback": "[st2cd.mistral_release_candidate: FAILED]", "title": "[st2cd.mistral_release_candidate: FAILED]", "title_link": "<% ctx().webui_base_url %>/#/history/<% ctx(st2).action_execution_id %>/general", "text": "Error releasing candidate <% ctx().version %>.", "color": "#FF0000"}]'
+    next:
+      - do:
+          - fail
