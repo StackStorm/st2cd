@@ -16,7 +16,7 @@ tasks:
   init:
     action: core.local
     input:
-      cmd: echo <% ctx().version %> | cut -d "." -f1-2
+      cmd: echo -n '"'; echo -n <% ctx().version %> | cut -d "." -f1-2 | tr -d '\n'; echo -n '"'
     next:
       - when: <% succeeded() %>
         publish:
