@@ -15,10 +15,10 @@ tasks:
   init:
     action: core.noop
     next:
-      - when: <% ctx().host = null %>
+      - when: <% ctx().host = null or str(ctx().host).toLower() = "none" or str(ctx().host.toLower()) = "null" %>
         do:
           - get_host
-      - when: <% ctx().host != null %>
+      - when: <% ctx().host != null and str(ctx().host).toLower() != "none" and str(ctx().host.toLower()) != "null" %>
         do:
           - clone_repos
   get_host:
@@ -31,6 +31,24 @@ tasks:
       - when: <% succeeded() %>
         publish:
           - host: <% result().result[0] %>
+        do:
+          - create_repos_dir
+  create_repos_dir:
+    action: core.remote_sudo
+    input:
+      hosts: <% ctx().host %>
+      cmd: mkdir -p <% ctx().repo_dir %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - change_repos_dir_owner
+  change_repos_dir_owner:
+    action: core.remote_sudo
+    input:
+      hosts: <% ctx().host %>
+      cmd: chown stanley:stanley <% ctx().repo_dir %>
+    next:
+      - when: <% succeeded() %>
         do:
           - clone_repos
   clone_repos:
@@ -54,6 +72,10 @@ tasks:
         do:
           - create_branch
       - when: <% failed() %>
+        publish:
+          - clone_paths: <% dict(mistral => result()[0].get(ctx().host).stdout,
+                                 mistralclient => result()[1].get(ctx().host).stdout,
+                                 st2mistral => result()[2].get(ctx().host).stdout) %>
         do:
           - remove_repos
           - fail
@@ -69,6 +91,10 @@ tasks:
     next:
       - do:
           - remove_repos
+      - when: <% failed() %>
+        do:
+          - fail
+
   remove_repos:
     with:
       items: repo in <% list(ctx().clone_paths.get(mistral),
