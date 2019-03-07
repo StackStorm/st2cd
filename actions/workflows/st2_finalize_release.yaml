@@ -128,23 +128,6 @@ tasks:
     next:
       - when: <% succeeded() %>
         do:
-          - st2_docker_tag_release
-      - when: <% failed() %>
-        do:
-          - cleanup_on_failure
-  st2_docker_tag_release:
-    action: st2cd.tag_release
-    input:
-      project: st2-docker
-      version: <% ctx().version %>
-      fork: <% ctx().fork %>
-      local_repo: <% 'st2docker_' + ctx().local_repo_sfx %>
-      branch: master
-      hosts: <% ctx().host %>
-      cwd: <% ctx().cwd %>
-    next:
-      - when: <% succeeded() %>
-        do:
           - get_utc_date
       - when: <% failed() %>
         do:
