@@ -7,6 +7,7 @@ input:
   - oses
 vars:
   - local_repo_sfx:
+  - cwd: '/home/stanley'
 tasks:
   init:
     action: core.local
