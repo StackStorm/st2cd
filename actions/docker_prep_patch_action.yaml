@@ -1,18 +1,18 @@
 ---
-name: st2_prep_release_for_st2_dockerfiles
-description: Prepare the st2-dockerfiles repo for release
+name: docker_prep_patch_action
+description: Prepare the docker patch branch and Makefile
 enabled: true
 runner_type: remote-shell-script
-entry_point: st2_chg_ver_for_st2_dockerfiles.sh
+entry_point: docker_chg_ver.sh
 parameters:
     project:
         type: string
-        description: Project name for st2-dockerfiles
-        default: st2-dockerfiles
+        description: Repo name for the docker repo
+        required: true
         position: 0
     version:
         type: string
-        description: ST2 version to use 
+        description: Version for the patch release. Should include the patch e.g. 0.1.0
         required: true
         position: 1
     fork:
@@ -23,7 +23,7 @@ parameters:
     branch:
         type: string
         description: Branch to update
-        default: master
+        required: true
         position: 3
     local_repo:
         type: string
