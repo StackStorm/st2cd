@@ -66,7 +66,7 @@ tasks:
           - cleanup_on_failure
 
   prep_st2_dockerfiles:
-    action: st2cd.docker_prep_patch_action
+    action: st2cd.docker_chg_ver
     input:
       project: st2-dockerfiles
       version: <% ctx().version %>
@@ -123,7 +123,7 @@ tasks:
 
   # st2enterprise-dockerfiles requires st2-dockerfiles images
   prep_st2enterprise_dockerfiles:
-    action: st2cd.docker_prep_patch_action
+    action: st2cd.docker_chg_ver
     input:
       project: st2enterprise-dockerfiles
       version: <% ctx().version %>
