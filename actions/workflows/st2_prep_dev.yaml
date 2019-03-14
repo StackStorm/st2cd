@@ -131,40 +131,6 @@ tasks:
       hosts: <% ctx().host %>
       cwd: <% ctx().cwd %>
     next:
-      - when: <% succeeded() %>
-        do:
-          - prep_st2_dockerfiles
-      - when: <% failed() %>
-        do:
-          - cleanup_on_failure
-  prep_st2_dockerfiles:
-    action: st2cd.st2_prep_dev_for_st2_dockerfiles
-    input:
-      project: st2-dockerfiles
-      version: <% ctx().dev_version %>
-      fork: <% ctx().fork %>
-      local_repo: <% 'st2dockerfiles_' + ctx().local_repo_sfx %>
-      branch: master
-      hosts: <% ctx().host %>
-      cwd: <% ctx().cwd %>
-    next:
-      - when: <% succeeded() %>
-        do:
-          - prep_st2enterprise_dockerfiles
-      - when: <% failed() %>
-        do:
-          - cleanup_on_failure
-  prep_st2enterprise_dockerfiles:
-    action: st2cd.st2_prep_dev_for_st2enterprise_dockerfiles
-    input:
-      project: st2enterprise-dockerfiles
-      version: <% ctx().dev_version %>
-      fork: <% ctx().fork %>
-      local_repo: <% 'st2enterprisedockerfiles_' + ctx().local_repo_sfx %>
-      branch: master
-      hosts: <% ctx().host %>
-      cwd: <% ctx().cwd %>
-    next:
       - when: <% failed() %>
         do:
           - cleanup_on_failure
