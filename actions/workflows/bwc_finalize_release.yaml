@@ -43,20 +43,26 @@ tasks:
   finalize:
     next:
       - do:
-          - make_bwc_docs_stable
-  make_bwc_docs_stable:
-    action: st2cd.bwc_docs
+          - make_ewc_docs_stable
+  make_ewc_docs_stable:
+    action: circle_ci.run_build
     input:
       branch: v<% ctx().major_minor_version %>
+      project: ipfabric-docs
+      username: StackStorm
     next:
       - when: <% succeeded() %>
         do:
-          - make_bwc_docs_latest
+          - make_ewc_docs_latest
       - when: <% failed() %>
         do:
           - cleanup_on_failure
-  make_bwc_docs_latest:
-    action: st2cd.bwc_docs
+  make_ewc_docs_latest:
+    action: circle_ci.run_build
+    input:
+      branch: master
+      project: ipfabric-docs
+      username: StackStorm
     next:
       - when: <% failed() %>
         do:

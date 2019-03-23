@@ -84,11 +84,11 @@ tasks:
     next:
       - when: <% succeeded() %>
         do:
-          - prep_bwc_docs
+          - prep_ewc_docs
       - when: <% failed() %>
         do:
           - cleanup_on_failure
-  prep_bwc_docs:
+  prep_ewc_docs:
     action: st2cd.bwc_prep_release_for_ipfabric_docs
     input:
       project: ipfabric-docs

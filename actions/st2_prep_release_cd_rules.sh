@@ -2,9 +2,6 @@
 # To be created:
 # st2cd
 ############################################
-# bwc_docs_ipfabric_prod_{{version}}.yaml
-# st2_docs_{{version}}.yaml
-# bwc_docs_prod_{{version}}.yaml
 # st2_pkg_test_stable_{{os}}.yaml
 # st2_pkg_test_stable_{{os}}_enterprise.yaml
 set -e
@@ -46,27 +43,6 @@ function git_repo {
     echo "Currently at directory `pwd`..."
 }
 
-function create_new_rules {
-    # Skip if the two intended versions are the same.
-    # This can happen on patch releases, since 2.2.1 is reduced to v2.2, which is the same as if the version was 2.2.0
-    if [ "$PREV_FILE_POSTFIX_UNDERSCORE" != "$FILE_POSTFIX_UNDERSCORE" ]
-    then
-        cat ./rules/bwc_docs_ipfabric_prod_$PREV_FILE_POSTFIX_UNDERSCORE.yaml > ./rules/bwc_docs_ipfabric_prod_$FILE_POSTFIX_UNDERSCORE.yaml
-        cat ./rules/st2_docs_$PREV_FILE_POSTFIX.yaml > ./rules/st2_docs_$FILE_POSTFIX.yaml
-        cat ./rules/bwc_docs_prod_$PREV_FILE_POSTFIX_UNDERSCORE.yaml > ./rules/bwc_docs_prod_$FILE_POSTFIX_UNDERSCORE.yaml
-    fi
-}
-
-function update_new_rules {
-    sed -i "s/$PREV_FILE_POSTFIX_UNDERSCORE/$FILE_POSTFIX_UNDERSCORE/g" ./rules/bwc_docs_ipfabric_prod_$FILE_POSTFIX_UNDERSCORE.yaml
-    sed -i "s/$PREV_FILE_POSTFIX_UNDERSCORE/$FILE_POSTFIX_UNDERSCORE/g" ./rules/st2_docs_$FILE_POSTFIX.yaml
-    sed -i "s/$PREV_FILE_POSTFIX_UNDERSCORE/$FILE_POSTFIX_UNDERSCORE/g" ./rules/bwc_docs_prod_$FILE_POSTFIX_UNDERSCORE.yaml
-
-    sed -i "s/$PREV_BRANCH/$BRANCH/g" ./rules/bwc_docs_ipfabric_prod_$FILE_POSTFIX_UNDERSCORE.yaml
-    sed -i "s/$PREV_BRANCH/$BRANCH/g" ./rules/st2_docs_$FILE_POSTFIX.yaml
-    sed -i "s/$PREV_BRANCH/$BRANCH/g" ./rules/bwc_docs_prod_$FILE_POSTFIX_UNDERSCORE.yaml
-}
-
 function update_existing_rules {
     for os in $OSES; do
         sed -i "s/${PREV_VERSION}/${VERSION}/g" ./rules/st2_pkg_test_stable_${os}.yaml
@@ -88,8 +64,6 @@ function clean_up {
 
 function main {
     git_repo
-    create_new_rules
-    update_new_rules
     update_existing_rules
     git_finish
     clean_up

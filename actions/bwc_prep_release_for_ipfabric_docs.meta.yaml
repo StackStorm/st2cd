@@ -7,7 +7,7 @@ entry_point: bwc_prep_release_for_ipfabric_docs.sh
 parameters:
     project:
         type: string
-        description: Project name for st2docs
+        description: Project name for ewcdocs
         default: ipfabric-docs
         position: 0
     version:
