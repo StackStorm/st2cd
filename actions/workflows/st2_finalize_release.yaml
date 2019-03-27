@@ -55,27 +55,21 @@ tasks:
         do:
           - make_st2docs_stable
   make_st2docs_stable:
-    action: st2cd.st2_make_docs
+    action: circle_ci.run_build
     input:
+      branch: v<% ctx().major_minor_version %>
       project: st2docs
-      branch: v<% ctx().version.substring(0, ctx().version.lastIndexOf('.')) %>
-      fork: <% ctx().fork %>
-      local_repo: <% 'st2docs_' + ctx().local_repo_sfx %>
-      hosts: <% ctx().host %>
-      cwd: <% ctx().cwd %>
+      username: StackStorm
     next:
       - when: <% succeeded() %>
         do:
           - make_st2docs_latest
   make_st2docs_latest:
-    action: st2cd.st2_make_docs
+    action: circle_ci.run_build
     input:
-      project: st2docs
       branch: master
-      fork: <% ctx().fork %>
-      local_repo: <% 'st2docs_' + ctx().local_repo_sfx %>
-      hosts: <% ctx().host %>
-      cwd: <% ctx().cwd %>
+      project: st2docs
+      username: StackStorm
     next:
       - when: <% succeeded() %>
         do:
