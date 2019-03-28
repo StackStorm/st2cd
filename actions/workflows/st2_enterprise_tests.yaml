@@ -17,7 +17,7 @@ tasks:
     action: core.remote_sudo
     input:
       hosts: <% ctx().host_ip %>
-      cmd: grep -zlP '\[rbac\]\senable\s?=\s?True' /etc/st2/st2.conf
+      cmd: grep -zlP '\[rbac\]\senable\s?=\s?True\sbackend\s?=\s?enterprise' /etc/st2/st2.conf
       timeout: 10
     next:
       - when: <% succeeded() %>
