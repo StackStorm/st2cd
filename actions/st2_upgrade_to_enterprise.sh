@@ -120,8 +120,10 @@ enable_and_configure_rbac() {
   else
       sudo yum install -y crudini
   fi
+
   # Enable RBAC
   sudo crudini --set /etc/st2/st2.conf rbac enable 'True'
+  sudo crudini --set /etc/st2/st2.conf rbac backend 'enterprise'
 
   # TODO: Move directory creation to package
   sudo mkdir -p /opt/stackstorm/rbac/assignments/
