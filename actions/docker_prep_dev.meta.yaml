@@ -1,0 +1,22 @@
+---
+name: docker_prep_dev
+runner_type: orquesta
+description: Prep dev images for st2 release
+enabled: true
+entry_point: workflows/docker_prep_dev.yaml
+parameters:
+  version:
+    type: string
+    description: Version used for the release. Should include the patch e.g. 0.1.0
+    required: true
+  fork:
+    type: string
+    description: Fork to use
+    default: StackStorm
+  host:
+    type: string
+    description: Host where to run the release process.
+  cwd:
+    type: string
+    description: Working directory where remote shell scripts use
+    default: /home/stanley
