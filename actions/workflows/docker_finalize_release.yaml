@@ -71,7 +71,7 @@ tasks:
       project: st2-dockerfiles
       version: <% ctx().version %>
       fork: <% ctx().fork %>
-      branch: <% ctx().major_minor_version %>
+      branch: v<% ctx().major_minor_version %>
       local_repo: <% 'st2_dockerfiles_' + ctx().local_repo_sfx %>
       hosts: <% ctx().host %>
       cwd: <% ctx().cwd %>
@@ -90,7 +90,7 @@ tasks:
       version: <% ctx().version %>
       fork: <% ctx().fork %>
       local_repo: <% 'st2_dockerfiles_' + ctx().local_repo_sfx %>
-      branch: <% ctx().major_minor_version %>
+      branch: v<% ctx().major_minor_version %>
       hosts: <% ctx().host %>
       cwd: <% ctx().cwd %>
     next:
@@ -128,7 +128,7 @@ tasks:
       project: st2enterprise-dockerfiles
       version: <% ctx().version %>
       fork: <% ctx().fork %>
-      branch: <% ctx().major_minor_version %>
+      branch: v<% ctx().major_minor_version %>
       local_repo: <% 'st2enterprise_dockerfiles_' + ctx().local_repo_sfx %>
       hosts: <% ctx().host %>
       cwd: <% ctx().cwd %>
@@ -144,7 +144,7 @@ tasks:
       version: <% ctx().version %>
       fork: <% ctx().fork %>
       local_repo: <% 'st2enterprise_dockerfiles_' + ctx().local_repo_sfx %>
-      branch: <% ctx().major_minor_version %>
+      branch: v<% ctx().major_minor_version %>
       hosts: <% ctx().host %>
       cwd: <% ctx().cwd %>
     next:
