@@ -55,15 +55,17 @@ install_enterprise_bits() {
             local BWC_ENTERPRISE_PKG_VERSION=$(get_apt_pkg_latest_revision bwc-enterprise $VERSION)
             local ST2FLOW_PKG_VERSION=$(get_apt_pkg_latest_revision st2flow $VERSION)
             local ST2LDAP_PKG_VERSION=$(get_apt_pkg_latest_revision st2-auth-ldap $VERSION)
+            local ST2RBAC_BACKEND_PKG_VERSION=$(get_apt_pkg_latest_revision st2-rbac-backend $VERSION)
             local BWCUI_PKG_VERSION=$(get_apt_pkg_latest_revision bwc-ui $VERSION)
             echo "##########################################################"
             echo "#### Following versions of packages will be installed ####"
             echo "bwc-enterprise${BWC_ENTERPRISE_PKG_VERSION}"
             echo "st2flow${ST2FLOW_PKG_VERSION}"
             echo "st2-auth-ldap${ST2LDAP_PKG_VERSION}"
+            echo "st2-rbac-backend${ST2RBAC_BACKEND_PKG_VERSION}"
             echo "bwc-ui${BWCUI_PKG_VERSION}"
             echo "##########################################################"
-            apt-get install -y bwc-enterprise=${BWC_ENTERPRISE_PKG_VERSION} st2flow=${ST2FLOW_PKG_VERSION} st2-auth-ldap=${ST2LDAP_PKG_VERSION} bwc-ui=${BWCUI_PKG_VERSION}
+            apt-get install -y bwc-enterprise=${BWC_ENTERPRISE_PKG_VERSION} st2flow=${ST2FLOW_PKG_VERSION} st2-auth-ldap=${ST2LDAP_PKG_VERSION} st2-rbac-backend=${ST2RBAC_BACKEND_PKG_VERSION} bwc-ui=${BWCUI_PKG_VERSION}
         fi
     else
         curl -s https://${LICENSE_KEY}:@packagecloud.io/install/repositories/StackStorm/${REPO}/script.rpm.sh | sudo bash
@@ -74,8 +76,9 @@ install_enterprise_bits() {
             local BWC_PKG=$(get_rpm_pkg_name_with_latest_revision bwc-enterprise $VERSION)
             local ST2FLOW_PKG=$(get_rpm_pkg_name_with_latest_revision st2flow $VERSION)
             local ST2LDAP_PKG=$(get_rpm_pkg_name_with_latest_revision st2-auth-ldap $VERSION)
+            local ST2RBAC_BACKEND_PKG=$(get_rpm_pkg_name_with_latest_revision st2-rbac-backend $VERSION)
             local BWCUI_PKG=$(get_rpm_pkg_name_with_latest_revision bwc-ui $VERSION)
-            local BWC_ENTERPRISE_PKG="${BWC_PKG} ${ST2FLOW_PKG} ${ST2LDAP_PKG} ${BWCUI_PKG}"
+            local BWC_ENTERPRISE_PKG="${BWC_PKG} ${ST2FLOW_PKG} ${ST2LDAP_PKG} ${ST2RBAC_BACKEND_PKG} ${BWCUI_PKG}"
             echo "##########################################################"
             echo "#### Following versions of packages will be installed ####"
             echo "${BWC_ENTERPRISE_PKG}"
@@ -120,8 +123,10 @@ enable_and_configure_rbac() {
   else
       sudo yum install -y crudini
   fi
+
   # Enable RBAC
   sudo crudini --set /etc/st2/st2.conf rbac enable 'True'
+  sudo crudini --set /etc/st2/st2.conf rbac backend 'enterprise'
 
   # TODO: Move directory creation to package
   sudo mkdir -p /opt/stackstorm/rbac/assignments/
