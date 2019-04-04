@@ -68,6 +68,22 @@ tasks:
     next:
       - when: <% succeeded() %>
         do:
+          - prep_st2enterprise_rbac_backend
+      - when: <% failed() %>
+        do:
+          - cleanup_on_failure
+  prep_st2enterprise_rbac_backend:
+    action: st2cd.st2_prep_patch_for_enterprise_rbac_backend
+    input:
+      project: st2-enterprise-rbac-backend
+      version: <% ctx().version %>
+      fork: <% ctx().fork %>
+      local_repo: <% 'st2enterprise_rbac_backend_' + ctx().local_repo_sfx %>
+      hosts: <% ctx().host %>
+      cwd: <% ctx().cwd %>
+    next:
+      - when: <% succeeded() %>
+        do:
           - prep_bwc_ui
       - when: <% failed() %>
         do:
