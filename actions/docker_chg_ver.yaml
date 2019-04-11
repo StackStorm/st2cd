@@ -15,9 +15,9 @@ parameters:
         description: Version to use, including the patch e.g. 0.1.0
         required: true
         position: 1
-    fork:
+    org:
         type: string
-        description: Fork to use
+        description: GitHub organization (or username) to use
         default: StackStorm
         position: 2
     branch:

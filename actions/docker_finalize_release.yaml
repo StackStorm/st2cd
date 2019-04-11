@@ -1,7 +1,7 @@
 ---
 name: docker_finalize_release
 runner_type: orquesta
-description: Finalize docker images for st2 release
+description: Change version and tag in docker images for st2 release
 enabled: true
 entry_point: workflows/docker_finalize_release.yaml
 parameters:
@@ -9,9 +9,9 @@ parameters:
     type: string
     description: Version used for the release. Should include the patch e.g. 0.1.0
     required: true
-  fork:
+  org:
     type: string
-    description: Fork to use
+    description: GitHub organization (or username) to use
     default: StackStorm
   host:
     type: string

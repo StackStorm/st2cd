@@ -3,7 +3,7 @@ version: '1.0'
 description: Finalize docker images for st2 release
 input:
   - version
-  - fork
+  - org
   - host
   - cwd
 vars:
@@ -52,7 +52,7 @@ tasks:
     input:
       project: st2-docker
       version: <% ctx().version %>
-      fork: <% ctx().fork %>
+      org: <% ctx().org %>
       local_repo: <% 'st2docker_' + ctx().local_repo_sfx %>
       branch: master
       hosts: <% ctx().host %>
@@ -70,7 +70,7 @@ tasks:
     input:
       project: st2-dockerfiles
       version: <% ctx().version %>
-      fork: <% ctx().fork %>
+      org: <% ctx().org %>
       branch: v<% ctx().major_minor_version %>
       local_repo: <% 'st2_dockerfiles_' + ctx().local_repo_sfx %>
       hosts: <% ctx().host %>
@@ -88,7 +88,7 @@ tasks:
     input:
       project: st2-dockerfiles
       version: <% ctx().version %>
-      fork: <% ctx().fork %>
+      org: <% ctx().org %>
       local_repo: <% 'st2_dockerfiles_' + ctx().local_repo_sfx %>
       branch: v<% ctx().major_minor_version %>
       hosts: <% ctx().host %>
@@ -105,7 +105,7 @@ tasks:
   wait_for_community_docker_image:
     action: st2cd.wait_for_docker_image
     input:
-      org: <% ctx().fork %>
+      org: <% ctx().org %>
       image: st2web
       version: <% ctx().version %>
       tries: 10
@@ -127,7 +127,7 @@ tasks:
     input:
       project: st2enterprise-dockerfiles
       version: <% ctx().version %>
-      fork: <% ctx().fork %>
+      org: <% ctx().org %>
       branch: v<% ctx().major_minor_version %>
       local_repo: <% 'st2enterprise_dockerfiles_' + ctx().local_repo_sfx %>
       hosts: <% ctx().host %>
@@ -142,7 +142,7 @@ tasks:
     input:
       project: st2enterprise-dockerfiles
       version: <% ctx().version %>
-      fork: <% ctx().fork %>
+      org: <% ctx().org %>
       local_repo: <% 'st2enterprise_dockerfiles_' + ctx().local_repo_sfx %>
       branch: v<% ctx().major_minor_version %>
       hosts: <% ctx().host %>
