@@ -26,6 +26,14 @@ if [ "${RELEASE}" = "unstable" ]; then
     REPO="${REPO}-${RELEASE}"
 fi
 
+# NOTE: st2-rbac-backend package has been introduced in v3.0.0(dev) so we only try to install
+# it if version >= 3.0.0[dev]
+if [[ "$VERSION" =~ ^[3-9]+\.[0-9]+\.[0-9]+$ ]] || [[ "$VERSION" =~ ^[3-9]+\.[0-9]+dev$ ]]; then
+    IS_V300_OR_ABOVE="true"
+else
+    IS_V300_OR_ABOVE="false"
+fi
+
 get_apt_pkg_latest_revision() {
     # Returns string of form 1.5.1-5. Note how this is different from rpm :/
     local PKG_NAME=$1
@@ -55,17 +63,25 @@ install_enterprise_bits() {
             local BWC_ENTERPRISE_PKG_VERSION=$(get_apt_pkg_latest_revision bwc-enterprise $VERSION)
             local ST2FLOW_PKG_VERSION=$(get_apt_pkg_latest_revision st2flow $VERSION)
             local ST2LDAP_PKG_VERSION=$(get_apt_pkg_latest_revision st2-auth-ldap $VERSION)
-            local ST2RBAC_BACKEND_PKG_VERSION=$(get_apt_pkg_latest_revision st2-rbac-backend $VERSION)
+            if [ "${IS_V300_OR_ABOVE}" = "true" ]; then
+                local ST2RBAC_BACKEND_PKG_VERSION=$(get_apt_pkg_latest_revision st2-rbac-backend $VERSION)
+            fi
             local BWCUI_PKG_VERSION=$(get_apt_pkg_latest_revision bwc-ui $VERSION)
             echo "##########################################################"
             echo "#### Following versions of packages will be installed ####"
             echo "bwc-enterprise${BWC_ENTERPRISE_PKG_VERSION}"
             echo "st2flow${ST2FLOW_PKG_VERSION}"
             echo "st2-auth-ldap${ST2LDAP_PKG_VERSION}"
-            echo "st2-rbac-backend${ST2RBAC_BACKEND_PKG_VERSION}"
+            if [ "${IS_V300_OR_ABOVE}" = "true" ]; then
+                echo "st2-rbac-backend${ST2RBAC_BACKEND_PKG_VERSION}"
+            fi
             echo "bwc-ui${BWCUI_PKG_VERSION}"
             echo "##########################################################"
-            apt-get install -y bwc-enterprise=${BWC_ENTERPRISE_PKG_VERSION} st2flow=${ST2FLOW_PKG_VERSION} st2-auth-ldap=${ST2LDAP_PKG_VERSION} st2-rbac-backend=${ST2RBAC_BACKEND_PKG_VERSION} bwc-ui=${BWCUI_PKG_VERSION}
+            if [ "${IS_V300_OR_ABOVE}" = "true" ]; then
+                apt-get install -y bwc-enterprise=${BWC_ENTERPRISE_PKG_VERSION} st2flow=${ST2FLOW_PKG_VERSION} st2-auth-ldap=${ST2LDAP_PKG_VERSION} st2-rbac-backend=${ST2RBAC_BACKEND_PKG_VERSION} bwc-ui=${BWCUI_PKG_VERSION}
+            else
+                apt-get install -y bwc-enterprise=${BWC_ENTERPRISE_PKG_VERSION} st2flow=${ST2FLOW_PKG_VERSION} st2-auth-ldap=${ST2LDAP_PKG_VERSION} bwc-ui=${BWCUI_PKG_VERSION}
+            fi
         fi
     else
         curl -s https://${LICENSE_KEY}:@packagecloud.io/install/repositories/StackStorm/${REPO}/script.rpm.sh | sudo bash
@@ -76,9 +92,15 @@ install_enterprise_bits() {
             local BWC_PKG=$(get_rpm_pkg_name_with_latest_revision bwc-enterprise $VERSION)
             local ST2FLOW_PKG=$(get_rpm_pkg_name_with_latest_revision st2flow $VERSION)
             local ST2LDAP_PKG=$(get_rpm_pkg_name_with_latest_revision st2-auth-ldap $VERSION)
-            local ST2RBAC_BACKEND_PKG=$(get_rpm_pkg_name_with_latest_revision st2-rbac-backend $VERSION)
+            if [ "${IS_V300_OR_ABOVE}" = "true" ]; then
+                local ST2RBAC_BACKEND_PKG=$(get_rpm_pkg_name_with_latest_revision st2-rbac-backend $VERSION)
+            fi
             local BWCUI_PKG=$(get_rpm_pkg_name_with_latest_revision bwc-ui $VERSION)
-            local BWC_ENTERPRISE_PKG="${BWC_PKG} ${ST2FLOW_PKG} ${ST2LDAP_PKG} ${ST2RBAC_BACKEND_PKG} ${BWCUI_PKG}"
+            if [ "${IS_V300_OR_ABOVE}" = "true" ]; then
+                local BWC_ENTERPRISE_PKG="${BWC_PKG} ${ST2FLOW_PKG} ${ST2LDAP_PKG} ${ST2RBAC_BACKEND_PKG} ${BWCUI_PKG}"
+            else
+                local BWC_ENTERPRISE_PKG="${BWC_PKG} ${ST2FLOW_PKG} ${ST2LDAP_PKG} ${BWCUI_PKG}"
+            fi
             echo "##########################################################"
             echo "#### Following versions of packages will be installed ####"
             echo "${BWC_ENTERPRISE_PKG}"
