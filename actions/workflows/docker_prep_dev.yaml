@@ -1,0 +1,121 @@
+---
+version: '1.0'
+description: Prepare docker images for st2 release
+input:
+  - version
+  - org
+  - host
+  - cwd
+vars:
+  - local_repo_sfx:
+tasks:
+  init:
+    action: core.local
+    input:
+      cmd: echo `date +'%s'`_`awk -v min=100 -v max=999 'BEGIN{srand(); print int(min+rand()*(max-min+1))}'`
+    next:
+      - when: <% succeeded() and (ctx().host = null) %>
+        publish:
+          - local_repo_sfx: <% result().stdout %>
+          - next_patch_version: <% ctx().version.split('.')[0] + '.' + ctx().version.split('.')[1] + '.' + str(int(ctx().version.split('.')[2]) + 1) %>
+          - major_minor_version: <% ctx().version.split('.')[0] + '.' + ctx().version.split('.')[1] %>
+        do:
+          - get_host
+      - when: <% succeeded() and (ctx().host != null) %>
+        publish:
+          - local_repo_sfx: <% result().stdout %>
+          - next_patch_version: <% ctx().version.split('.')[0] + '.' + ctx().version.split('.')[1] + '.' + str(int(ctx().version.split('.')[2]) + 1) %>
+          - major_minor_version: <% ctx().version.split('.')[0] + '.' + ctx().version.split('.')[1] %>
+        do:
+          - finalize
+
+  get_host:
+    action: linux.dig
+    input:
+      hostname: st2-build-slave-ubuntu.service.consul
+      rand: true
+      count: 1
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - host: <% result().result[0] %>
+        do:
+          - finalize
+
+  finalize:
+    next:
+      - do:
+          - prep_st2_dockerfiles
+
+  prep_st2_dockerfiles:
+    action: st2cd.docker_chg_ver
+    input:
+      project: st2-dockerfiles
+      version: <% ctx().version %>
+      org: <% ctx().org %>
+      branch: master
+      local_repo: <% 'st2_dockerfiles_' + ctx().local_repo_sfx %>
+      hosts: <% ctx().host %>
+      cwd: <% ctx().cwd %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - wait_for_community_docker_image
+      - when: <% failed() %>
+        do:
+          - cleanup_on_failure
+
+  # If it is acceptable for the enterprise build to fail, this wait is not required
+  wait_for_community_docker_image:
+    action: st2cd.wait_for_docker_image
+    input:
+      org: <% ctx().org %>
+      image: st2web
+      version: <% ctx().version %>
+      tries: 10
+      check_delay: 60
+      hosts: <% ctx().host %>
+      cwd: <% ctx().cwd %>
+      timeout: 650
+    next:
+      - when: <% succeeded() %>
+        do:
+          - prep_st2enterprise_dockerfiles
+      - when: <% failed() %>
+        do:
+          - cleanup_on_failure
+
+  # st2enterprise-dockerfiles requires st2-dockerfiles images
+  prep_st2enterprise_dockerfiles:
+    action: st2cd.docker_chg_ver
+    input:
+      project: st2enterprise-dockerfiles
+      version: <% ctx().version %>
+      org: <% ctx().org %>
+      branch: master
+      local_repo: <% 'st2enterprise_dockerfiles_' + ctx().local_repo_sfx %>
+      hosts: <% ctx().host %>
+      cwd: <% ctx().cwd %>
+    next:
+      - when: <% failed() %>
+        do:
+          - cleanup_on_failure
+
+  cleanup_on_failure:
+    action: core.noop
+    next:
+      - when: <% ctx().local_repo_sfx %>
+        do:
+          - cleanup
+      - when: <% not ctx().local_repo_sfx %>
+        do:
+          - fail
+
+  cleanup:
+    action: core.remote
+    input:
+      cmd: <% 'rm -rf ' + ctx().cwd + '/st2*' + ctx().local_repo_sfx + ' && rm -rf ~/.pypirc' %>
+      hosts: <% ctx().host %>
+    next:
+      - do:
+          - fail

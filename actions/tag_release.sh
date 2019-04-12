@@ -44,7 +44,7 @@ git checkout -B ${BRANCH} origin/${BRANCH}
 TAGGED=`git tag -l ${TAGGED_VERSION} || true`
 if [[ -z "${TAGGED}" ]]; then
     # TAG RELEASE
-    echo "Tagging release ${TAGGED_VERSION} for ${PROJECT}..."
+    echo "Tagging release ${TAGGED_VERSION} for ${PROJECT} on branch ${BRANCH}..."
     git tag -a ${TAGGED_VERSION} -m "Creating tag ${TAGGED_VERSION} for branch ${BRANCH}"
     git push origin ${TAGGED_VERSION} -q
 else
