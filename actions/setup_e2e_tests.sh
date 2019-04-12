@@ -87,7 +87,7 @@ else
     virtualenv --no-download venv
 fi
 . venv/bin/activate
-pip install -r robotfm_tests/test-requirements.txt
+pip install -r test-requirements.txt
 
 
 # Restart st2 primarily reload the keyvalue configuration
