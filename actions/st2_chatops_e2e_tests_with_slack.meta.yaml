@@ -1,0 +1,21 @@
+---
+name: st2_chatops_e2e_tests_with_slack
+description: ChatOps end-to-end tests with Slack
+enabled: true
+runner_type: orquesta
+entry_point: workflows/st2_chatops_e2e_tests_with_slack.yaml
+parameters:
+  cwd:
+    type: string
+    default: "/tmp/st2tests"
+  slack_bot_api_token:
+    type: string
+    default: "{{ st2kv.system.chatops_e2e_tests_slack_bot_api_token }}"
+  websocket:
+    type: string
+  slack_user_username:
+    type: string
+    default: "{{ st2kv.system.chatops_e2e_tests_slack_user_username }}"
+  slack_user_api_token:
+    type: string
+    default: "{{ st2kv.system.chatops_e2e_tests_slack_user_api_token }}"

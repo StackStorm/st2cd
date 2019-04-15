@@ -1,0 +1,110 @@
+---
+version: '1.0'
+
+input:
+  - cwd
+
+tasks:
+  skip_if_ubuntu_14:
+    action: core.local
+    input:
+      command: "lsb_release --release | awk '{ print $2 }'"
+    next:
+      - when: <% succeeded() and (result().stdout != '14.04') %>
+        publish:
+          - websocket:
+        do:
+          - setup
+      - when: <% failed() %>
+        publish:
+          - ubuntu_version: <% result().stdout %>
+        do:
+          - log_ubuntu_version
+          - skip_if_rhel_6
+  log_ubuntu_version:
+    action: core.echo
+    input:
+      message: <% ctx().ubuntu_version %>
+  skip_if_rhel_6:
+    action: core.local
+    input:
+      command: "[[ -e /etc/redhat-release ]] && cat /etc/redhat-release 2>/dev/null | sed -r 's/^[a-zA-Z ]*([0-9]){1,}\..*$/\\1/'"
+    next:
+      - when: <% succeeded() and (int(result().stdout) >= 7) %>
+        publish:
+          - websocket: /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem
+        do:
+          - setup
+      - when: <% failed() %>
+        publish:
+          - redhat_version: <% result().stdout %>
+        do:
+          - log_redhat_version
+          - noop
+  log_redhat_version:
+    action: core.echo
+    input:
+      message: <% ctx().redhat_version %>
+
+  # Setup the virtualenv
+  # This is separated from the configure action because it does not (and SHOULD
+  # not be) run with root privileges
+  setup:
+    action: st2cd.st2_chatops_setup_e2e_tests
+    input:
+      cwd: <% ctx().cwd %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - run_with_slack
+      - when: <% failed() %>
+        do:
+          - teardown
+  # Run the tests with Slack
+  run_with_slack:
+    action: st2cd.st2_chatops_e2e_tests_with_slack
+    input:
+      cwd: <% ctx().cwd %>
+      env:
+        - websocket: <% ctx().websocket %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - run_with_msteams
+      - when: <% failed() %>
+        do:
+          - run_with_msteams
+          - fail
+  # Run the tests with MS Teams
+  run_with_msteams:
+    action: core.noop
+    input:
+      cwd: <% ctx().cwd %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - run_with_mattermost
+      - when: <% failed() %>
+        do:
+          - run_with_mattermost
+          - fail
+  # Run the tests with Mattermost
+  run_with_mattermost:
+    action: core.noop
+    input:
+      cwd: <% ctx().cwd %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - teardown
+      - when: <% failed() %>
+        do:
+          - teardown
+          - fail
+  # Remove the virtualenv
+  # This is separated from the reset action because it does not (and SHOULD
+  # not be) run with root privileges
+  teardown:
+    action: st2cd.st2_chatops_teardown_e2e_tests
+    input:
+      cwd: <% ctx().cwd %>
