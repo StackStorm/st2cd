@@ -13,23 +13,22 @@ if [[ -n "$RHTEST" ]]; then
     echo "*** Detected Distro is ${RHTEST} - ${RHVERSION} ***"
     sudo yum install -y python-pip wget
     if [[ "$RHVERSION" -ge 7 ]]; then
-        sudo yum install -y bats jq
-    else
-        # Install from GitHub
-        git clone https://github.com/bats-core/bats-core.git
-        (cd bats-core; sudo ./install.sh /usr/local)
+        sudo yum install -y jq
     fi
+    # Install from GitHub
+    # RHEL 7+ has both bats and jq package, so we don't need to do this once we
+    # drop RHEL 6 support
+    git clone https://github.com/bats-core/bats-core.git
+    (cd bats-core; sudo ./install.sh /usr/local)
 elif [[ -n "$DEBTEST" ]]; then
     DEBVERSION=`lsb_release --release | awk '{ print $2 }'`
     echo "*** Detected Distro is ${DEBTEST} - ${DEBVERSION} ***"
-    sudo apt-get -q -y install build-essential jq python-pip python-dev python3-venv wget
-    if [[ "$DEBVERSION" != "14.04" ]]; then
-        sudo apt-get -q -y install bats
-    else
-        # Install from GitHub
-        git clone https://github.com/bats-core/bats-core.git
-        (cd bats-core; sudo ./install.sh /usr/local)
-    fi
+    sudo apt-get -q -y install build-essential jq python-pip python-dev wget
+    # Install from GitHub
+    # Ubuntu 16.04 has both bats and jq packages, so we don't need to do this
+    # once we drop Ubuntu 14.04 support
+    git clone https://github.com/bats-core/bats-core.git
+    (cd bats-core; sudo ./install.sh /usr/local)
 else
     echo "Unknown Operating System."
     exit 2
