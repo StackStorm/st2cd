@@ -10,7 +10,7 @@ parameters:
     default: "/tmp/st2tests"
   slack_bot_api_token:
     type: string
-    default: "{{ st2kv.system.chatops_e2e_tests_slack_bot_api_token }}"
+    default: "{{ st2kv.system.chatops_e2e_tests_slack_bot_api_token | decrypt_kv }}"
   websocket:
     type: string
   slack_user_username:
@@ -18,4 +18,4 @@ parameters:
     default: "{{ st2kv.system.chatops_e2e_tests_slack_user_username }}"
   slack_user_api_token:
     type: string
-    default: "{{ st2kv.system.chatops_e2e_tests_slack_user_api_token }}"
+    default: "{{ st2kv.system.chatops_e2e_tests_slack_user_api_token | decrypt_kv }}"
