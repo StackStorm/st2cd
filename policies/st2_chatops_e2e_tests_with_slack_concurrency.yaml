@@ -1,0 +1,38 @@
+---
+# Only one ChatOps end-to-end tests can be run with Slack at a time because
+# they all use the same Slack channel. So every StackStorm instance under test
+# would login as the same bot (eg: using SLACK_BOT_API_TOKEN) to the same room
+# and respond to the same messages from each testing bot (that is impersonating
+# a user, eg: using SLACK_USER_API_TOKEN).
+# TODO:
+# This restriction can be solved by creating distinct Slack bots and distinct
+# Slack channels for every supported OS.
+#   Example:
+#     - StackStorm instance under test
+#       OS: Ubuntu 16.04
+#       Slack bot username: st2_test_bot_u16
+#       Slack user username: user_test_bot_u16
+#       Slack channel: chatops_e2e_tests_u16
+#     - StackStorm instance under test
+#       OS: Ubuntu 18.04
+#       Slack bot username: st2_test_bot_u18
+#       Slack user username: user_test_bot_u18
+#       Slack channel: chatops_e2e_tests_u18
+#     - StackStorm instance under test
+#       OS: CentOS 7
+#       Slack bot username: st2_test_bot_el7
+#       Slack user username: user_test_bot_el7
+#       Slack channel: chatops_e2e_tests_el7
+#     - StackStorm instance under test
+#       OS: CentOS 8
+#       Slack bot username: st2_test_bot_el8
+#       Slack user username: user_test_bot_el8
+#       Slack channel: chatops_e2e_tests_el8
+name: st2_chatops_e2e_tests_with_slack.concurrency
+description: Only run one ChatOps end-to-end test (with Slack) at a time
+enabled: true
+resource_ref: st2cd.st2_chatops_e2e_tests_with_slack
+policy_type: action.concurrency
+parameters:
+  action: delay
+  threshold: 1
