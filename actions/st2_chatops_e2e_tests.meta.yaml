@@ -5,6 +5,8 @@ enabled: true
 runner_type: orquesta
 entry_point: workflows/st2_chatops_e2e_tests.yaml
 parameters:
+  host_ip:
+    type: string
   cwd:
     type: string
     default: "/tmp/st2tests"
