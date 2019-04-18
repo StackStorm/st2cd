@@ -1,0 +1,11 @@
+---
+name: github_event
+pack: githubwebhook
+description: 'Github push event'
+payload_schema:
+  type: object
+  properties:
+    headers:
+      type: object
+    body:
+      type: object
