@@ -106,6 +106,46 @@ do
     fi
 done
 
+# Set version attribute for all the bundled packs (core, linux, examples, etc.)
+BUNDLED_PACKS_METADATA_FILES=($(find contrib/ -mindepth 2 -maxdepth 2 -name pack.yaml))
+
+# NOTE: We don't set dev versions because pack version needs to be a valid semver string
+# (e.g 1.2.3) and Python dev version is not a valid semver string (e.g 2.10dev)
+IS_DEV_VERSION=$(echo ${VERSION} |grep -v "dev$")
+EXIT_CODE=$?
+
+if [ ${EXIT_CODE} -eq 1 ]; then
+    IS_DEV_VERSION=true
+else
+    IS_DEV_VERSION=false
+fi
+
+if [ "${IS_DEV_VERSION}" = "false" ]; then
+    for PACK_METADATA_FILE in "${BUNDLED_PACKS_METADATA_FILES}"
+    do
+        echo "Setting pack version in: ${PACK_METADATA_FILE}"
+
+        if [[ ! -e "${PACK_METADATA_FILE}" ]]; then
+            >&2 echo "ERROR: Pack metadata file ${PACK_METADATA_FILE} does not exist."
+            exit 1
+        fi
+
+        VERSION_STR_MATCH=`grep -Po "^version\s*:\s*${VERSION}" ${PACK_METADATA_FILE}`
+        if [[ -z "${VERSION_STR_MATCH}" ]]; then
+            echo "Setting version in ${PACK_METADATA_FILE} to ${VERSION}..."
+            sed -i -E "s/^version\s*:\s*(.*?)$/version: ${VERSION}/" ${PACK_METADATA_FILE}
+
+            VERSION_STR_MATCH=`grep "${VERSION}" ${PACK_METADATA_FILE} || true`
+            if [[ -z "${VERSION_STR_MATCH}" ]]; then
+                >&2 echo "ERROR: Unable to update the version in >${PACK_METADATA_FILE}."
+                exit 1
+            fi
+        fi
+    done
+else
+    echo "Skipping setting version attribute in pack.yaml files for dev version"
+fi
+
 MODIFIED=`git status | grep modified || true`
 if [[ ! -z "${MODIFIED}" ]]; then
     echo "Committing the st2 version update on branch ${BRANCH}..."
