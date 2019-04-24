@@ -7,11 +7,11 @@ set -e
 
 PROJECT=$1
 ST2_VERSION=$2
-FORK=$3
+ORG=$3
 BRANCH=$4
 LOCAL_REPO=$5
 
-GIT_REPO="git@github.com:${FORK}/${PROJECT}.git"
+GIT_REPO="git@github.com:${ORG}/${PROJECT}.git"
 CWD=`pwd`
 
 cleanup() {
