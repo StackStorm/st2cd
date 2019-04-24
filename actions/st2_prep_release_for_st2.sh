@@ -121,7 +121,7 @@ else
 fi
 
 if [ "${IS_DEV_VERSION}" = "false" ]; then
-    for PACK_METADATA_FILE in "${BUNDLED_PACKS_METADATA_FILES}"
+    for PACK_METADATA_FILE in "${BUNDLED_PACKS_METADATA_FILES[@]}"
     do
         echo "Setting pack version in: ${PACK_METADATA_FILE}"
 
