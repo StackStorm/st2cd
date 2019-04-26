@@ -12,6 +12,14 @@ GIT_REPO="git@github.com:${FORK}/${PROJECT}.git"
 CWD=`pwd`
 PUSH=0
 
+# Temporary workaround until we fix "False" default value for boolean
+# See https://github.com/StackStorm/st2/issues/4649
+if [ "$#" -eq 5 ]; then
+    # UPDATE_MISTRAL and UPDATE_CHANGELOG not provided due to bug in StackStorm
+    UPDATE_MISTRAL="0"
+    UPDATE_CHANGELOG="0"
+fi
+
 
 # CHECK IF BRANCH EXISTS
 BRANCH_EXISTS=`git ls-remote --heads ${GIT_REPO} | grep refs/heads/${BRANCH} || true`

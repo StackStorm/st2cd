@@ -43,26 +43,9 @@ tasks:
   finalize:
     next:
       - do:
-          - make_ewc_docs_stable
-  make_ewc_docs_stable:
-    action: circle_ci.run_build
-    input:
-      branch: v<% ctx().major_minor_version %>
-      project: ipfabric-docs
-      username: StackStorm
-    next:
-      - when: <% succeeded() %>
-        do:
-          - make_ewc_docs_latest
-      - when: <% failed() %>
-        do:
-          - cleanup_on_failure
-  make_ewc_docs_latest:
-    action: circle_ci.run_build
-    input:
-      branch: master
-      project: ipfabric-docs
-      username: StackStorm
+          - noop
+  noop:
+    action: core.noop
     next:
       - when: <% failed() %>
         do:
