@@ -77,10 +77,16 @@ done
 # Set version attribute for all the bundled packs (core, linux, examples, etc.)
 BUNDLED_PACKS_METADATA_FILES=($(find contrib/ -mindepth 2 -maxdepth 2 -name pack.yaml))
 
+
+# Temporary disable fail on failure for grep step where failure is OK
+set +e
+
 # NOTE: We don't set dev versions because pack version needs to be a valid semver string
 # (e.g 1.2.3) and Python dev version is not a valid semver string (e.g 2.10dev)
 IS_DEV_VERSION=$(echo ${VERSION} |grep -v "dev$")
 EXIT_CODE=$?
+
+set -e
 
 if [ ${EXIT_CODE} -eq 1 ]; then
     IS_DEV_VERSION=true
