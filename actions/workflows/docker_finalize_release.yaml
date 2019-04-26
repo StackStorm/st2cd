@@ -52,7 +52,7 @@ tasks:
     input:
       project: st2-docker
       version: <% ctx().version %>
-      org: <% ctx().org %>
+      fork: <% ctx().org %>
       local_repo: <% 'st2docker_' + ctx().local_repo_sfx %>
       branch: master
       hosts: <% ctx().host %>
@@ -88,7 +88,7 @@ tasks:
     input:
       project: st2-dockerfiles
       version: <% ctx().version %>
-      org: <% ctx().org %>
+      fork: <% ctx().org %>
       local_repo: <% 'st2_dockerfiles_' + ctx().local_repo_sfx %>
       branch: v<% ctx().major_minor_version %>
       hosts: <% ctx().host %>
@@ -105,18 +105,18 @@ tasks:
   wait_for_community_docker_image:
     action: st2cd.wait_for_docker_image
     input:
-      org: <% ctx().org %>
+      org: <% ctx().org.toLower() %>
       image: st2web
       version: <% ctx().version %>
-      tries: 10
+      tries: 13
       check_delay: 60
       hosts: <% ctx().host %>
       cwd: <% ctx().cwd %>
-      timeout: 650
+      timeout: 1000
     next:
       - when: <% succeeded() %>
         do:
-          - st2enterprise_dockerfiles_tag_release
+          - prep_st2enterprise_dockerfiles
       - when: <% failed() %>
         do:
           - cleanup_on_failure
@@ -133,6 +133,9 @@ tasks:
       hosts: <% ctx().host %>
       cwd: <% ctx().cwd %>
     next:
+      - when: <% succeeded() %>
+        do:
+          - st2enterprise_dockerfiles_tag_release
       - when: <% failed() %>
         do:
           - cleanup_on_failure
@@ -142,7 +145,7 @@ tasks:
     input:
       project: st2enterprise-dockerfiles
       version: <% ctx().version %>
-      org: <% ctx().org %>
+      fork: <% ctx().org %>
       local_repo: <% 'st2enterprise_dockerfiles_' + ctx().local_repo_sfx %>
       branch: v<% ctx().major_minor_version %>
       hosts: <% ctx().host %>
