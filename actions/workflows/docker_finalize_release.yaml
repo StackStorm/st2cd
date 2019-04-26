@@ -108,11 +108,11 @@ tasks:
       org: <% ctx().org %>
       image: st2web
       version: <% ctx().version %>
-      tries: 10
+      tries: 13
       check_delay: 60
       hosts: <% ctx().host %>
       cwd: <% ctx().cwd %>
-      timeout: 650
+      timeout: 1000
     next:
       - when: <% succeeded() %>
         do:
