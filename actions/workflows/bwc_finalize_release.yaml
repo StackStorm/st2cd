@@ -44,18 +44,3 @@ tasks:
     next:
       - do:
           - noop
-  noop:
-    action: core.noop
-    next:
-      - when: <% failed() %>
-        do:
-          - cleanup_on_failure
-
-  cleanup_on_failure:
-    action: core.remote
-    input:
-      cmd: <% 'rm -rf ' + ctx().cwd + '/bwc*' + ctx().local_repo_sfx + ' && rm -rf ~/.pypirc' %>
-      hosts: <% ctx().host %>
-    next:
-      - do:
-          - fail
