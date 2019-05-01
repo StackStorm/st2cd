@@ -85,6 +85,7 @@ tasks:
       cwd: <% ctx().cwd %>
       websocket: <% ctx().websocket %>
       slack_channel: "{{ st2kv.system.chatops_e2e_tests_slack_channel_u16 }}"
+      slack_bot_username: "{{ st2kv.system.chatops_e2e_tests_slack_bot_username_u16 }}"
       slack_bot_api_token: "{{ st2kv.system.chatops_e2e_tests_slack_bot_api_token_u16 | decrypt_kv }}"
       slack_user_username: "{{ st2kv.system.chatops_e2e_tests_slack_user_username_u16 }}"
       slack_user_api_token: "{{ st2kv.system.chatops_e2e_tests_slack_user_api_token_u16 | decrypt_kv }}"
@@ -103,6 +104,7 @@ tasks:
       cwd: <% ctx().cwd %>
       websocket: <% ctx().websocket %>
       slack_channel: "{{ st2kv.system.chatops_e2e_tests_slack_channel_u18 }}"
+      slack_bot_username: "{{ st2kv.system.chatops_e2e_tests_slack_bot_username_u18 }}"
       slack_bot_api_token: "{{ st2kv.system.chatops_e2e_tests_slack_bot_api_token_u18 | decrypt_kv }}"
       slack_user_username: "{{ st2kv.system.chatops_e2e_tests_slack_user_username_u18 }}"
       slack_user_api_token: "{{ st2kv.system.chatops_e2e_tests_slack_user_api_token_u18 | decrypt_kv }}"
@@ -121,6 +123,7 @@ tasks:
       cwd: <% ctx().cwd %>
       websocket: <% ctx().websocket %>
       slack_channel: "{{ st2kv.system.chatops_e2e_tests_slack_channel_el7 }}"
+      slack_bot_username: "{{ st2kv.system.chatops_e2e_tests_slack_bot_username_el7 }}"
       slack_bot_api_token: "{{ st2kv.system.chatops_e2e_tests_slack_bot_api_token_el7 | decrypt_kv }}"
       slack_user_username: "{{ st2kv.system.chatops_e2e_tests_slack_user_username_el7 }}"
       slack_user_api_token: "{{ st2kv.system.chatops_e2e_tests_slack_user_api_token_el7 | decrypt_kv }}"

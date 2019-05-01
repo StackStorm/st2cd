@@ -14,6 +14,8 @@ parameters:
     type: string
   slack_channel:
     type: string
+  slack_bot_username:
+    type: string
   slack_bot_api_token:
     type: string
   slack_user_username:

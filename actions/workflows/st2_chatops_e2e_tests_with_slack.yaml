@@ -6,6 +6,7 @@ input:
   - cwd
   - websocket
   - slack_channel
+  - slack_bot_username
   - slack_bot_api_token
   - slack_user_username
   - slack_user_api_token
@@ -33,6 +34,7 @@ tasks:
       env:
         WEBSOCKET_CLIENT_CA_BUNDLE: <% ctx().websocket %>
         SLACK_CHANNEL: <% ctx().slack_channel %>
+        SLACK_BOT_USERNAME: <% ctx().slack_bot_username %>
         SLACK_USER_USERNAME: <% ctx().slack_user_username %>
         SLACK_USER_API_TOKEN: <% ctx().slack_user_api_token %>
     next:
