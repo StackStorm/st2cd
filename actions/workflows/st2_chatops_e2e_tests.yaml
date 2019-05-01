@@ -1,0 +1,144 @@
+---
+version: '1.0'
+
+input:
+  - host_ip
+  - cwd
+
+tasks:
+  # Setup the virtualenv
+  # This is separated from the configure action because it does not (and SHOULD
+  # not be) run with root privileges
+  setup:
+    action: st2cd.st2_chatops_setup_e2e_tests
+    input:
+      hosts: host_ip
+      cwd: <% ctx().cwd %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - switch_on_ubuntu_version
+
+  switch_on_ubuntu_version:
+    action: core.remote
+    input:
+      hosts: <% ctx().host_ip %>
+      command: "echo -n '\"'; lsb_release --release | awk '{ print $2 }' | tr -d '\\n'; echo '\"'"
+    next:
+      - publish:
+          - ubuntu_version: <% result().stdout %>
+        do:
+          - log_ubuntu_version
+      - when: <% succeeded() and result().stdout == '16.04' %>
+        publish:
+          - websocket:
+        do:
+          - run_with_slack_u16
+      - when: <% succeeded() and result().stdout == '18.04' %>
+        publish:
+          - websocket:
+        do:
+          - run_with_slack_u18
+      - when: <% failed() or (succeeded() and not ["16.04", "18.04"].contains(result().stdout)) %>
+        do:
+          - switch_on_redhat_version
+
+  log_ubuntu_version:
+    action: core.echo
+    input:
+      message: <% ctx().ubuntu_version %>
+
+  switch_on_redhat_version:
+    action: core.remote
+    input:
+      hosts: <% ctx().host_ip %>
+      command: "echo -n '\"'; [[ -e /etc/redhat-release ]] && cat /etc/redhat-release 2>/dev/null | sed -r 's/^[a-zA-Z ]*([0-9]){1,}\..*$/\\1/' | tr -d '\\n'; echo '\"'"
+    next:
+      - publish:
+          - redhat_version: <% result().stdout %>
+        do:
+          - log_redhat_version
+      - when: <% succeeded() and result().stdout == '7' %>
+        publish:
+          - websocket: /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem
+        do:
+          - run_with_slack_el7
+      - when: <% failed() or (succeeded() and not ["7"].contains(result().stdout)) %>
+        do:
+          - log_skipping
+
+  log_redhat_version:
+    action: core.echo
+    input:
+      message: <% ctx().redhat_version %>
+
+  log_skipping:
+    action: core.echo
+    input:
+      message: "Skipping ChatOps end-to-end tests: <% ctx().ubuntu_version %><% ctx().redhat_version %>"
+
+  # Run the tests with Slack, ST2 IUT on Ubuntu 16.04
+  run_with_slack_u16:
+    action: st2cd.st2_chatops_e2e_tests_with_slack
+    input:
+      host_ip: <% ctx().host_ip %>
+      cwd: <% ctx().cwd %>
+      websocket: <% ctx().websocket %>
+      slack_channel: "{{ st2kv.system.chatops_e2e_tests_slack_channel_u16 }}"
+      slack_bot_username: "{{ st2kv.system.chatops_e2e_tests_slack_bot_username_u16 }}"
+      slack_bot_api_token: "{{ st2kv.system.chatops_e2e_tests_slack_bot_api_token_u16 | decrypt_kv }}"
+      slack_user_username: "{{ st2kv.system.chatops_e2e_tests_slack_user_username_u16 }}"
+      slack_user_api_token: "{{ st2kv.system.chatops_e2e_tests_slack_user_api_token_u16 | decrypt_kv }}"
+    next:
+      - do:
+          - teardown
+      - when: <% failed() %>
+        do:
+          - fail
+
+  # Run the tests with Slack, ST2 IUT on Ubuntu 18.04
+  run_with_slack_u18:
+    action: st2cd.st2_chatops_e2e_tests_with_slack
+    input:
+      host_ip: <% ctx().host_ip %>
+      cwd: <% ctx().cwd %>
+      websocket: <% ctx().websocket %>
+      slack_channel: "{{ st2kv.system.chatops_e2e_tests_slack_channel_u18 }}"
+      slack_bot_username: "{{ st2kv.system.chatops_e2e_tests_slack_bot_username_u18 }}"
+      slack_bot_api_token: "{{ st2kv.system.chatops_e2e_tests_slack_bot_api_token_u18 | decrypt_kv }}"
+      slack_user_username: "{{ st2kv.system.chatops_e2e_tests_slack_user_username_u18 }}"
+      slack_user_api_token: "{{ st2kv.system.chatops_e2e_tests_slack_user_api_token_u18 | decrypt_kv }}"
+    next:
+      - do:
+          - teardown
+      - when: <% failed() %>
+        do:
+          - fail
+
+  # Run the tests with Slack, ST2 IUT on RHEL/CentOS 7
+  run_with_slack_el7:
+    action: st2cd.st2_chatops_e2e_tests_with_slack
+    input:
+      host_ip: <% ctx().host_ip %>
+      cwd: <% ctx().cwd %>
+      websocket: <% ctx().websocket %>
+      slack_channel: "{{ st2kv.system.chatops_e2e_tests_slack_channel_el7 }}"
+      slack_bot_username: "{{ st2kv.system.chatops_e2e_tests_slack_bot_username_el7 }}"
+      slack_bot_api_token: "{{ st2kv.system.chatops_e2e_tests_slack_bot_api_token_el7 | decrypt_kv }}"
+      slack_user_username: "{{ st2kv.system.chatops_e2e_tests_slack_user_username_el7 }}"
+      slack_user_api_token: "{{ st2kv.system.chatops_e2e_tests_slack_user_api_token_el7 | decrypt_kv }}"
+    next:
+      - do:
+          - teardown
+      - when: <% failed() %>
+        do:
+          - fail
+
+  # Remove the virtualenv
+  # This is separated from the reset action because it does not (and SHOULD
+  # not be) run with root privileges
+  teardown:
+    action: st2cd.st2_chatops_teardown_e2e_tests
+    input:
+      hosts: host_ip
+      cwd: <% ctx().cwd %>

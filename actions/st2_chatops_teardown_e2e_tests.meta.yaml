@@ -1,0 +1,14 @@
+---
+name: st2_chatops_teardown_e2e_tests
+description: Remove the ChatOps end-to-end tests virtualenv
+enabled: true
+runner_type: remote-shell-script
+entry_point: st2_chatops_teardown_e2e_tests.sh
+parameters:
+  sudo:
+    type: boolean
+    immutable: true
+    default: false
+  cwd:
+    type: string
+    default: "/tmp/st2tests"

@@ -12,10 +12,23 @@ if [[ -n "$RHTEST" ]]; then
     RHVERSION=`cat /etc/redhat-release 2> /dev/null | sed -r 's/([^0-9]*([0-9]*)){1}.*/\2/'`
     echo "*** Detected Distro is ${RHTEST} - ${RHVERSION} ***"
     sudo yum install -y python-pip wget
+    if [[ "$RHVERSION" -ge 7 ]]; then
+        sudo yum install -y jq
+    fi
+    # Install from GitHub
+    # RHEL 7+ has both bats and jq package, so we don't need to do this once we
+    # drop RHEL 6 support
+    git clone https://github.com/bats-core/bats-core.git
+    (cd bats-core; sudo ./install.sh /usr/local)
 elif [[ -n "$DEBTEST" ]]; then
-    echo "*** Detected Distro is ${DEBTEST} ***"
-    sudo apt-get install -y wget
-    sudo apt-get -q -y install python-pip python-dev build-essential
+    DEBVERSION=`lsb_release --release | awk '{ print $2 }'`
+    echo "*** Detected Distro is ${DEBTEST} - ${DEBVERSION} ***"
+    sudo apt-get -q -y install build-essential jq python-pip python-dev wget
+    # Install from GitHub
+    # Ubuntu 16.04 has both bats and jq packages, so we don't need to do this
+    # once we drop Ubuntu 14.04 support
+    git clone https://github.com/bats-core/bats-core.git
+    (cd bats-core; sudo ./install.sh /usr/local)
 else
     echo "Unknown Operating System."
     exit 2
@@ -41,10 +54,12 @@ st2ctl reload --register-all
 # Install packs for testing
 if [[ ${BRANCH} == "master" ]]; then
     echo "Installing st2tests from '${BRANCH}' branch at location: `pwd`..."
-    git clone -b ${BRANCH} --depth 1 https://github.com/StackStorm/st2tests.git
+    # Can use --recurse-submodules with Git 2.13 and later
+    git clone --recursive -b ${BRANCH} --depth 1 https://github.com/StackStorm/st2tests.git
 else
-   echo "Installing st2tests from 'v${BRANCH}' branch at location: `pwd`"
-   git clone -b v${BRANCH} --depth 1 https://github.com/StackStorm/st2tests.git
+    echo "Installing st2tests from 'v${BRANCH}' branch at location: `pwd`"
+    # Can use --recurse-submodules with Git 2.13 and later
+    git clone --recursive -b v${BRANCH} --depth 1 https://github.com/StackStorm/st2tests.git
 fi
 echo "Installing Packs: tests, asserts, fixtures, webui..."
 sudo cp -R st2tests/packs/* /opt/stackstorm/packs/
@@ -71,7 +86,7 @@ else
     virtualenv --no-download venv
 fi
 . venv/bin/activate
-pip install -r robotfm_tests/test-requirements.txt
+pip install -r test-requirements.txt
 
 
 # Restart st2 primarily reload the keyvalue configuration

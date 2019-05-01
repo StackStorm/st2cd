@@ -1,0 +1,52 @@
+---
+version: '1.0'
+
+input:
+  - host_ip
+  - cwd
+  - websocket
+  - slack_channel
+  - slack_bot_username
+  - slack_bot_api_token
+  - slack_user_username
+  - slack_user_api_token
+
+tasks:
+  # Configure st2chatops.env and restart st2chatops
+  # This is separate from the setup action because it does (and MUST) require
+  # root privileges
+  configure:
+    action: st2cd.st2_chatops_configure_e2e_tests_with_slack
+    input:
+      hosts: <% ctx().host_ip %>
+      env:
+        SLACK_BOT_API_TOKEN: <% ctx().slack_bot_api_token %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - run
+  # Run the tests with Slack
+  run:
+    action: st2cd.st2_chatops_run_e2e_tests_with_slack
+    input:
+      hosts: <% ctx().host_ip %>
+      cwd: <% ctx().cwd %>
+      env:
+        WEBSOCKET_CLIENT_CA_BUNDLE: <% ctx().websocket %>
+        SLACK_CHANNEL: <% ctx().slack_channel %>
+        SLACK_BOT_USERNAME: <% ctx().slack_bot_username %>
+        SLACK_USER_USERNAME: <% ctx().slack_user_username %>
+        SLACK_USER_API_TOKEN: <% ctx().slack_user_api_token %>
+    next:
+      - do:
+          - reset
+      - when: <% failed() %>
+        do:
+          - fail
+  # Reset st2chatops.env and restart st2chatops
+  # This is separate from the teardown action because it does (and MUST) require
+  # root privileges
+  reset:
+    action: st2cd.st2_chatops_reset_e2e_tests_with_slack
+    input:
+      hosts: <% ctx().host_ip %>

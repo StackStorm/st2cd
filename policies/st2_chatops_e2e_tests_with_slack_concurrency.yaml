@@ -1,0 +1,17 @@
+---
+# ChatOps end-to-end tests with Slack run configured with different channels so
+# they do not interfere with each other.
+# However, we still need to ensure that multiple end-to-end test runs do not
+# interfere with each other, so we restrict the
+# st2.st2_chatops_e2e_tests_with_slack to only run one action at a time for
+# each different Slack channel.
+name: st2_chatops_e2e_tests_with_slack.concurrency
+description: Only run one ChatOps end-to-end test (with Slack) at a time
+enabled: true
+resource_ref: st2cd.st2_chatops_e2e_tests_with_slack
+policy_type: action.concurrency.attr
+parameters:
+  action: delay
+  threshold: 1
+  attributes:
+    - slack_channel
