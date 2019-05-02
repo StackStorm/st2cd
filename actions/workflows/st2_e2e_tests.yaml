@@ -120,7 +120,7 @@ tasks:
       hosts: <% ctx().host_ip %>
       env: <% ctx().st2_cli_env %>
       cmd: "cd /tmp/st2tests && bats docs/*.bats"
-      timeout: 300
+      timeout: 1200
     next:
       - when: <% succeeded() %>
         do:
@@ -131,7 +131,7 @@ tasks:
       hosts: <% ctx().host_ip %>
       env: <% ctx().st2_cli_env %>
       cmd: "cd /tmp/st2tests && bats cli/*.bats"
-      timeout: 300
+      timeout: 1200
     next:
       - when: <% succeeded() %>
         do:
@@ -142,7 +142,7 @@ tasks:
       hosts: <% ctx().host_ip %>
       env: <% ctx().st2_cli_env %>
       cmd: "cd /tmp/st2tests && bats chatops/*.bats"
-      timeout: 300
+      timeout: 1200
   #   next:
   #     - when: <% succeeded() %>
   #       do:
