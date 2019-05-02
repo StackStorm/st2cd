@@ -151,7 +151,6 @@ tasks:
     action: st2cd.st2_chatops_e2e_tests
     input:
       cwd: /tmp/st2tests
-      timeout: 300
     next:
       - when: <% succeeded() and (ctx().enterprise) %>
         do:
