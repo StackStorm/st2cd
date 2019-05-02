@@ -110,47 +110,47 @@ tasks:
       windows_password: <% ctx().windows_password %>
       env: <% ctx().st2_cli_env %>
       protocol: <% ctx().protocol %>
-    next:
-      - when: <% succeeded() %>
-        do:
-          - docs_tests
-  docs_tests:
-    action: core.remote
-    input:
-      hosts: <% ctx().host_ip %>
-      env: <% ctx().st2_cli_env %>
-      cmd: "cd /tmp/st2tests && bats docs/*.bats"
-      timeout: 300
-    next:
-      - when: <% succeeded() %>
-        do:
-          - cli_tests
-  cli_tests:
-    action: core.remote
-    input:
-      hosts: <% ctx().host_ip %>
-      env: <% ctx().st2_cli_env %>
-      cmd: "cd /tmp/st2tests && bats cli/*.bats"
-      timeout: 300
-    next:
-      - when: <% succeeded() %>
-        do:
-          - chatops_tests
-  chatops_tests:
-    action: core.remote
-    input:
-      hosts: <% ctx().host_ip %>
-      env: <% ctx().st2_cli_env %>
-      cmd: "cd /tmp/st2tests && bats chatops/*.bats"
-      timeout: 300
-    next:
-      - when: <% succeeded() %>
-        do:
-          - chatops_e2e_tests
-  chatops_e2e_tests:
-    action: st2cd.st2_chatops_e2e_tests
-    input:
-      cwd: /tmp/st2tests
+  #   next:
+  #     - when: <% succeeded() %>
+  #       do:
+  #         - docs_tests
+  # docs_tests:
+  #   action: core.remote
+  #   input:
+  #     hosts: <% ctx().host_ip %>
+  #     env: <% ctx().st2_cli_env %>
+  #     cmd: "cd /tmp/st2tests && bats docs/*.bats"
+  #     timeout: 300
+  #   next:
+  #     - when: <% succeeded() %>
+  #       do:
+  #         - cli_tests
+  # cli_tests:
+  #   action: core.remote
+  #   input:
+  #     hosts: <% ctx().host_ip %>
+  #     env: <% ctx().st2_cli_env %>
+  #     cmd: "cd /tmp/st2tests && bats cli/*.bats"
+  #     timeout: 300
+  #   next:
+  #     - when: <% succeeded() %>
+  #       do:
+  #         - chatops_tests
+  # chatops_tests:
+  #   action: core.remote
+  #   input:
+  #     hosts: <% ctx().host_ip %>
+  #     env: <% ctx().st2_cli_env %>
+  #     cmd: "cd /tmp/st2tests && bats chatops/*.bats"
+  #     timeout: 300
+  #   next:
+  #     - when: <% succeeded() %>
+  #       do:
+  #         - chatops_e2e_tests
+  # chatops_e2e_tests:
+  #   action: st2cd.st2_chatops_e2e_tests
+  #   input:
+  #     cwd: /tmp/st2tests
     next:
       - when: <% succeeded() and (ctx().enterprise) %>
         do:
