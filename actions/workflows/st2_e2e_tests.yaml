@@ -110,10 +110,10 @@ tasks:
       windows_password: <% ctx().windows_password %>
       env: <% ctx().st2_cli_env %>
       protocol: <% ctx().protocol %>
-    next:
-      - when: <% succeeded() %>
-        do:
-          - docs_tests
+#   next:
+#     - when: <% succeeded() %>
+#       do:
+#         - docs_tests
 #  docs_tests:
 #    action: core.remote
 #    input:
