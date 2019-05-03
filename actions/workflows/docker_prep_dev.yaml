@@ -7,6 +7,7 @@ input:
   - host
   - cwd
 vars:
+  - dev_version: <% ctx().version.split('.')[0] + '.' + ctx().version.split('.')[1] + 'dev' %>
   - local_repo_sfx:
 tasks:
   init:
@@ -51,7 +52,7 @@ tasks:
     action: st2cd.docker_chg_ver
     input:
       project: st2-dockerfiles
-      version: <% ctx().version %>
+      version: <% ctx().dev_version %>
       org: <% ctx().org %>
       branch: master
       local_repo: <% 'st2_dockerfiles_' + ctx().local_repo_sfx %>
@@ -71,7 +72,7 @@ tasks:
     input:
       org: <% ctx().org %>
       image: st2web
-      version: <% ctx().version %>
+      version: <% ctx().dev_version %>
       tries: 10
       check_delay: 60
       hosts: <% ctx().host %>
@@ -90,7 +91,7 @@ tasks:
     action: st2cd.docker_chg_ver
     input:
       project: st2enterprise-dockerfiles
-      version: <% ctx().version %>
+      version: <% ctx().dev_version %>
       org: <% ctx().org %>
       branch: master
       local_repo: <% 'st2enterprise_dockerfiles_' + ctx().local_repo_sfx %>
