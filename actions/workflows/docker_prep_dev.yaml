@@ -70,14 +70,14 @@ tasks:
   wait_for_community_docker_image:
     action: st2cd.wait_for_docker_image
     input:
-      org: <% ctx().org %>
+      org: <% ctx().org.toLower() %>
       image: st2web
       version: <% ctx().dev_version %>
-      tries: 10
+      tries: 13
       check_delay: 60
       hosts: <% ctx().host %>
       cwd: <% ctx().cwd %>
-      timeout: 650
+      timeout: 1000
     next:
       - when: <% succeeded() %>
         do:
