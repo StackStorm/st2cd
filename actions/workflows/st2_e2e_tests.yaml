@@ -114,35 +114,35 @@ tasks:
       - when: <% succeeded() %>
         do:
           - docs_tests
-  docs_tests:
-    action: core.remote
-    input:
-      hosts: <% ctx().host_ip %>
-      env: <% ctx().st2_cli_env %>
-      cmd: "cd /tmp/st2tests && bats docs/*.bats"
-      timeout: 1200
-    next:
-      - when: <% succeeded() %>
-        do:
-          - cli_tests
-  cli_tests:
-    action: core.remote
-    input:
-      hosts: <% ctx().host_ip %>
-      env: <% ctx().st2_cli_env %>
-      cmd: "cd /tmp/st2tests && bats cli/*.bats"
-      timeout: 1200
-    next:
-      - when: <% succeeded() %>
-        do:
-          - chatops_tests
-  chatops_tests:
-    action: core.remote
-    input:
-      hosts: <% ctx().host_ip %>
-      env: <% ctx().st2_cli_env %>
-      cmd: "cd /tmp/st2tests && bats chatops/*.bats"
-      timeout: 1200
+#  docs_tests:
+#    action: core.remote
+#    input:
+#      hosts: <% ctx().host_ip %>
+#      env: <% ctx().st2_cli_env %>
+#      cmd: "cd /tmp/st2tests && bats docs/*.bats"
+#      timeout: 1200
+#    next:
+#      - when: <% succeeded() %>
+#        do:
+#          - cli_tests
+#  cli_tests:
+#    action: core.remote
+#    input:
+#      hosts: <% ctx().host_ip %>
+#      env: <% ctx().st2_cli_env %>
+#      cmd: "cd /tmp/st2tests && bats cli/*.bats"
+#      timeout: 1200
+#    next:
+#      - when: <% succeeded() %>
+#        do:
+#          - chatops_tests
+#  chatops_tests:
+#    action: core.remote
+#    input:
+#      hosts: <% ctx().host_ip %>
+#      env: <% ctx().st2_cli_env %>
+#      cmd: "cd /tmp/st2tests && bats chatops/*.bats"
+#      timeout: 1200
   #   next:
   #     - when: <% succeeded() %>
   #       do:
