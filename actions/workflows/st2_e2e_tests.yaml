@@ -100,8 +100,8 @@ tasks:
     next:
      - when: <% succeeded() %>
        do:
-         - docs_tests
-  docs_tests:
+         - run_docs_tests
+  run_docs_tests:
     action: core.remote
     input:
       hosts: <% ctx().host_ip %>
@@ -111,8 +111,8 @@ tasks:
     next:
       - when: <% succeeded() %>
         do:
-          - cli_tests
-  cli_tests:
+          - run_cli_tests
+  run_cli_tests:
     action: core.remote
     input:
       hosts: <% ctx().host_ip %>
@@ -122,8 +122,8 @@ tasks:
     next:
       - when: <% succeeded() %>
         do:
-          - chatops_tests
-  chatops_tests:
+          - run_chatops_tests
+  run_chatops_tests:
     action: core.remote
     input:
       hosts: <% ctx().host_ip %>
@@ -133,8 +133,8 @@ tasks:
   #   next:
   #     - when: <% succeeded() %>
   #       do:
-  #         - chatops_e2e_tests
-  # chatops_e2e_tests:
+  #         - run_chatops_e2e_tests
+  # run_chatops_e2e_tests:
   #   action: st2cd.st2_chatops_e2e_tests
   #   input:
   #     host_ip: <% ctx().host_ip %>
@@ -155,8 +155,8 @@ tasks:
     next:
       - when: <% succeeded() and (ctx().enterprise) %>
         do:
-          - enterprise_tests
-  enterprise_tests:
+          - run_enterprise_tests
+  run_enterprise_tests:
     action: st2cd.st2_enterprise_tests
     input:
       host_ip: <% ctx().host_ip %>
