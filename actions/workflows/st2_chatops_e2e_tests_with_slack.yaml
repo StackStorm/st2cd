@@ -3,6 +3,7 @@ version: '1.0'
 
 input:
   - host_ip
+  - st2_auth_token
   - cwd
   - websocket
   - slack_channel
@@ -32,6 +33,7 @@ tasks:
       hosts: <% ctx().host_ip %>
       command: st2 run --inherit-env tests.test_aliases_with_slack
       env:
+        ST2_AUTH_TOKEN: <% ctx().st2_auth_token %>
         WEBSOCKET_CLIENT_CA_BUNDLE: <% ctx().websocket %>
         SLACK_CHANNEL: <% ctx().slack_channel %>
         SLACK_BOT_USERNAME: <% ctx().slack_bot_username %>

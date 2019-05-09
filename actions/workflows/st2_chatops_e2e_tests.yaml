@@ -3,6 +3,7 @@ version: '1.0'
 
 input:
   - host_ip
+  - env
   - cwd
 
 tasks:
@@ -69,6 +70,7 @@ tasks:
     action: st2cd.st2_chatops_e2e_tests_with_slack
     input:
       host_ip: <% ctx().host_ip %>
+      st2_auth_token: <% ctx().env.ST2_AUTH_TOKEN %>
       cwd: <% ctx().cwd %>
       websocket: <% ctx().websocket %>
       slack_channel: "{{ st2kv.system.chatops_e2e_tests_slack_channel_u16 }}"
@@ -82,6 +84,7 @@ tasks:
     action: st2cd.st2_chatops_e2e_tests_with_slack
     input:
       host_ip: <% ctx().host_ip %>
+      st2_auth_token: <% ctx().env.ST2_AUTH_TOKEN %>
       cwd: <% ctx().cwd %>
       websocket: <% ctx().websocket %>
       slack_channel: "{{ st2kv.system.chatops_e2e_tests_slack_channel_u18 }}"
@@ -95,6 +98,7 @@ tasks:
     action: st2cd.st2_chatops_e2e_tests_with_slack
     input:
       host_ip: <% ctx().host_ip %>
+      st2_auth_token: <% ctx().env.ST2_AUTH_TOKEN %>
       cwd: <% ctx().cwd %>
       websocket: <% ctx().websocket %>
       slack_channel: "{{ st2kv.system.chatops_e2e_tests_slack_channel_el7 }}"
