@@ -15,6 +15,11 @@ if [[ -n "$RHTEST" ]]; then
     if [[ "$RHVERSION" -ge 7 ]]; then
         sudo yum install -y jq
     fi
+    # Remove bats-core if it already exists (this happens when test workflows
+    # are re-run on a server when tests are debugged)
+    if [[ -d bats-core ]]; then
+        rm -rf bats-core
+    fi
     # Install from GitHub
     # RHEL 7+ has both bats and jq package, so we don't need to do this once we
     # drop RHEL 6 support
@@ -24,6 +29,11 @@ elif [[ -n "$DEBTEST" ]]; then
     DEBVERSION=`lsb_release --release | awk '{ print $2 }'`
     echo "*** Detected Distro is ${DEBTEST} - ${DEBVERSION} ***"
     sudo apt-get -q -y install build-essential jq python-pip python-dev wget
+    # Remove bats-core if it already exists (this happens when test workflows
+    # are re-run on a server when tests are debugged)
+    if [[ -d bats-core ]]; then
+        rm -rf bats-core
+    fi
     # Install from GitHub
     # Ubuntu 16.04 has both bats and jq packages, so we don't need to do this
     # once we drop Ubuntu 14.04 support
