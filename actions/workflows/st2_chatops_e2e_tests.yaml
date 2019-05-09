@@ -6,19 +6,6 @@ input:
   - cwd
 
 tasks:
-  # Setup the virtualenv
-  # This is separated from the configure action because it does not (and SHOULD
-  # not be) run with root privileges
-  setup:
-    action: st2cd.st2_chatops_setup_e2e_tests
-    input:
-      hosts: host_ip
-      cwd: <% ctx().cwd %>
-    next:
-      - when: <% succeeded() %>
-        do:
-          - switch_on_ubuntu_version
-
   switch_on_ubuntu_version:
     action: core.remote
     input:
@@ -133,12 +120,3 @@ tasks:
       - when: <% failed() %>
         do:
           - fail
-
-  # Remove the virtualenv
-  # This is separated from the reset action because it does not (and SHOULD
-  # not be) run with root privileges
-  teardown:
-    action: st2cd.st2_chatops_teardown_e2e_tests
-    input:
-      hosts: host_ip
-      cwd: <% ctx().cwd %>
