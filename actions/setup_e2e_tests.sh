@@ -64,6 +64,12 @@ keyvalue_options"
 # Reload required for testing st2 upgrade
 st2ctl reload --register-all
 
+# Remove the st2tests directory if it exists (this happens when test workflows
+# are re-run on a server when tests are debugged)
+if [[ -d st2tests ]]; then
+    rm -rf st2tests
+fi
+
 # Install packs for testing
 if [[ ${BRANCH} == "master" ]]; then
     echo "Installing st2tests from '${BRANCH}' branch at location: `pwd`..."
