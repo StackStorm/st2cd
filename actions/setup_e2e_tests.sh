@@ -14,6 +14,10 @@ if [[ -n "$RHTEST" ]]; then
     sudo yum install -y python-pip wget
     if [[ "$RHVERSION" -ge 7 ]]; then
         sudo yum install -y jq
+    else
+        # For RHEL/CentOS 6
+        sudo yum install -y epel-release
+        sudo yum install -y jq
     fi
     # Remove bats-core if it already exists (this happens when test workflows
     # are re-run on a server when tests are debugged)
