@@ -76,12 +76,6 @@ tasks:
       slack_bot_api_token: "{{ st2kv.system.chatops_e2e_tests_slack_bot_api_token_u16 | decrypt_kv }}"
       slack_user_username: "{{ st2kv.system.chatops_e2e_tests_slack_user_username_u16 }}"
       slack_user_api_token: "{{ st2kv.system.chatops_e2e_tests_slack_user_api_token_u16 | decrypt_kv }}"
-    next:
-      - do:
-          - teardown
-      - when: <% failed() %>
-        do:
-          - fail
 
   # Run the tests with Slack, ST2 IUT on Ubuntu 18.04
   run_with_slack_u18:
@@ -95,12 +89,6 @@ tasks:
       slack_bot_api_token: "{{ st2kv.system.chatops_e2e_tests_slack_bot_api_token_u18 | decrypt_kv }}"
       slack_user_username: "{{ st2kv.system.chatops_e2e_tests_slack_user_username_u18 }}"
       slack_user_api_token: "{{ st2kv.system.chatops_e2e_tests_slack_user_api_token_u18 | decrypt_kv }}"
-    next:
-      - do:
-          - teardown
-      - when: <% failed() %>
-        do:
-          - fail
 
   # Run the tests with Slack, ST2 IUT on RHEL/CentOS 7
   run_with_slack_el7:
@@ -114,9 +102,3 @@ tasks:
       slack_bot_api_token: "{{ st2kv.system.chatops_e2e_tests_slack_bot_api_token_el7 | decrypt_kv }}"
       slack_user_username: "{{ st2kv.system.chatops_e2e_tests_slack_user_username_el7 }}"
       slack_user_api_token: "{{ st2kv.system.chatops_e2e_tests_slack_user_api_token_el7 | decrypt_kv }}"
-    next:
-      - do:
-          - teardown
-      - when: <% failed() %>
-        do:
-          - fail
