@@ -50,9 +50,12 @@ CRYPTO_BASE="/etc/st2/keys"
 CRYPTO_KEY_FILE="${CRYPTO_BASE}/key.json"
 
 sudo mkdir -p ${CRYPTO_BASE}
-sudo st2-generate-symmetric-crypto-key --key-path ${CRYPTO_KEY_FILE}
-sudo chgrp st2packs ${CRYPTO_KEY_FILE}
+if [[ ! -e "${CRYPTO_KEY_FILE}" ]]; then
+    sudo st2-generate-symmetric-crypto-key --key-path ${CRYPTO_KEY_FILE}
+    sudo chgrp st2packs ${CRYPTO_KEY_FILE}
+fi
 
+# This looks overly complicated...
 sudo bash -c "cat <<keyvalue_options >>${ST2_CONF}
 [keyvalue]
 encryption_key_path=${CRYPTO_KEY_FILE}
