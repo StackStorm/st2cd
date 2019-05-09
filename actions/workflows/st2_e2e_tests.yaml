@@ -98,6 +98,30 @@ tasks:
       env: <% ctx().st2_cli_env %>
       protocol: <% ctx().protocol %>
     next:
+      - when: <% succeeded() %>
+        do:
+          - run_windows_tests
+  run_windows_tests:
+    action: st2cd.st2_e2e_tests_test_windows
+    input:
+      host: <% ctx().host_ip %>
+      windows_host: <% ctx().windows_host_ip %>
+      windows_username: <% ctx().windows_username %>
+      windows_password: <% ctx().windows_password %>
+      env: <% ctx().st2_cli_env %>
+      protocol: <% ctx().protocol %>
+    next:
+      - when: <% succeeded() and ctx().enterprise %>
+        do:
+          - run_enterprise_tests
+      - when: <% succeeded() and not ctx().enterprise %>
+        do:
+          - run_docs_tests
+  run_enterprise_tests:
+    action: st2cd.st2_enterprise_tests
+    input:
+      host_ip: <% ctx().host_ip %>
+    next:
      - when: <% succeeded() %>
        do:
          - run_docs_tests
@@ -113,6 +137,8 @@ tasks:
       - when: <% succeeded() %>
         do:
           - run_cli_tests
+  # CAUTION: These tests remove the examples pack, so they should be run last
+  #          or the st2cd.setup_e2e_tests action should be run again.
   run_cli_tests:
     action: core.remote
     input:
@@ -142,24 +168,3 @@ tasks:
   #   input:
   #     host_ip: <% ctx().host_ip %>
   #     cwd: /tmp/st2tests
-    next:
-      - when: <% succeeded() %>
-        do:
-          - run_windows_tests
-  run_windows_tests:
-    action: st2cd.st2_e2e_tests_test_windows
-    input:
-      host: <% ctx().host_ip %>
-      windows_host: <% ctx().windows_host_ip %>
-      windows_username: <% ctx().windows_username %>
-      windows_password: <% ctx().windows_password %>
-      env: <% ctx().st2_cli_env %>
-      protocol: <% ctx().protocol %>
-    next:
-      - when: <% succeeded() and (ctx().enterprise) %>
-        do:
-          - run_enterprise_tests
-  run_enterprise_tests:
-    action: st2cd.st2_enterprise_tests
-    input:
-      host_ip: <% ctx().host_ip %>
