@@ -121,44 +121,44 @@ tasks:
     action: st2cd.st2_enterprise_tests
     input:
       host_ip: <% ctx().host_ip %>
-    next:
-     - when: <% succeeded() %>
-       do:
-         - run_docs_tests
-  run_docs_tests:
-    action: core.remote
-    input:
-      hosts: <% ctx().host_ip %>
-      env: <% ctx().st2_cli_env %>
-      cmd: bats docs/*.bats
-      cwd: /tmp/st2tests
-      timeout: 1200
-    next:
-      - when: <% succeeded() %>
-        do:
-          - run_cli_tests
-  # CAUTION: These tests remove the examples pack, so they should be run last
-  #          or the st2cd.setup_e2e_tests action should be run again.
-  run_cli_tests:
-    action: core.remote
-    input:
-      hosts: <% ctx().host_ip %>
-      env: <% ctx().st2_cli_env %>
-      cmd: bats cli/*.bats
-      cwd: /tmp/st2tests
-      timeout: 1200
-    next:
-      - when: <% succeeded() %>
-        do:
-          - run_chatops_tests
-  run_chatops_tests:
-    action: core.remote
-    input:
-      hosts: <% ctx().host_ip %>
-      env: <% ctx().st2_cli_env %>
-      cmd: bats chatops/*.bats
-      cwd: /tmp/st2tests
-      timeout: 1200
+  #   next:
+  #    - when: <% succeeded() %>
+  #      do:
+  #        - run_docs_tests
+  # run_docs_tests:
+  #   action: core.remote
+  #   input:
+  #     hosts: <% ctx().host_ip %>
+  #     env: <% ctx().st2_cli_env %>
+  #     cmd: bats docs/*.bats
+  #     cwd: /tmp/st2tests
+  #     timeout: 1200
+  #   next:
+  #     - when: <% succeeded() %>
+  #       do:
+  #         - run_cli_tests
+  # # CAUTION: These tests remove the examples pack, so they should be run last
+  # #          or the st2cd.setup_e2e_tests action should be run again.
+  # run_cli_tests:
+  #   action: core.remote
+  #   input:
+  #     hosts: <% ctx().host_ip %>
+  #     env: <% ctx().st2_cli_env %>
+  #     cmd: bats cli/*.bats
+  #     cwd: /tmp/st2tests
+  #     timeout: 1200
+  #   next:
+  #     - when: <% succeeded() %>
+  #       do:
+  #         - run_chatops_tests
+  # run_chatops_tests:
+  #   action: core.remote
+  #   input:
+  #     hosts: <% ctx().host_ip %>
+  #     env: <% ctx().st2_cli_env %>
+  #     cmd: bats chatops/*.bats
+  #     cwd: /tmp/st2tests
+  #     timeout: 1200
   #   next:
   #     - when: <% succeeded() %>
   #       do:
