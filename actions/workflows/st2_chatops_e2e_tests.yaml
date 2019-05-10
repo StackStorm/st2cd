@@ -14,22 +14,22 @@ tasks:
       cmd: "echo -n '\"'; lsb_release --release | awk '{ print $2 }' | tr -d '\\n'; echo '\"'"
     next:
       - publish:
-          - ubuntu_version: <% result().result.output %>
+          - ubuntu_version: <% result().get(ctx().host_ip).stdout %>
         do:
           - log_ubuntu_version
-      - when: <% succeeded() and result().result.output = '16.04' %>
+      - when: <% succeeded() and result().get(ctx().host_ip).stdout = '16.04' %>
         publish:
           - websocket:
         do:
           - run_with_slack_u16
-      - when: <% succeeded() and result().result.output = '18.04' %>
+      - when: <% succeeded() and result().get(ctx().host_ip).stdout = '18.04' %>
         publish:
           - websocket:
         do:
           - run_with_slack_u18
-      - when: <% failed() or (succeeded() and not ["16.04", "18.04"].contains(result().result.output)) %>
+      - when: <% failed() or (succeeded() and not ["16.04", "18.04"].contains(result().get(ctx().host_ip).stdout)) %>
         publish:
-          - ubuntu_version: <% result().result.output %>
+          - ubuntu_version: <% result().get(ctx().host_ip).stdout %>
         do:
           - switch_on_redhat_version
 
@@ -45,17 +45,17 @@ tasks:
       cmd: "echo -n '\"'; [[ -e /etc/redhat-release ]] && cat /etc/redhat-release 2>/dev/null | sed -r 's/^[a-zA-Z ]*([0-9]){1,}\\..*$/\\1/' | tr -d '\\n'; echo '\"'"
     next:
       - publish:
-          - redhat_version: <% result().result.output %>
+          - redhat_version: <% result().get(ctx().host_ip).stdout %>
         do:
           - log_redhat_version
-      - when: <% succeeded() and result().result.output = '7' %>
+      - when: <% succeeded() and result().get(ctx().host_ip).stdout = '7' %>
         publish:
           - websocket: /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem
         do:
           - run_with_slack_el7
-      - when: <% failed() or (succeeded() and not ["7"].contains(result().result.output)) %>
+      - when: <% failed() or (succeeded() and not ["7"].contains(result().get(ctx().host_ip).stdout)) %>
         publish:
-          - redhat_version: <% result().result.output %>
+          - redhat_version: <% result().get(ctx().host_ip).stdout %>
         do:
           - log_skipping
 
