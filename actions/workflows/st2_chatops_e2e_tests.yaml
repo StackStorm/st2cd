@@ -40,7 +40,7 @@ tasks:
     action: core.remote
     input:
       hosts: <% ctx().host_ip %>
-      command: "echo -n '\"'; [[ -e /etc/redhat-release ]] && cat /etc/redhat-release 2>/dev/null | sed -r 's/^[a-zA-Z ]*([0-9]){1,}\..*$/\\1/' | tr -d '\\n'; echo '\"'"
+      command: "echo -n '\"'; [[ -e /etc/redhat-release ]] && cat /etc/redhat-release 2>/dev/null | sed -r 's/^[a-zA-Z ]*([0-9]){1,}\\..*$/\\1/' | tr -d '\\n'; echo '\"'"
     next:
       - publish:
           - redhat_version: <% result().stdout %>
