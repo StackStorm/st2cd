@@ -31,7 +31,7 @@ tasks:
     action: core.remote
     input:
       hosts: <% ctx().host_ip %>
-      command: st2 run --inherit-env tests.test_aliases_with_slack
+      cmd: st2 run --inherit-env tests.test_aliases_with_slack
       env:
         ST2_AUTH_TOKEN: <% ctx().st2_auth_token %>
         WEBSOCKET_CLIENT_CA_BUNDLE: <% ctx().websocket %>
