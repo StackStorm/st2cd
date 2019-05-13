@@ -12,3 +12,72 @@ parameters:
   cwd:
     type: string
     default: "/tmp/st2tests"
+
+  chatops_e2e_tests_slack_channel_u16:
+    type: string
+    default: "{{ st2kv.system.chatops_e2e_tests_slack_channel_u16 }}"
+    immutable: true
+  chatops_e2e_tests_slack_bot_username_u16:
+    type: string
+    default: "{{ st2kv.system.chatops_e2e_tests_slack_bot_username_u16 }}"
+    immutable: true
+  chatops_e2e_tests_slack_bot_api_token_u16:
+    type: string
+    default: "{{ st2kv.system.chatops_e2e_tests_slack_bot_api_token_u16 | decrypt_kv }}"
+    secret: true
+    immutable: true
+  chatops_e2e_tests_slack_user_username_u16:
+    type: string
+    default: "{{ st2kv.system.chatops_e2e_tests_slack_user_username_u16 }}"
+    immutable: true
+  chatops_e2e_tests_slack_user_api_token_u16:
+    type: string
+    default: "{{ st2kv.system.chatops_e2e_tests_slack_user_api_token_u16 | decrypt_kv }}"
+    secret: true
+    immutable: true
+
+  chatops_e2e_tests_slack_channel_u18:
+    type: string
+    default: "{{ st2kv.system.chatops_e2e_tests_slack_channel_u18 }}"
+    immutable: true
+  chatops_e2e_tests_slack_bot_username_u18:
+    type: string
+    default: "{{ st2kv.system.chatops_e2e_tests_slack_bot_username_u18 }}"
+    immutable: true
+  chatops_e2e_tests_slack_bot_api_token_u18:
+    type: string
+    default: "{{ st2kv.system.chatops_e2e_tests_slack_bot_api_token_u18 | decrypt_kv }}"
+    secret: true
+    immutable: true
+  chatops_e2e_tests_slack_user_username_u18:
+    type: string
+    default: "{{ st2kv.system.chatops_e2e_tests_slack_user_username_u18 }}"
+    immutable: true
+  chatops_e2e_tests_slack_user_api_token_u18:
+    type: string
+    default: "{{ st2kv.system.chatops_e2e_tests_slack_user_api_token_u18 | decrypt_kv }}"
+    secret: true
+    immutable: true
+
+  chatops_e2e_tests_slack_channel_el7:
+    type: string
+    default: "{{ st2kv.system.chatops_e2e_tests_slack_channel_el7 }}"
+    immutable: true
+  chatops_e2e_tests_slack_bot_username_el7:
+    type: string
+    default: "{{ st2kv.system.chatops_e2e_tests_slack_bot_username_el7 }}"
+    immutable: true
+  chatops_e2e_tests_slack_bot_api_token_el7:
+    type: string
+    default: "{{ st2kv.system.chatops_e2e_tests_slack_bot_api_token_el7 | decrypt_kv }}"
+    secret: true
+    immutable: true
+  chatops_e2e_tests_slack_user_username_el7:
+    type: string
+    default: "{{ st2kv.system.chatops_e2e_tests_slack_user_username_el7 }}"
+    immutable: true
+  chatops_e2e_tests_slack_user_api_token_el7:
+    type: string
+    default: "{{ st2kv.system.chatops_e2e_tests_slack_user_api_token_el7 | decrypt_kv }}"
+    secret: true
+    immutable: true
