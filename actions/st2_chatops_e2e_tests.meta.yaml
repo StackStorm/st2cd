@@ -9,9 +9,6 @@ parameters:
     type: string
   env:
     type: object
-  cwd:
-    type: string
-    default: "/tmp/st2tests"
 
   chatops_e2e_tests_slack_channel_u16:
     type: string

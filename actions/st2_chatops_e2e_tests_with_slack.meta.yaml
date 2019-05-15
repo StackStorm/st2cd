@@ -9,9 +9,6 @@ parameters:
     type: string
   st2_auth_token:
     type: string
-  cwd:
-    type: string
-    default: "/tmp/st2tests"
   websocket:
     type: string
   slack_channel:

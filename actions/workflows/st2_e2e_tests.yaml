@@ -167,4 +167,3 @@ tasks:
     input:
       host_ip: <% ctx().host_ip %>
       env: <% ctx().st2_cli_env %>
-      cwd: /tmp/st2tests
