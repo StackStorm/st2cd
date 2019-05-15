@@ -133,7 +133,7 @@ tasks:
       env: <% ctx().st2_cli_env %>
       cmd: bats docs/*.bats
       cwd: /tmp/st2tests
-      timeout: 1200
+      timeout: 400
     next:
       - when: <% succeeded() %>
         do:
@@ -145,7 +145,7 @@ tasks:
       env: <% ctx().st2_cli_env %>
       cmd: bats cli/*.bats
       cwd: /tmp/st2tests
-      timeout: 1200
+      timeout: 400
     next:
       - when: <% succeeded() %>
         do:
@@ -157,7 +157,7 @@ tasks:
       env: <% ctx().st2_cli_env %>
       cmd: bats chatops/*.bats
       cwd: /tmp/st2tests
-      timeout: 1200
+      timeout: 200
    # TODO: Re-enable once it's fixed
    # next:
    #   - when: <% succeeded() %>
