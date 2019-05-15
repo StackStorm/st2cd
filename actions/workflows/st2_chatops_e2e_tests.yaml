@@ -28,7 +28,7 @@ tasks:
     action: core.remote
     input:
       hosts: <% ctx().host_ip %>
-      cmd: "which -s lsb_release && { echo -n '\"'; lsb_release --release | awk '{ print $2 }' | tr -d '\\n'; echo '\"' } || exit 1"
+      cmd: "which lsb_release 1>/dev/null && { echo -n '\"'; lsb_release --release | awk '{ print $2 }' | tr -d '\\n'; echo '\"'; } || exit 1"
     next:
       - publish:
           - ubuntu_version: <% result().get(ctx().host_ip).stdout %>
