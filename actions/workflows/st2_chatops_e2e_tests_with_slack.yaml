@@ -51,8 +51,6 @@ tasks:
         . /opt/stackstorm/virtualenvs/tests/bin/activate;
         python /opt/stackstorm/packs/tests/actions/test_aliases_with_slack.py
     next:
-      - do:
-          - reset
       - when: <% failed() %>
         do:
           - run_with_large_timeout
