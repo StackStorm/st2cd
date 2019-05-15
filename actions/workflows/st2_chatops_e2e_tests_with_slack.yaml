@@ -24,9 +24,10 @@ tasks:
     next:
       - when: <% succeeded() %>
         do:
-          - run
+          - run_with_small_timeout
   # Run the tests with Slack
-  run:
+  # Default SLACK_DONT_WAIT_FOR_MESSAGES_TIMEOUT value is 8 (seconds)
+  run_with_small_timeout:
     action: core.remote
     input:
       hosts: <% ctx().host_ip %>
@@ -47,6 +48,39 @@ tasks:
         export SLACK_BOT_USERNAME=<% ctx().slack_bot_username %>;
         export SLACK_USER_USERNAME=<% ctx().slack_user_username %>;
         export SLACK_USER_API_TOKEN=<% ctx().slack_user_api_token %>;
+        . /opt/stackstorm/virtualenvs/tests/bin/activate;
+        python /opt/stackstorm/packs/tests/actions/test_aliases_with_slack.py
+    next:
+      - do:
+          - reset
+      - when: <% failed() %>
+        do:
+          - run_with_large_timeout
+  # Run the tests with Slack
+  # This runs the tests slower and gives the ST2 IUT more time to respond
+  run_with_large_timeout:
+    action: core.remote
+    input:
+      hosts: <% ctx().host_ip %>
+      timeout: 4800  # seconds
+      # Workaround for https://github.com/StackStorm/st2/issues/4676
+      # cmd: st2 run --inherit-env tests.test_aliases_with_slack
+      # env:
+      #   ST2_AUTH_TOKEN: <% ctx().st2_auth_token %>
+      #   WEBSOCKET_CLIENT_CA_BUNDLE: <% ctx().websocket %>
+      #   SLACK_CHANNEL: <% ctx().slack_channel %>
+      #   SLACK_BOT_USERNAME: <% ctx().slack_bot_username %>
+      #   SLACK_USER_USERNAME: <% ctx().slack_user_username %>
+      #   SLACK_USER_API_TOKEN: <% ctx().slack_user_api_token %>
+      #   SLACK_DONT_WAIT_FOR_MESSAGES_TIMEOUT: 120
+      cmd: |
+        export ST2_AUTH_TOKEN=<% ctx().st2_auth_token %>;
+        export WEBSOCKET_CLIENT_CA_BUNDLE=<% ctx().websocket %>;
+        export SLACK_CHANNEL=<% ctx().slack_channel %>;
+        export SLACK_BOT_USERNAME=<% ctx().slack_bot_username %>;
+        export SLACK_USER_USERNAME=<% ctx().slack_user_username %>;
+        export SLACK_USER_API_TOKEN=<% ctx().slack_user_api_token %>;
+        export SLACK_DONT_WAIT_FOR_MESSAGES_TIMEOUT=120;
         . /opt/stackstorm/virtualenvs/tests/bin/activate;
         python /opt/stackstorm/packs/tests/actions/test_aliases_with_slack.py
     next:
