@@ -115,9 +115,9 @@ tasks:
       - when: <% succeeded() and ctx().enterprise %>
         do:
           - run_enterprise_tests
-      # - when: <% succeeded() and not ctx().enterprise %>
-      #   do:
-      #     - run_docs_tests
+      - when: <% succeeded() and not ctx().enterprise %>
+        do:
+          - run_docs_tests
   run_enterprise_tests:
     action: st2cd.st2_enterprise_tests
     input:
