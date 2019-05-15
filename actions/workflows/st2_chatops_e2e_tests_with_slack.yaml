@@ -31,14 +31,25 @@ tasks:
     action: core.remote
     input:
       hosts: <% ctx().host_ip %>
-      cmd: st2 run --inherit-env tests.test_aliases_with_slack
-      env:
-        ST2_AUTH_TOKEN: <% ctx().st2_auth_token %>
-        WEBSOCKET_CLIENT_CA_BUNDLE: <% ctx().websocket %>
-        SLACK_CHANNEL: <% ctx().slack_channel %>
-        SLACK_BOT_USERNAME: <% ctx().slack_bot_username %>
-        SLACK_USER_USERNAME: <% ctx().slack_user_username %>
-        SLACK_USER_API_TOKEN: <% ctx().slack_user_api_token %>
+      timeout: 2400  # seconds
+      # Workaround for https://github.com/StackStorm/st2/issues/4676
+      # cmd: st2 run --inherit-env tests.test_aliases_with_slack
+      # env:
+      #   ST2_AUTH_TOKEN: <% ctx().st2_auth_token %>
+      #   WEBSOCKET_CLIENT_CA_BUNDLE: <% ctx().websocket %>
+      #   SLACK_CHANNEL: <% ctx().slack_channel %>
+      #   SLACK_BOT_USERNAME: <% ctx().slack_bot_username %>
+      #   SLACK_USER_USERNAME: <% ctx().slack_user_username %>
+      #   SLACK_USER_API_TOKEN: <% ctx().slack_user_api_token %>
+      cmd: |
+        export ST2_AUTH_TOKEN=<% ctx().st2_auth_token %>;
+        export WEBSOCKET_CLIENT_CA_BUNDLE=<% ctx().websocket %>;
+        export SLACK_CHANNEL=<% ctx().slack_channel %>;
+        export SLACK_BOT_USERNAME=<% ctx().slack_bot_username %>;
+        export SLACK_USER_USERNAME=<% ctx().slack_user_username %>;
+        export SLACK_USER_API_TOKEN=<% ctx().slack_user_api_token %>;
+        . /opt/stackstorm/virtualenvs/tests/bin/activate;
+        python /opt/stackstorm/packs/tests/actions/test_aliases_with_slack.py
     next:
       - do:
           - reset
