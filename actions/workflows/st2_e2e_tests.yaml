@@ -158,12 +158,13 @@ tasks:
       cmd: bats chatops/*.bats
       cwd: /tmp/st2tests
       timeout: 1200
-    next:
-      - when: <% succeeded() %>
-        do:
-          - run_chatops_e2e_tests
-  run_chatops_e2e_tests:
-    action: st2cd.st2_chatops_e2e_tests
-    input:
-      host_ip: <% ctx().host_ip %>
-      env: <% ctx().st2_cli_env %>
+   # TODO: Re-enable once it's fixed
+   # next:
+   #   - when: <% succeeded() %>
+   #     do:
+   #       - run_chatops_e2e_tests
+   #run_chatops_e2e_tests:
+   # action: st2cd.st2_chatops_e2e_tests
+   # input:
+   #   host_ip: <% ctx().host_ip %>
+   #   env: <% ctx().st2_cli_env %>
