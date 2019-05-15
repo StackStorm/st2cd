@@ -50,6 +50,7 @@ tasks:
         do:
           - run_basic_tests
           - run_quickstart_tests
+          - run_chatops_e2e_tests
   run_basic_tests:
     action: st2cd.st2_e2e_tests_test_basic
     input:
@@ -137,8 +138,6 @@ tasks:
   #     - when: <% succeeded() %>
   #       do:
   #         - run_cli_tests
-  # # CAUTION: These tests remove the examples pack, so they should be run last
-  # #          or the st2cd.setup_e2e_tests action should be run again.
   # run_cli_tests:
   #   action: core.remote
   #   input:
@@ -163,9 +162,9 @@ tasks:
   #     - when: <% succeeded() %>
   #       do:
   #         - run_chatops_e2e_tests
-  # run_chatops_e2e_tests:
-  #   action: st2cd.st2_chatops_e2e_tests
-  #   input:
-  #     host_ip: <% ctx().host_ip %>
-  #     env: <% ctx().st2_cli_env %>
-  #     cwd: /tmp/st2tests
+  run_chatops_e2e_tests:
+    action: st2cd.st2_chatops_e2e_tests
+    input:
+      host_ip: <% ctx().host_ip %>
+      env: <% ctx().st2_cli_env %>
+      cwd: /tmp/st2tests
