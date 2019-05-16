@@ -18,6 +18,8 @@ if [[ ! ${SUPPORTED_DISTROS[@]} =~ (^| )${DISTRO_LCASE}($| ) ]]; then
     exit 1
 fi
 
+ORIGINAL_HOSTNAME=$(hostname)
+
 if [[ ${DISTRO_LCASE} = "ubuntu" ]]; then
     sed -i -e "s/\(preserve_hostname: \)false/\1true/" /etc/cloud/cloud.cfg && echo "${HOSTNAME}" > /etc/hostname && hostname ${HOSTNAME}
 elif [[ ${DISTRO_LCASE} = "redhat" || ${DISTRO_LCASE} = "centos" ]]; then
@@ -29,4 +31,9 @@ elif [[ ${DISTRO_LCASE} = "fedora" ]]; then
     echo -e "HOSTNAME=${HOSTNAME}" >> /etc/sysconfig/network && hostname ${HOSTNAME}
 fi
 
+# For just in case (for scenarios where hostname is not correctly set and preserved during reboots,
+# also add original hostname to /etc/hosts)
+#sed -i "/127\.0\.0\.1/ s/$/ ${ORIGINAL_HOSTNAME}/" /etc/hosts
+
+# Add new hostname to /etc/hosts
 sed -i "/127\.0\.0\.1/ s/$/ ${HOSTNAME}/" /etc/hosts
