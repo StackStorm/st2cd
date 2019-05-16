@@ -21,7 +21,10 @@ fi
 if [[ ${DISTRO_LCASE} = "ubuntu" ]]; then
     sed -i -e "s/\(preserve_hostname: \)false/\1true/" /etc/cloud/cloud.cfg && echo "${HOSTNAME}" > /etc/hostname && hostname ${HOSTNAME}
 elif [[ ${DISTRO_LCASE} = "redhat" || ${DISTRO_LCASE} = "centos" ]]; then
-    sed -i -e "s/\(HOSTNAME=\).*/\1${HOSTNAME}/" /etc/sysconfig/network && hostname ${HOSTNAME}
+    # Note: We also want to make sure /etc/hostname file matches 
+    sed -i -e "s/\(HOSTNAME=\).*/\1${HOSTNAME}/" /etc/sysconfig/network && echo "${HOSTNAME}" > /etc/hostname && hostname ${HOSTNAME}
+    hostnamectl set-hostname --static ${HOSTNAME}
+    echo "preserve_hostname: true" > /etc/cloud/cloud.cfg.d/99_hostname.cfg
 elif [[ ${DISTRO_LCASE} = "fedora" ]]; then
     echo -e "HOSTNAME=${HOSTNAME}" >> /etc/sysconfig/network && hostname ${HOSTNAME}
 fi
