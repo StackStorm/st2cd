@@ -14,6 +14,23 @@ if [[ -n "$RHTEST" ]]; then
     sudo yum install -y python-pip wget
     if [[ "$RHVERSION" -ge 7 ]]; then
         sudo yum install -y jq
+
+        # Rabbit MQ on RHEL 7 needs to be able to resolve the hsort name to
+        # localhost, so we need to add it in to /etc/hosts
+        # The sed command should be idempotent.
+        if [[ "$RHVERSION" -eq 7 ]]; then
+            sudo sed -i.e2e.bak "s/\\(localhost4.localdomain4\\) \\([^[:space:]]*\\)\$/\\1 $(hostname | cut -d . -f 1) \\2/" /etc/hosts
+            sudo service rabbitmq-server restart
+        fi
+    else
+        # For RHEL/CentOS 6
+        sudo yum install -y epel-release
+        sudo yum install -y jq
+    fi
+    # Remove bats-core if it already exists (this happens when test workflows
+    # are re-run on a server when tests are debugged)
+    if [[ -d bats-core ]]; then
+        rm -rf bats-core
     fi
     # Install from GitHub
     # RHEL 7+ has both bats and jq package, so we don't need to do this once we
@@ -24,6 +41,11 @@ elif [[ -n "$DEBTEST" ]]; then
     DEBVERSION=`lsb_release --release | awk '{ print $2 }'`
     echo "*** Detected Distro is ${DEBTEST} - ${DEBVERSION} ***"
     sudo apt-get -q -y install build-essential jq python-pip python-dev wget
+    # Remove bats-core if it already exists (this happens when test workflows
+    # are re-run on a server when tests are debugged)
+    if [[ -d bats-core ]]; then
+        rm -rf bats-core
+    fi
     # Install from GitHub
     # Ubuntu 16.04 has both bats and jq packages, so we don't need to do this
     # once we drop Ubuntu 14.04 support
@@ -40,9 +62,12 @@ CRYPTO_BASE="/etc/st2/keys"
 CRYPTO_KEY_FILE="${CRYPTO_BASE}/key.json"
 
 sudo mkdir -p ${CRYPTO_BASE}
-sudo st2-generate-symmetric-crypto-key --key-path ${CRYPTO_KEY_FILE}
-sudo chgrp st2packs ${CRYPTO_KEY_FILE}
+if [[ ! -e "${CRYPTO_KEY_FILE}" ]]; then
+    sudo st2-generate-symmetric-crypto-key --key-path ${CRYPTO_KEY_FILE}
+    sudo chgrp st2packs ${CRYPTO_KEY_FILE}
+fi
 
+# This looks overly complicated...
 sudo bash -c "cat <<keyvalue_options >>${ST2_CONF}
 [keyvalue]
 encryption_key_path=${CRYPTO_KEY_FILE}
@@ -50,6 +75,12 @@ keyvalue_options"
 
 # Reload required for testing st2 upgrade
 st2ctl reload --register-all
+
+# Remove the st2tests directory if it exists (this happens when test workflows
+# are re-run on a server when tests are debugged)
+if [[ -d st2tests ]]; then
+    rm -rf st2tests
+fi
 
 # Install packs for testing
 if [[ ${BRANCH} == "master" ]]; then
