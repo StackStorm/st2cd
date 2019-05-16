@@ -123,9 +123,9 @@ tasks:
     input:
       host_ip: <% ctx().host_ip %>
     next:
-     - when: <% succeeded() %>
-       do:
-         - run_docs_tests
+      - when: <% succeeded() %>
+        do:
+          - run_docs_tests
   run_docs_tests:
     action: core.remote
     input:
