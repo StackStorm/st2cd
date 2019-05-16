@@ -26,8 +26,7 @@ tasks:
         do:
           - run_with_small_timeout
   # Run the tests with Slack
-  # Default SLACK_DONT_WAIT_FOR_MESSAGES_TIMEOUT value is 24 (seconds)
-  # Default SLACK_WAIT_BETWEEN_MESSAGES_TIMEOUT value is 36 (seconds)
+  # Default SLACK_WAIT_FOR_MESSAGES_TIMEOUT value is 120 (seconds)
   run_with_small_timeout:
     action: core.remote
     input:
@@ -75,8 +74,7 @@ tasks:
       #   SLACK_BOT_USERNAME: <% ctx().slack_bot_username %>
       #   SLACK_USER_USERNAME: <% ctx().slack_user_username %>
       #   SLACK_USER_API_TOKEN: <% ctx().slack_user_api_token %>
-      #   SLACK_DONT_WAIT_FOR_MESSAGES_TIMEOUT: 48
-      #   SLACK_WAIT_BETWEEN_MESSAGES_TIMEOUT: 72
+      #   SLACK_WAIT_FOR_MESSAGES_TIMEOUT: 240
       cmd: |
         export ST2_AUTH_TOKEN=<% ctx().st2_auth_token %>;
         export WEBSOCKET_CLIENT_CA_BUNDLE=<% ctx().websocket %>;
@@ -84,8 +82,7 @@ tasks:
         export SLACK_BOT_USERNAME=<% ctx().slack_bot_username %>;
         export SLACK_USER_USERNAME=<% ctx().slack_user_username %>;
         export SLACK_USER_API_TOKEN=<% ctx().slack_user_api_token %>;
-        export SLACK_DONT_WAIT_FOR_MESSAGES_TIMEOUT=48;
-        export SLACK_WAIT_BETWEEN_MESSAGES_TIMEOUT=72;
+        export SLACK_WAIT_FOR_MESSAGES_TIMEOUT=240;
         . /opt/stackstorm/virtualenvs/tests/bin/activate;
         python /opt/stackstorm/packs/tests/actions/test_aliases_with_slack.py
     next:
