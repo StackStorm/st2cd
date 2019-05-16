@@ -37,3 +37,6 @@ fi
 
 # Add new hostname to /etc/hosts
 sed -i "/127\.0\.0\.1/ s/$/ ${HOSTNAME}/" /etc/hosts
+
+echo "Original hostname: ${ORIGINAL_HOSTNAME}"
+echo "New hostname: ${HOSTNAME}"
