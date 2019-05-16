@@ -25,7 +25,8 @@ if [[ ${DISTRO_LCASE} = "ubuntu" ]]; then
 elif [[ ${DISTRO_LCASE} = "redhat" || ${DISTRO_LCASE} = "centos" ]]; then
     # Note: We also want to make sure /etc/hostname file matches
     sed -i -e "s/\(HOSTNAME=\).*/\1${HOSTNAME}/" /etc/sysconfig/network && echo "${HOSTNAME}" > /etc/hostname && hostname ${HOSTNAME}
-    hostnamectl set-hostname --static ${HOSTNAME}
+    # RHEL 6 doesn't have hostnamectl, so check for it before we use it
+    which hostnamectl 2>/dev/null && hostnamectl set-hostname --static ${HOSTNAME}
     # Make sure the hostname is preserved between the reboots
     echo "preserve_hostname: true" > /etc/cloud/cloud.cfg.d/99_hostname.cfg
 elif [[ ${DISTRO_LCASE} = "fedora" ]]; then
