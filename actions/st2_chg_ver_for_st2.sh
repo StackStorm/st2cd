@@ -85,7 +85,6 @@ done
 # Set version attribute for all the bundled packs (core, linux, examples, etc.)
 BUNDLED_PACKS_METADATA_FILES=($(find contrib/ -mindepth 2 -maxdepth 2 -name pack.yaml))
 
-
 # Temporary disable fail on failure for grep step where failure is OK
 set +e
 
@@ -94,7 +93,6 @@ set +e
 IS_DEV_VERSION=$(echo ${VERSION} |grep -v "dev$")
 EXIT_CODE=$?
 
-set -e
 
 if [ ${EXIT_CODE} -eq 1 ]; then
     IS_DEV_VERSION=true
@@ -127,6 +125,9 @@ if [ "${IS_DEV_VERSION}" = "false" ]; then
 else
     echo "Skipping setting version attribute in pack.yaml files for dev version"
 fi
+
+# Re-enable fail on failure
+set -e
 
 MODIFIED=`git status | grep modified || true`
 if [[ ! -z "${MODIFIED}" ]]; then
