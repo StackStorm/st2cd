@@ -50,7 +50,7 @@ tasks:
         do:
           - run_basic_tests
           - run_quickstart_tests
-          - run_chatops_e2e_tests
+          # - run_chatops_e2e_tests
   run_basic_tests:
     action: st2cd.st2_e2e_tests_test_basic
     input:
@@ -115,55 +115,56 @@ tasks:
       - when: <% succeeded() and ctx().enterprise %>
         do:
           - run_enterprise_tests
-      # - when: <% succeeded() and not ctx().enterprise %>
-      #   do:
-      #     - run_docs_tests
+      - when: <% succeeded() and not ctx().enterprise %>
+        do:
+          - run_docs_tests
   run_enterprise_tests:
     action: st2cd.st2_enterprise_tests
     input:
       host_ip: <% ctx().host_ip %>
-  #   next:
-  #    - when: <% succeeded() %>
-  #      do:
-  #        - run_docs_tests
-  # run_docs_tests:
-  #   action: core.remote
-  #   input:
-  #     hosts: <% ctx().host_ip %>
-  #     env: <% ctx().st2_cli_env %>
-  #     cmd: bats docs/*.bats
-  #     cwd: /tmp/st2tests
-  #     timeout: 1200
-  #   next:
-  #     - when: <% succeeded() %>
-  #       do:
-  #         - run_cli_tests
-  # run_cli_tests:
-  #   action: core.remote
-  #   input:
-  #     hosts: <% ctx().host_ip %>
-  #     env: <% ctx().st2_cli_env %>
-  #     cmd: bats cli/*.bats
-  #     cwd: /tmp/st2tests
-  #     timeout: 1200
-  #   next:
-  #     - when: <% succeeded() %>
-  #       do:
-  #         - run_chatops_tests
-  # run_chatops_tests:
-  #   action: core.remote
-  #   input:
-  #     hosts: <% ctx().host_ip %>
-  #     env: <% ctx().st2_cli_env %>
-  #     cmd: bats chatops/*.bats
-  #     cwd: /tmp/st2tests
-  #     timeout: 1200
-  #   next:
-  #     - when: <% succeeded() %>
-  #       do:
-  #         - run_chatops_e2e_tests
-  run_chatops_e2e_tests:
-    action: st2cd.st2_chatops_e2e_tests
+    next:
+      - when: <% succeeded() %>
+        do:
+          - run_docs_tests
+  run_docs_tests:
+    action: core.remote
     input:
-      host_ip: <% ctx().host_ip %>
+      hosts: <% ctx().host_ip %>
       env: <% ctx().st2_cli_env %>
+      cmd: bats docs/*.bats
+      cwd: /tmp/st2tests
+      timeout: 400
+    next:
+      - when: <% succeeded() %>
+        do:
+          - run_cli_tests
+  run_cli_tests:
+    action: core.remote
+    input:
+      hosts: <% ctx().host_ip %>
+      env: <% ctx().st2_cli_env %>
+      cmd: bats cli/*.bats
+      cwd: /tmp/st2tests
+      timeout: 800
+    next:
+      - when: <% succeeded() %>
+        do:
+          - run_chatops_tests
+  run_chatops_tests:
+    action: core.remote
+    input:
+      hosts: <% ctx().host_ip %>
+      env: <% ctx().st2_cli_env %>
+      cmd: bats chatops/*.bats
+      cwd: /tmp/st2tests
+      timeout: 200
+   # TODO: Re-enable once it's fixed
+   # next:
+   #   - when: <% succeeded() %>
+   #     do:
+   #       - run_chatops_e2e_tests
+   #run_chatops_e2e_tests:
+   # action: st2cd.st2_chatops_e2e_tests
+   # input:
+   #   host_ip: <% ctx().host_ip %>
+   #   env: <% ctx().st2_cli_env %>
