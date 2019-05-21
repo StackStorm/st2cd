@@ -7,6 +7,13 @@ BRANCH=`echo ${VERSION} | cut -d "." -f1-2`
 # Install OS specific pre-reqs (Better moved to puppet at some point.)
 DEBTEST=`lsb_release -a 2> /dev/null | grep Distributor | awk '{print $3}'`
 RHTEST=`cat /etc/redhat-release 2> /dev/null | sed -e "s~\(.*\)release.*~\1~g"`
+SUBTYPE=`lsb_release -a 2>&1 | grep Codename | grep -v "LSB" | awk '{print $2}'`
+
+# Decrease interval for MongoDB TTL expire thread. By default it runs every 60 seconds which
+# means we would need to wait at least 60 seconds in our key expire end to end tests.
+# By decreasing it, we can speed up those tests
+# TODO: Use db.adminCommand, but for that we need to fix admin user permissions in bootstrap script
+echo -e "\nsetParameter:\n  ttlMonitorSleepSecs: 1" >> /etc/mongod.conf
 
 if [[ -n "$RHTEST" ]]; then
     RHVERSION=`cat /etc/redhat-release 2> /dev/null | sed -r 's/([^0-9]*([0-9]*)){1}.*/\2/'`
@@ -15,6 +22,7 @@ if [[ -n "$RHTEST" ]]; then
     if [[ "$RHVERSION" -ge 7 ]]; then
         sudo yum install -y jq
 
+        sudo systemctl restart mongod
     else
         # For RHEL/CentOS 6
         sudo yum install -y epel-release
@@ -44,10 +52,14 @@ elif [[ -n "$DEBTEST" ]]; then
     # once we drop Ubuntu 14.04 support
     git clone --branch add_per_test_timing_information --depth 1 https://github.com/Kami/bats-core.git
     (cd bats-core; sudo ./install.sh /usr/local)
+
+    sudo service mongod restart
 else
     echo "Unknown Operating System."
     exit 2
 fi
+
+sleep 2
 
 # Setup crypto key file
 ST2_CONF="/etc/st2/st2.conf"
