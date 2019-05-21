@@ -13,8 +13,8 @@ RHTEST=`cat /etc/redhat-release 2> /dev/null | sed -e "s~\(.*\)release.*~\1~g"`
 # By decreasing it, we can speed up those tests
 # TODO: Use db.adminCommand, but for that we need to fix admin user permissions in bootstrap script
 echo "Updating MongoDB config..."
-sudo sh -c 'echo "\nsetParameter:\n  ttlMonitorSleepSecs: 1" >> /etc/mongod.conf'
-sudo sh -c 'cat /etc/mongod.conf'
+echo -e "\nsetParameter:\n  ttlMonitorSleepSecs: 1" | sudo tee -a /etc/mongod.conf > /dev/null
+sudo cat /etc/mongod.conf
 
 if [[ -n "$RHTEST" ]]; then
     RHVERSION=`cat /etc/redhat-release 2> /dev/null | sed -r 's/([^0-9]*([0-9]*)){1}.*/\2/'`
