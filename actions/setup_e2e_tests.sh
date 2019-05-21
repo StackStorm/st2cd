@@ -7,7 +7,6 @@ BRANCH=`echo ${VERSION} | cut -d "." -f1-2`
 # Install OS specific pre-reqs (Better moved to puppet at some point.)
 DEBTEST=`lsb_release -a 2> /dev/null | grep Distributor | awk '{print $3}'`
 RHTEST=`cat /etc/redhat-release 2> /dev/null | sed -e "s~\(.*\)release.*~\1~g"`
-SUBTYPE=`lsb_release -a 2>&1 | grep Codename | grep -v "LSB" | awk '{print $2}'`
 
 # Decrease interval for MongoDB TTL expire thread. By default it runs every 60 seconds which
 # means we would need to wait at least 60 seconds in our key expire end to end tests.
@@ -58,8 +57,6 @@ else
     echo "Unknown Operating System."
     exit 2
 fi
-
-sleep 2
 
 # Setup crypto key file
 ST2_CONF="/etc/st2/st2.conf"
