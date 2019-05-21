@@ -12,28 +12,38 @@ RHTEST=`cat /etc/redhat-release 2> /dev/null | sed -e "s~\(.*\)release.*~\1~g"`
 # means we would need to wait at least 60 seconds in our key expire end to end tests.
 # By decreasing it, we can speed up those tests
 # TODO: Use db.adminCommand, but for that we need to fix admin user permissions in bootstrap script
+echo "Updating MongoDB config..."
 sudo sh -c 'echo "\nsetParameter:\n  ttlMonitorSleepSecs: 1" >> /etc/mongod.conf'
+sudo sh -c 'cat /etc/mongod.conf'
 
 if [[ -n "$RHTEST" ]]; then
     RHVERSION=`cat /etc/redhat-release 2> /dev/null | sed -r 's/([^0-9]*([0-9]*)){1}.*/\2/'`
     echo "*** Detected Distro is ${RHTEST} - ${RHVERSION} ***"
+
+    echo "Restarting MongoDB..."
+    if [[ "$RHVERSION" -ge 7 ]]; then
+        # Restart MongoDB for the config changes above to take an affect
+        sudo systemctl restart mongod
+    else
+        # Restart MongoDB for the config changes above to take an affect
+        sudo service mongod restart
+    fi
+
     sudo yum install -y python-pip wget
     if [[ "$RHVERSION" -ge 7 ]]; then
         sudo yum install -y jq
-
-        sudo systemctl restart mongod
     else
         # For RHEL/CentOS 6
         sudo yum install -y epel-release
         sudo yum install -y jq
-
-        sudo service mongod restart
     fi
+
     # Remove bats-core if it already exists (this happens when test workflows
     # are re-run on a server when tests are debugged)
     if [[ -d bats-core ]]; then
         rm -rf bats-core
     fi
+
     # Install from GitHub
     # RHEL 7+ has both bats and jq package, so we don't need to do this once we
     # drop RHEL 6 support
@@ -43,23 +53,28 @@ elif [[ -n "$DEBTEST" ]]; then
     DEBVERSION=`lsb_release --release | awk '{ print $2 }'`
     SUBTYPE=`lsb_release -a 2>&1 | grep Codename | grep -v "LSB" | awk '{print $2}'`
     echo "*** Detected Distro is ${DEBTEST} - ${DEBVERSION} ***"
+
+    echo "Restarting MongoDB..."
+    # Restart MongoDB for the config changes above to take an affect
+    if [[ "$SUBTYPE" == 'xenial' || "${SUBTYPE}" == "bionic" ]]; then
+      sudo systemctl restart mongod
+    else
+      sudo service mongod restart
+    fi
+
     sudo apt-get -q -y install build-essential jq python-pip python-dev wget
+
     # Remove bats-core if it already exists (this happens when test workflows
     # are re-run on a server when tests are debugged)
     if [[ -d bats-core ]]; then
         rm -rf bats-core
     fi
+
     # Install from GitHub
     # Ubuntu 16.04 has both bats and jq packages, so we don't need to do this
     # once we drop Ubuntu 14.04 support
     git clone --branch add_per_test_timing_information --depth 1 https://github.com/Kami/bats-core.git
     (cd bats-core; sudo ./install.sh /usr/local)
-
-    if [[ "$SUBTYPE" == 'xenial' || "${SUBTYPE}" == "bionic" ]]; then
-      sudo systemctl restart mongod
-    else
-      sudo service mongod restart
-  fi
 else
     echo "Unknown Operating System."
     exit 2
