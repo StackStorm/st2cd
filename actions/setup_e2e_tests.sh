@@ -26,6 +26,8 @@ if [[ -n "$RHTEST" ]]; then
         # For RHEL/CentOS 6
         sudo yum install -y epel-release
         sudo yum install -y jq
+
+        sudo service mongod restart
     fi
     # Remove bats-core if it already exists (this happens when test workflows
     # are re-run on a server when tests are debugged)
@@ -54,8 +56,7 @@ elif [[ -n "$DEBTEST" ]]; then
     (cd bats-core; sudo ./install.sh /usr/local)
 
     if [[ "$SUBTYPE" == 'xenial' || "${SUBTYPE}" == "bionic" ]]; then
-      sudo systemctl enable mongod
-      sudo systemctl start mongod
+      sudo systemctl restart mongod
     else
       sudo service mongod restart
   fi
