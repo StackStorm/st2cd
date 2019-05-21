@@ -15,13 +15,6 @@ if [[ -n "$RHTEST" ]]; then
     if [[ "$RHVERSION" -ge 7 ]]; then
         sudo yum install -y jq
 
-        # Rabbit MQ on RHEL 7 needs to be able to resolve the hsort name to
-        # localhost, so we need to add it in to /etc/hosts
-        # The sed command should be idempotent.
-        if [[ "$RHVERSION" -eq 7 ]]; then
-            sudo sed -i.e2e.bak "s/\\(localhost4.localdomain4\\) \\([^[:space:]]*\\)\$/\\1 $(hostname | cut -d . -f 1) \\2/" /etc/hosts
-            sudo service rabbitmq-server restart
-        fi
     else
         # For RHEL/CentOS 6
         sudo yum install -y epel-release
