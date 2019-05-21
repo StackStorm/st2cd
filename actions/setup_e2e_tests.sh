@@ -39,6 +39,7 @@ if [[ -n "$RHTEST" ]]; then
     (cd bats-core; sudo ./install.sh /usr/local)
 elif [[ -n "$DEBTEST" ]]; then
     DEBVERSION=`lsb_release --release | awk '{ print $2 }'`
+    SUBTYPE=`lsb_release -a 2>&1 | grep Codename | grep -v "LSB" | awk '{print $2}'`
     echo "*** Detected Distro is ${DEBTEST} - ${DEBVERSION} ***"
     sudo apt-get -q -y install build-essential jq python-pip python-dev wget
     # Remove bats-core if it already exists (this happens when test workflows
@@ -52,7 +53,12 @@ elif [[ -n "$DEBTEST" ]]; then
     git clone --branch add_per_test_timing_information --depth 1 https://github.com/Kami/bats-core.git
     (cd bats-core; sudo ./install.sh /usr/local)
 
-    sudo service mongod restart
+    if [[ "$SUBTYPE" == 'xenial' || "${SUBTYPE}" == "bionic" ]]; then
+      sudo systemctl enable mongod
+      sudo systemctl start mongod
+    else
+      sudo service mongod restart
+  fi
 else
     echo "Unknown Operating System."
     exit 2
