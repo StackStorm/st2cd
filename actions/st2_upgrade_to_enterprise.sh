@@ -151,10 +151,8 @@ enable_and_configure_rbac() {
   # Enable RBAC
   echo "Enabling rbac in st2.conf"
 
-  sudo cat /etc/st2/st2.conf
   sudo crudini --set /etc/st2/st2.conf rbac enable 'True'
   sudo crudini --set /etc/st2/st2.conf rbac backend 'enterprise'
-  sudo cat /etc/st2/st2.conf
 
   # TODO: Move directory creation to package
   sudo mkdir -p /opt/stackstorm/rbac/assignments/
