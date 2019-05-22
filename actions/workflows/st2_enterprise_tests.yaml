@@ -17,7 +17,18 @@ tasks:
     action: core.remote_sudo
     input:
       hosts: <% ctx().host_ip %>
-      cmd: grep -zlP '\[rbac\]\senable\s?=\s?True\sbackend\s?=\s?enterprise' /etc/st2/st2.conf
+      # The following formats are all considered as valid
+      #
+      # [rbac]
+      # backend = enterprise
+      # enable = True
+      #
+      # [rbac]
+      # enable = True
+      # backend = enterprise
+      #
+      # TODO: Eventually use crudini in a custom shell script?
+      cmd: grep -zlP '\[rbac\]\senable\s?=\s?True\sbackend\s?=\s?enterprise' /etc/st2/st2.conf || grep -zlP '\[rbac\]\sbackend\s?=\s?enterprise\senable\s?=\s?True' /etc/st2/st2.conf
       timeout: 10
     next:
       - when: <% succeeded() %>
@@ -57,4 +68,15 @@ tasks:
     input:
       hosts: <% ctx().host_ip %>
       cmd: /opt/stackstorm/st2/bin/python -c "import st2auth_enterprise_ldap_backend"
+      timeout: 10
+    next:
+      - when: <% succeeded() %>
+        do:
+          - verify_enterprise_rbac_backend_is_installed
+  # NOTE: RBAC has become a standalone package in StackStorm v3.0.0
+  verify_enterprise_rbac_backend_is_installed:
+    action: core.remote_sudo
+    input:
+      hosts: <% ctx().host_ip %>
+      cmd: /opt/stackstorm/st2/bin/python -c "import st2rbac_enterprise_backend"
       timeout: 10
