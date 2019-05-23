@@ -44,3 +44,6 @@ parameters:
   enterprise:
     type: boolean
     default: false
+  chatops:
+    type: boolean
+    default: false
