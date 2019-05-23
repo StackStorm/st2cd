@@ -88,4 +88,12 @@
         keyfile: "{{keyfile}}"
         ssh_timeout: 30
         retries: 10
+      on-success: "check_hostname_post_reboot"
+    -
+      # Verify hostname is preserved across reboot
+      name: "check_hostname_post_reboot"
+      ref: "core.remote_sudo"
+      params:
+        hosts: "{{ec2_instance_private_ip}}"
+        cmd: "cat /etc/hostname ; echo ''; hostname ; echo ''; cat /etc/hosts"
   default: "get_subnet_id"
