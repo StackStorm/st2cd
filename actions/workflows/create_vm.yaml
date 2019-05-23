@@ -95,5 +95,5 @@
       ref: "core.remote_sudo"
       params:
         hosts: "{{ec2_instance_private_ip}}"
-        cmd: "cat /etc/hostname ; hostname"
+        cmd: "cat /etc/hostname ; echo ''; hostname ; echo ''; cat /etc/hosts"
   default: "get_subnet_id"
