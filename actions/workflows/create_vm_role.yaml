@@ -196,7 +196,7 @@ tasks:
     action: core.remote_sudo
     input:
       hosts: <% ctx().ec2_instance_private_ip %>
-      cmd: cat /etc/hostname ; hostname
+      cmd: "cat /etc/hostname ; echo ''; hostname ; echo ''; cat /etc/hosts"
     next:
       - when: <% failed() %>
         do:
