@@ -47,7 +47,8 @@ if [[ -n "$RHTEST" ]]; then
     # Install from GitHub
     # RHEL 7+ has both bats and jq package, so we don't need to do this once we
     # drop RHEL 6 support
-    git clone --branch add_per_test_timing_information --depth 1 https://github.com/Kami/bats-core.git
+    # git clone --branch add_per_test_timing_information --depth 1 https://github.com/Kami/bats-core.git
+    git clone --depth 1 https://github.com/bats-core/bats-core.git
     (cd bats-core; sudo ./install.sh /usr/local)
 elif [[ -n "$DEBTEST" ]]; then
     DEBVERSION=`lsb_release --release | awk '{ print $2 }'`
@@ -73,7 +74,8 @@ elif [[ -n "$DEBTEST" ]]; then
     # Install from GitHub
     # Ubuntu 16.04 has both bats and jq packages, so we don't need to do this
     # once we drop Ubuntu 14.04 support
-    git clone --branch add_per_test_timing_information --depth 1 https://github.com/Kami/bats-core.git
+    # git clone --branch add_per_test_timing_information --depth 1 https://github.com/Kami/bats-core.git
+    git clone --depth 1 https://github.com/bats-core/bats-core.git
     (cd bats-core; sudo ./install.sh /usr/local)
 else
     echo "Unknown Operating System."
