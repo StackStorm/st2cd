@@ -186,6 +186,18 @@ tasks:
       ssh_timeout: 30
       retries: 10
     next:
+      - when: <% succeeded() %>
+        do:
+          - check_hostname_post_reboot
+      - when: <% failed() %>
+        do:
+          - destroy_vm_on_failure
+  check_hostname_post_reboot:
+    action: core.remote_sudo
+    input:
+      hosts: <% ctx().ec2_instance_private_ip %>
+      cmd: cat /etc/hostname ; hostname
+    next:
       - when: <% failed() %>
         do:
           - destroy_vm_on_failure
