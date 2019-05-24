@@ -29,6 +29,7 @@ tasks:
       hosts: <% ctx().host %>
       env: <% ctx().env %>
       cmd: st2 run tests.test_quickstart_key <% ctx().st2_cli_args %>
+      timeout: 90
   test_quickstart_rules:
     action: core.remote
     input:
