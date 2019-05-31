@@ -51,9 +51,6 @@ tasks:
         do:
           - run_basic_tests
           - run_quickstart_tests
-      - when: <% succeeded() and ctx().chatops %>
-        do:
-          - run_chatops_e2e_tests
   run_basic_tests:
     action: st2cd.st2_e2e_tests_test_basic
     input:
@@ -161,7 +158,10 @@ tasks:
       cmd: bats chatops/*.bats
       cwd: /tmp/st2tests
       timeout: 250
-
+    next:
+      - when: <% succeeded() and ctx().chatops %>
+        do:
+          - run_chatops_e2e_tests
   run_chatops_e2e_tests:
     action: st2cd.st2_chatops_e2e_tests
     input:
