@@ -48,6 +48,7 @@ tasks:
         export SLACK_BOT_USERNAME=<% ctx().slack_bot_username %>;
         export SLACK_USER_USERNAME=<% ctx().slack_user_username %>;
         export SLACK_USER_API_TOKEN=<% ctx().slack_user_api_token %>;
+        export SLACK_WAIT_FOR_MESSAGES_TIMEOUT=240;
         . /opt/stackstorm/virtualenvs/chatops_tests/bin/activate;
         python /opt/stackstorm/packs/chatops_tests/actions/test_aliases_with_slack.py
     next:
@@ -82,7 +83,7 @@ tasks:
         export SLACK_BOT_USERNAME=<% ctx().slack_bot_username %>;
         export SLACK_USER_USERNAME=<% ctx().slack_user_username %>;
         export SLACK_USER_API_TOKEN=<% ctx().slack_user_api_token %>;
-        export SLACK_WAIT_FOR_MESSAGES_TIMEOUT=240;
+        export SLACK_WAIT_FOR_MESSAGES_TIMEOUT=480;
         . /opt/stackstorm/virtualenvs/chatops_tests/bin/activate;
         python /opt/stackstorm/packs/chatops_tests/actions/test_aliases_with_slack.py
     next:
