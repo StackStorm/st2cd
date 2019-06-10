@@ -21,9 +21,9 @@ vars:
       private_dns_name:
 output:
   - vm_info:
-      id: <% ctx().vm_info.id %>
-      private_ip_address: <% ctx().vm_info.private_ip_address %>
-      private_dns_name: <% ctx().vm_info.private_dns_name %>
+      id: <% ctx(ec2_instance_id) %>
+      private_ip_address: <% ctx(ec2_instance_private_ip) %>
+      private_dns_name: <% ctx(ec2_instance_private_dns) %>
 tasks:
   get_subnet_id:
     action: st2.kv.get
@@ -69,17 +69,19 @@ tasks:
   run_instance:
     action: aws.ec2_run_instances
     input:
-      image_id: <% task(get_ami).result.result %>
-      instance_type: <% ctx().instance_type %>
-      subnet_id: <% task(get_subnet_id).result.result %>
-      key_name: <% ctx().key_name %>
+      ImageId: <% task(get_ami).result.result %>
+      InstanceType: <% ctx().instance_type %>
+      SubnetId: <% task(get_subnet_id).result.result %>
+      KeyName: <% ctx().key_name %>
+      MaxCount: 1
+      MinCount: 1
     next:
       - when: <% succeeded() %>
         publish:
-          - ec2_instance_id: <% result().result[0].id %>
-          - ec2_instance_private_ip: <% result().result[0].private_ip_address %>
-          - ec2_instance_private_dns: <% result().result[0].private_dns_name %>
-          - vm_info: <% result().result[0] %>
+          - vm_info: <% result().result[0].Instances[0] %>
+          - ec2_instance_id: <% ctx(vm_info).InstanceId %>
+          - ec2_instance_private_ip: <% ctx(vm_info).PrivateIpAddress %>
+          - ec2_instance_private_dns: <% ctx(vm_info).PrivateDnsName %>
         do:
           - wait_for_instance
       - when: <% failed() %>
@@ -115,9 +117,17 @@ tasks:
   add_tags:
     action: aws.ec2_create_tags
     input:
-      resource_ids:
+      Resources:
         - <% ctx().ec2_instance_id %>
-      tags: Name=<% ctx().hostname %>,Creator=<% ctx().creator %>,Role=<% ctx().role %>,Purpose=<% switch(isEmpty(ctx().purpose) => "No Description", ctx().purpose => ctx().purpose) %>
+      Tags:
+        - Key: Name
+          Value: <% ctx().hostname %>
+        - Key: Creator
+          Value: <% ctx().creator %>
+        - Key: Role
+          Value: <% ctx().role %>
+        - Key: Purpose
+          Value: <% switch(isEmpty(ctx().purpose) => "No Description", ctx().purpose => ctx().purpose) %>
     next:
       - when: <% succeeded() %>
         do:

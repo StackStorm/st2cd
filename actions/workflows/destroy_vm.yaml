@@ -84,7 +84,7 @@ tasks:
     next:
       - when: <% succeeded() %>
         publish:
-          - volumes: <% result().result.first().get( blockDeviceMapping, {}).values().where( not $.get(delete_on_termination, True)).select($.volume_id) %>
+          - volumes: <% result().result.first().get(blockDeviceMapping, {}).values().where(not $.get(delete_on_termination, True)).select($.volume_id) %>
         do:
           - destroy_instance
       - when: <% failed() %>
@@ -93,7 +93,8 @@ tasks:
   destroy_instance:
     action: aws.ec2_terminate_instances
     input:
-      instance_ids: <% ctx().instances[0] %>
+      InstanceIds:
+        - <% ctx().instances[0] %>
     next:
       - when: <% succeeded() %>
         do:
@@ -131,7 +132,7 @@ tasks:
     with: volume in <% ctx().volumes %>
     action: aws.ec2_delete_volume
     input:
-      volume_id: <% item(volume) %>
+      VolumeId: <% item(volume) %>
     next:
       - when: <% succeeded() %>
         do:
