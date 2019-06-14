@@ -13,6 +13,7 @@ input:
   - windows_password
   - version
   - enterprise
+  - chatops
 tasks:
   init:
     action: core.noop
@@ -50,7 +51,6 @@ tasks:
         do:
           - run_basic_tests
           - run_quickstart_tests
-          # - run_chatops_e2e_tests
   run_basic_tests:
     action: st2cd.st2_e2e_tests_test_basic
     input:
@@ -158,13 +158,12 @@ tasks:
       cmd: bats chatops/*.bats
       cwd: /tmp/st2tests
       timeout: 250
-   # TODO: Re-enable once it's fixed
-   # next:
-   #   - when: <% succeeded() %>
-   #     do:
-   #       - run_chatops_e2e_tests
-   #run_chatops_e2e_tests:
-   # action: st2cd.st2_chatops_e2e_tests
-   # input:
-   #   host_ip: <% ctx().host_ip %>
-   #   env: <% ctx().st2_cli_env %>
+    next:
+      - when: <% succeeded() and ctx().chatops %>
+        do:
+          - run_chatops_e2e_tests
+  run_chatops_e2e_tests:
+    action: st2cd.st2_chatops_e2e_tests
+    input:
+      host_ip: <% ctx().host_ip %>
+      env: <% ctx().st2_cli_env %>
