@@ -22,3 +22,4 @@ action:
     pkg_env: production
     release: stable
     version: "3.0.1"
+    chatops: true

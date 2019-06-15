@@ -24,3 +24,4 @@ action:
     version: "3.0.1"
     enterprise: true
     enterprise_key: "{{st2kv.system.enterprise_key_prd_stable}}"
+    chatops: true
