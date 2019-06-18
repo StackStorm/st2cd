@@ -136,7 +136,7 @@ sudo pip install --upgrade "virtualenv==15.1.0"
 
 # wheel==0.30.0 doesn't support python 2.6 (default on el6)
 if [[ "$RHVERSION" == 6 ]]; then
-    virtualenv --no-download venv -p /opt/stackstorm/st2/bin/python2.7
+    virtualenv --always-copy --no-download venv -p /opt/stackstorm/st2/bin/python2.7
 else
     virtualenv --no-download venv
 fi
