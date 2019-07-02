@@ -7,6 +7,7 @@ input:
   - host
   - cwd
 vars:
+  - dev_version: <% ctx().version.split('.')[0] + '.' + ctx().version.split('.')[1] + 'dev' %>
   - local_repo_sfx:
 tasks:
   init:
@@ -17,15 +18,11 @@ tasks:
       - when: <% succeeded() and (ctx().host = null) %>
         publish:
           - local_repo_sfx: <% result().stdout %>
-          - next_patch_version: <% ctx().version.split('.')[0] + '.' + ctx().version.split('.')[1] + '.' + str(int(ctx().version.split('.')[2]) + 1) %>
-          - major_minor_version: <% ctx().version.split('.')[0] + '.' + ctx().version.split('.')[1] %>
         do:
           - get_host
       - when: <% succeeded() and (ctx().host != null) %>
         publish:
           - local_repo_sfx: <% result().stdout %>
-          - next_patch_version: <% ctx().version.split('.')[0] + '.' + ctx().version.split('.')[1] + '.' + str(int(ctx().version.split('.')[2]) + 1) %>
-          - major_minor_version: <% ctx().version.split('.')[0] + '.' + ctx().version.split('.')[1] %>
         do:
           - finalize
 
@@ -51,7 +48,7 @@ tasks:
     action: st2cd.docker_chg_ver
     input:
       project: st2-dockerfiles
-      version: <% ctx().version %>
+      version: <% ctx().dev_version %>
       org: <% ctx().org %>
       branch: master
       local_repo: <% 'st2_dockerfiles_' + ctx().local_repo_sfx %>
@@ -71,7 +68,7 @@ tasks:
     input:
       org: <% ctx().org %>
       image: st2web
-      version: <% ctx().version %>
+      version: <% ctx().dev_version %>
       tries: 10
       check_delay: 60
       hosts: <% ctx().host %>
@@ -90,7 +87,7 @@ tasks:
     action: st2cd.docker_chg_ver
     input:
       project: st2enterprise-dockerfiles
-      version: <% ctx().version %>
+      version: <% ctx().dev_version %>
       org: <% ctx().org %>
       branch: master
       local_repo: <% 'st2enterprise_dockerfiles_' + ctx().local_repo_sfx %>
