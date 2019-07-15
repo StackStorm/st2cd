@@ -15,6 +15,6 @@ parameters:
     required: true
   oses:
     type: string
-    description: Space separated list of operating systems supported by st2 e.g. 'rhel6 rhel7 u14 u16'
+    description: Space separated list of operating systems supported by st2 e.g. 'rhel6 rhel7 u14 u16 u18'
     required: true
-    default: rhel6 rhel7 u14 u16
+    default: rhel6 rhel7 u14 u16 u18
