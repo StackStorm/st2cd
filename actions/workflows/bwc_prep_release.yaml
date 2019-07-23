@@ -109,7 +109,7 @@ tasks:
     input:
       project: ipfabric-docs
       version: <% ctx().version %>
-      fork: <% ctx().fork %>
+      fork: extremenetworks
       local_repo: <% 'bwc_ipfabric_docs_' + ctx().local_repo_sfx %>
       hosts: <% ctx().host %>
       cwd: <% ctx().cwd %>
