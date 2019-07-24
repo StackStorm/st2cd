@@ -127,7 +127,7 @@ tasks:
     input:
       project: st2enterprise-dockerfiles
       version: <% ctx().version %>
-      org: <% ctx().org %>
+      org: extremenetworks
       branch: v<% ctx().major_minor_version %>
       local_repo: <% 'st2enterprise_dockerfiles_' + ctx().local_repo_sfx %>
       hosts: <% ctx().host %>
@@ -145,7 +145,7 @@ tasks:
     input:
       project: st2enterprise-dockerfiles
       version: <% ctx().version %>
-      fork: <% ctx().org %>
+      fork: extremenetworks
       local_repo: <% 'st2enterprise_dockerfiles_' + ctx().local_repo_sfx %>
       branch: v<% ctx().major_minor_version %>
       hosts: <% ctx().host %>
