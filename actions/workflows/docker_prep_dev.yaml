@@ -88,7 +88,7 @@ tasks:
     input:
       project: st2enterprise-dockerfiles
       version: <% ctx().dev_version %>
-      org: <% ctx().org %>
+      org: extremenetworks
       branch: master
       local_repo: <% 'st2enterprise_dockerfiles_' + ctx().local_repo_sfx %>
       hosts: <% ctx().host %>
