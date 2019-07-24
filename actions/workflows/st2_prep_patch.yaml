@@ -125,7 +125,7 @@ tasks:
     input:
       project: st2flow
       version: <% ctx().version %>
-      fork: <% ctx().fork %>
+      fork: extremenetworks
       local_repo: <% 'st2flow_' + ctx().local_repo_sfx %>
       hosts: <% ctx().host %>
       cwd: <% ctx().cwd %>
