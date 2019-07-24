@@ -20,7 +20,7 @@ parameters:
     fork:
         type: string
         description: Fork to use
-        default: StackStorm
+        default: extremenetworks
         position: 2
     local_repo:
         type: string
