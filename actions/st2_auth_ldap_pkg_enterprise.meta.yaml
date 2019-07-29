@@ -23,7 +23,7 @@
       type: "string"
       description: "GitHub repo ex. ORG/REPO"
       required: true
-      default: "StackStorm/st2-enterprise-auth-backend-ldap"
+      default: "extremenetworks/st2-enterprise-auth-backend-ldap"
     repo_target:
       type: "string"
       default: "/home/stanley/st2_ldap_auth_{{branch}}"

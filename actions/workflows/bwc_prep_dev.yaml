@@ -62,7 +62,7 @@ tasks:
     input:
       project: st2-enterprise-auth-backend-ldap
       version: <% ctx().dev_version %>
-      fork: <% ctx().fork %>
+      fork: extremenetworks
       local_repo: <% 'st2enterprise_auth_ldap_' + ctx().local_repo_sfx %>
       hosts: <% ctx().host %>
       cwd: <% ctx().cwd %>
@@ -78,7 +78,7 @@ tasks:
     input:
       project: st2-enterprise-rbac-backend
       version: <% ctx().dev_version %>
-      fork: <% ctx().fork %>
+      fork: extremenetworks
       local_repo: <% 'st2enterprise_rbac_backend' + ctx().local_repo_sfx %>
       hosts: <% ctx().host %>
       cwd: <% ctx().cwd %>
