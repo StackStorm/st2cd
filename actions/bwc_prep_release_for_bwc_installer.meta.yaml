@@ -1,14 +1,14 @@
 ---
 name: bwc_prep_release_for_bwc_installer
-description: Prepare the bwc-installer repo for release
+description: Prepare the ewc-installer repo for release
 enabled: true
 runner_type: remote-shell-script
 entry_point: bwc_prep_release_for_bwc_installer.sh
 parameters:
     project:
         type: string
-        description: Project name for bwc-installer
-        default: bwc-installer
+        description: Project name for ewc-installer
+        default: ewc-installer
         position: 0
     version:
         type: string
@@ -18,7 +18,7 @@ parameters:
     fork:
         type: string
         description: Fork to use
-        default: StackStorm
+        default: extremenetworks
         position: 2
     local_repo:
         type: string
