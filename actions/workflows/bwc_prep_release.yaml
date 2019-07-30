@@ -123,10 +123,10 @@ tasks:
   prep_bwc_installer:
     action: st2cd.bwc_prep_release_for_bwc_installer
     input:
-      project: bwc-installer
+      project: ewc-installer
       version: <% ctx().version %>
-      fork: <% ctx().fork %>
-      local_repo: <% 'bwc-installer_' + ctx().local_repo_sfx %>
+      fork: extremenetworks
+      local_repo: <% 'ewc-installer_' + ctx().local_repo_sfx %>
       hosts: <% ctx().host %>
       cwd: <% ctx().cwd %>
     next:
