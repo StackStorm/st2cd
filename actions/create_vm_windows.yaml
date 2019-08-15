@@ -22,10 +22,11 @@ parameters:
     type: string
     description: Windows key to use during intial instance creation. This is important as it's used to encrypt the randmly generated password when the VM is created.
     default: st2_deploy_windows
-  keyfile:
+  private_key:
     type: string
-    description: Path to local private key that corresponds to {{key_name}}
-    default: /home/stanley/st2_deploy_windows.pem
+    description: Private key (pem) that corresponds to {{key_name}}
+    default: "{{ st2kv.system.windows_private_key }}"
+    secret: true
   dns_zone:
     type: string
     description: Route53 DNS Zone to add host to
