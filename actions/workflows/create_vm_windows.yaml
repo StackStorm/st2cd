@@ -5,7 +5,7 @@ input:
   - instance_type
   - environment
   - key_name
-  - keyfile
+  - private_key
   - dns_zone
   - hostname
   - username
@@ -127,7 +127,7 @@ tasks:
   decrypt_password_data:
     action: st2cd.aws_decrypt_password_data
     input:
-      keyfile: <% ctx().keyfile %>
+      private_key: <% ctx().private_key %>
       password_data: <% ctx().ec2_instance_password_data %>
     next:
       - when: <% succeeded() %>
