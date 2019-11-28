@@ -145,7 +145,7 @@ tasks:
       env: <% ctx().st2_cli_env %>
       cmd: bats cli/*.bats
       cwd: /tmp/st2tests
-      timeout: 400
+      timeout: 600
     next:
       - when: <% succeeded() %>
         do:
