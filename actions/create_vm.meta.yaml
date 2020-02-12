@@ -44,6 +44,7 @@
       enum:
         - "RHEL6"
         - "RHEL7"
+        - "RHEL8"
         - "F20"
         - "F21"
         - "UBUNTU14"
