@@ -29,8 +29,10 @@ if [[ -n "$RHTEST" ]]; then
         sudo service mongod restart
     fi
 
-    sudo yum install -y python-pip wget
-    if [[ "$RHVERSION" -ge 7 ]]; then
+    if [[ "$RHVERSION" -eq 8 ]]; then
+        # For RHEL/CentOS 8
+        sudo yum install -y python3-pip wget
+    elif [[ "$RHVERSION" -eq 7 ]]; then
         sudo yum install -y jq
     else
         # For RHEL/CentOS 6
