@@ -28,11 +28,11 @@ tasks:
   check_if_mistral_is_available:
     action: core.noop
     next:
-      - when: <% succeeded() and 'u18' in ctx().host_fqdn.toLower() %>
+      - when: <% succeeded() and ('u18' in ctx().host_fqdn.toLower() or 'rhel8' = ctx().host_fqdn.toLower() or 'centos8' = ctx().host_fqdn.toLower()) %>
         do:
-          # Mistral is not available on Ubuntu Bionic, so skip Mistral tests
+          # Mistral is not available on Ubuntu Bionic or RHEL8, so skip Mistral tests
           - noop
-      - when: <% succeeded() and not 'u18' in ctx().host_fqdn.toLower() %>
+      - when: <% succeeded() and (not 'u18' in ctx().host_fqdn.toLower()) and 'rhel8' != ctx().host_fqdn.toLower() and 'centos8' != ctx().host_fqdn.toLower() %>
         do:
           - test_inquiry_mistral
   test_inquiry_mistral:

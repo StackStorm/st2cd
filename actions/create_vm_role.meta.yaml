@@ -50,6 +50,7 @@ parameters:
     enum:
       - RHEL6
       - RHEL7
+      - RHEL8
       - F20
       - F21
       - UBUNTU14
@@ -60,8 +61,11 @@ parameters:
       - pkg_UBUNTU18
       - pkg_RHEL6
       - pkg_RHEL7
+      - pkg_RHEL8
       - pkg_CENTOS6
       - pkg_CENTOS7
+      - pkg_CENTOS8
       - ubuntu
       - centos6
       - centos7
+      - centos8

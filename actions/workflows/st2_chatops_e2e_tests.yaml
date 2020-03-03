@@ -23,6 +23,12 @@ input:
   - chatops_e2e_tests_slack_user_username_el7
   - chatops_e2e_tests_slack_user_api_token_el7
 
+  - chatops_e2e_tests_slack_channel_el8
+  - chatops_e2e_tests_slack_bot_username_el8
+  - chatops_e2e_tests_slack_bot_api_token_el8
+  - chatops_e2e_tests_slack_user_username_el8
+  - chatops_e2e_tests_slack_user_api_token_el8
+
 tasks:
   switch_on_ubuntu_version:
     action: core.remote
@@ -70,7 +76,12 @@ tasks:
           - websocket: /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem
         do:
           - run_with_slack_el7
-      - when: <% failed() or (succeeded() and not ["7"].contains(result().get(ctx().host_ip).stdout)) %>
+      - when: <% succeeded() and result().get(ctx().host_ip).stdout = '8' %>
+        publish:
+          - websocket: /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem
+        do:
+          - run_with_slack_el8
+      - when: <% failed() or (succeeded() and not ["7"].contains(result().get(ctx().host_ip).stdout) and not ["8"].contains(result().get(ctx().host_ip).stdout)) %>
         publish:
           - redhat_version: <% result().get(ctx().host_ip).stdout %>
         do:
@@ -124,3 +135,16 @@ tasks:
       slack_bot_api_token: "{{ ctx().chatops_e2e_tests_slack_bot_api_token_el7 }}"
       slack_user_username: "{{ ctx().chatops_e2e_tests_slack_user_username_el7 }}"
       slack_user_api_token: "{{ ctx().chatops_e2e_tests_slack_user_api_token_el7 }}"
+
+  # Run the tests with Slack, ST2 IUT on RHEL/CentOS 8
+  run_with_slack_el8:
+    action: st2cd.st2_chatops_e2e_tests_with_slack
+    input:
+      host_ip: <% ctx().host_ip %>
+      st2_auth_token: <% ctx().env.ST2_AUTH_TOKEN %>
+      websocket: <% ctx().websocket %>
+      slack_channel: "{{ ctx().chatops_e2e_tests_slack_channel_el8 }}"
+      slack_bot_username: "{{ ctx().chatops_e2e_tests_slack_bot_username_el8 }}"
+      slack_bot_api_token: "{{ ctx().chatops_e2e_tests_slack_bot_api_token_el8 }}"
+      slack_user_username: "{{ ctx().chatops_e2e_tests_slack_user_username_el8 }}"
+      slack_user_api_token: "{{ ctx().chatops_e2e_tests_slack_user_api_token_el8 }}"
