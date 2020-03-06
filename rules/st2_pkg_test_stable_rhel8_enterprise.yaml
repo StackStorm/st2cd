@@ -2,7 +2,8 @@
 name: st2_pkg_test_stable_rhel8_enterprise
 pack: st2cd
 description: Test stable packages
-enabled: true
+# TODO: Enable once we have release a stable version that supports RHEL 8
+enabled: false
 
 trigger:
   type: core.st2.CronTimer
