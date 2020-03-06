@@ -55,7 +55,7 @@ install_enterprise_bits() {
     echo "Downloading from repo ${REPO}..."
     echo "Version: $VERSION"
 
-    if [[ "${DISTRO}" = \UBUNTU* ]]; then
+    if [[ "${DISTRO}" = UBUNTU* ]]; then
         curl -s https://${LICENSE_KEY}:@packagecloud.io/install/repositories/StackStorm/${REPO}/script.deb.sh | bash
         if [[ -z "$VERSION" ]]; then
             apt-get install -y bwc-enterprise
@@ -142,7 +142,7 @@ CONF
 enable_and_configure_rbac() {
   echo "Enabling and configuring RBAC in st2.conf"
 
-  if [[ "${DISTRO}" = \UBUNTU* ]]; then
+  if [[ "${DISTRO}" = UBUNTU* ]]; then
       sudo apt-get install -y crudini
   else
       sudo yum install -y crudini
