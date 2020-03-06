@@ -140,45 +140,44 @@ CONF
 }
 
 enable_and_configure_rbac() {
-  echo "Enabling and configuring RBAC in st2.conf"
+    echo "Enabling and configuring RBAC in st2.conf"
 
-  if [[ "${DISTRO}" = UBUNTU* ]]; then
+    if [[ "${DISTRO}" = UBUNTU* ]]; then
       sudo apt-get install -y crudini
-  else
+    else
       sudo yum install -y crudini
-  fi
+    fi
 
-  # Enable RBAC
-  echo "Enabling rbac in st2.conf"
+    # Enable RBAC
+    echo "Enabling rbac in st2.conf"
 
-  sudo crudini --set /etc/st2/st2.conf rbac enable 'True'
-  sudo crudini --set /etc/st2/st2.conf rbac backend 'enterprise'
+    sudo crudini --set /etc/st2/st2.conf rbac enable 'True'
+    sudo crudini --set /etc/st2/st2.conf rbac backend 'enterprise'
 
-  # TODO: Move directory creation to package
-  sudo mkdir -p /opt/stackstorm/rbac/assignments/
-  sudo mkdir -p /opt/stackstorm/rbac/roles/
+    # TODO: Move directory creation to package
+    sudo mkdir -p /opt/stackstorm/rbac/assignments/
+    sudo mkdir -p /opt/stackstorm/rbac/roles/
 
-  # Write role assignment for admin user
-  ROLE_ASSIGNMENT_FILE="/opt/stackstorm/rbac/assignments/${ST2_USERNAME}.yaml"
-  sudo bash -c "cat > ${ROLE_ASSIGNMENT_FILE}" <<EOL
+    # Write role assignment for admin user
+    ROLE_ASSIGNMENT_FILE="/opt/stackstorm/rbac/assignments/${ST2_USERNAME}.yaml"
+    sudo bash -c "cat > ${ROLE_ASSIGNMENT_FILE}" <<EOL
 ---
   username: "${ST2_USERNAME}"
   roles:
     - "system_admin"
 EOL
 
-  # Write role assignment for stanley (system) user
-  ROLE_ASSIGNMENT_FILE="/opt/stackstorm/rbac/assignments/stanley.yaml"
-  sudo bash -c "cat > ${ROLE_ASSIGNMENT_FILE}" <<EOL
+    # Write role assignment for stanley (system) user
+    ROLE_ASSIGNMENT_FILE="/opt/stackstorm/rbac/assignments/stanley.yaml"
+    sudo bash -c "cat > ${ROLE_ASSIGNMENT_FILE}" <<EOL
 ---
   username: "stanley"
   roles:
     - "admin"
 EOL
 
-  # Sync roles and assignments
-  sudo st2-apply-rbac-definitions --config-file /etc/st2/st2.conf
-
+    # Sync roles and assignments
+    sudo st2-apply-rbac-definitions --config-file /etc/st2/st2.conf
 }
 
 
