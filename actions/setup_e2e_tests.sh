@@ -3,6 +3,7 @@ set -e
 
 VERSION=$1
 BRANCH=`echo ${VERSION} | cut -d "." -f1-2`
+PIP="pip"
 
 # Install OS specific pre-reqs (Better moved to puppet at some point.)
 DEBTEST=`lsb_release -a 2> /dev/null | grep Distributor | awk '{print $3}'`
@@ -29,15 +30,16 @@ if [[ -n "$RHTEST" ]]; then
         sudo service mongod restart
     fi
 
-    if [[ "$RHVERSION" -eq 8 ]]; then
-        # For RHEL/CentOS 8
-        sudo yum install -y python3-pip wget
-    elif [[ "$RHVERSION" -eq 7 ]]; then
-        sudo yum install -y jq
-    else
+    if [[ "$RHVERSION" -eq 6 ]]; then
         # For RHEL/CentOS 6
-        sudo yum install -y epel-release
-        sudo yum install -y jq
+        sudo yum install -y python-pip jq epel-release
+    elif [[ "$RHVERSION" -eq 7 ]]; then
+        # For RHEL/CentOS 7
+        sudo yum install -y python-pip jq
+    else
+        # For RHEL/CentOS 8 and above
+        sudo yum install -y python3-pip wget
+        PIP="pip3"
     fi
 
     # Remove bats-core if it already exists (this happens when test workflows
@@ -133,8 +135,8 @@ st2ctl reload --register-all
 
 # Robotframework requirements
 cd st2tests
-sudo pip install --upgrade "pip>=9.0,<9.1"
-sudo pip install --upgrade "virtualenv==15.1.0"
+sudo ${PIP} install --upgrade "pip>=9.0,<9.1"
+sudo ${PIP} install --upgrade "virtualenv==15.1.0"
 
 # wheel==0.30.0 doesn't support python 2.6 (default on el6)
 if [[ "$RHVERSION" == 6 ]]; then
@@ -143,7 +145,7 @@ else
     virtualenv --no-download venv
 fi
 . venv/bin/activate
-pip install -r test-requirements.txt
+${PIP} install -r test-requirements.txt
 
 
 # Restart st2 primarily reload the keyvalue configuration
