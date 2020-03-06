@@ -14,15 +14,15 @@ LDAP_GROUP_DN=${10}
 ST2_USERNAME=st2admin
 REPO=enterprise
 
-if [ "$VERSION" = "None" ]; then
+if [[ "$VERSION" = "None" ]]; then
     VERSION=''
 fi
 
-if [ "${PKG_ENV}" = "staging" ]; then
+if [[ "${PKG_ENV}" = "staging" ]]; then
     REPO="${PKG_ENV}-${REPO}"
 fi
 
-if [ "${RELEASE}" = "unstable" ]; then
+if [[ "${RELEASE}" = "unstable" ]]; then
     REPO="${REPO}-${RELEASE}"
 fi
 
