@@ -14,7 +14,7 @@ LDAP_GROUP_DN=${10}
 ST2_USERNAME=st2admin
 REPO=enterprise
 
-if [ $VERSION = "None" ]; then
+if [ "$VERSION" = "None" ]; then
     VERSION=''
 fi
 
@@ -55,9 +55,9 @@ install_enterprise_bits() {
     echo "Downloading from repo ${REPO}..."
     echo "Version: $VERSION"
 
-    if [[ ${DISTRO} = \UBUNTU* ]]; then
+    if [[ "${DISTRO}" = \UBUNTU* ]]; then
         curl -s https://${LICENSE_KEY}:@packagecloud.io/install/repositories/StackStorm/${REPO}/script.deb.sh | bash
-        if [[ -z $VERSION ]]; then
+        if [[ -z "$VERSION" ]]; then
             apt-get install -y bwc-enterprise
         else
             local BWC_ENTERPRISE_PKG_VERSION=$(get_apt_pkg_latest_revision bwc-enterprise $VERSION)
@@ -85,7 +85,7 @@ install_enterprise_bits() {
         fi
     else
         curl -s https://${LICENSE_KEY}:@packagecloud.io/install/repositories/StackStorm/${REPO}/script.rpm.sh | sudo bash
-        if [[ -z $VERSION ]]; then
+        if [[ -z "$VERSION" ]]; then
             yum install -y bwc-enterprise
         else
             yum install -y yum-utils # need repoquery
@@ -142,7 +142,7 @@ CONF
 enable_and_configure_rbac() {
   echo "Enabling and configuring RBAC in st2.conf"
 
-  if [[ ${DISTRO} = \UBUNTU* ]]; then
+  if [[ "${DISTRO}" = \UBUNTU* ]]; then
       sudo apt-get install -y crudini
   else
       sudo yum install -y crudini
