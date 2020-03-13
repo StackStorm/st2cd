@@ -11,7 +11,7 @@ input:
   - windows_host_fqdn
   - windows_username
   - windows_password
-  - version
+  - st2tests_version
   - enterprise
   - chatops
 tasks:
@@ -44,7 +44,7 @@ tasks:
     input:
       hosts: <% ctx().host_ip %>
       env: <% ctx().st2_cli_env %>
-      version: <% ctx().version %>
+      version: <% ctx().st2tests_version %>
       timeout: 220
     next:
       - when: <% succeeded() %>
