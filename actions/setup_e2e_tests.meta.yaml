@@ -8,7 +8,9 @@ parameters:
   version:
     type: string
     default: "master"
-    description: Version used for the release. Should include the patch e.g. 0.1.0
+    description: >
+      Branch name or version string used for the release. If a version string,
+      it should include the patch release, e.g. 0.1.0
     position: 0
   sudo:
     immutable: true
