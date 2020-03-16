@@ -1,8 +1,19 @@
 #!/bin/bash
 set -e
 
-VERSION=$1
-BRANCH=`echo ${VERSION} | cut -d "." -f1-2`
+BRANCH=$1
+
+VERSION=
+# Try to convert the branch to a major.minor version number
+# master              ->  master
+# 0.1.0               ->  0.1
+# v0.1.0              ->  v0.1
+# testing             -> testing
+# something/python.py -> something/python.py
+if [[ $BRANCH =~ v?[[:digit:]]{1,}\.[[:digit:]]{1,} ]]; then
+    VERSION=$(echo ${BRANCH} | cut -d "." -f1-2 | sed 's/^v//')
+fi
+
 PIP="pip"
 
 # Install OS specific pre-reqs (Better moved to puppet at some point.)
@@ -111,14 +122,16 @@ if [[ -d st2tests ]]; then
 fi
 
 # Install packs for testing
-if [[ ${BRANCH} == "master" ]]; then
-    echo "Installing st2tests from '${BRANCH}' branch at location: `pwd`..."
+# If we didn't recognize a version string, treat it like a branch
+if [[ -z "$VERSION" ]]; then
+    echo "Installing st2tests from '${BRANCH}' branch at location: $(pwd)..."
     # Can use --recurse-submodules with Git 2.13 and later
     git clone --recursive -b ${BRANCH} --depth 1 https://github.com/StackStorm/st2tests.git
 else
-    echo "Installing st2tests from 'v${BRANCH}' branch at location: `pwd`"
+    echo "Installing st2tests from 'v${VERSION}' branch at location: $(pwd)"
     # Can use --recurse-submodules with Git 2.13 and later
-    git clone --recursive -b v${BRANCH} --depth 1 https://github.com/StackStorm/st2tests.git
+    # Treat $VERSION like a version string and prepend 'v'
+    git clone --recursive -b v${VERSION} --depth 1 https://github.com/StackStorm/st2tests.git
 fi
 echo "Installing Packs: tests, asserts, fixtures, webui..."
 sudo cp -R st2tests/packs/* /opt/stackstorm/packs/
