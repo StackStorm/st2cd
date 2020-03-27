@@ -18,23 +18,25 @@
         - "RHEL6"
         - "RHEL7"
         - "RHEL8"
+        # TODO: Remove these
         - "F20"
         - "F21"
-        - "UBUNTU14"
+        # Keep these though
         - "UBUNTU16"
         - "UBUNTU18"
+        # TODO: Remove these
         - "pkg_CENTOS6"
         - "pkg_CENTOS7"
         - "pkg_CENTOS8"
+        # Keep these though
         - "pkg_RHEL6"
         - "pkg_RHEL7"
         - "pkg_RHEL8"
-        - "pkg_UBUNTU14"
         - "pkg_UBUNTU16"
         - "pkg_UBUNTU18"
     cmd:
       immutable: true
-      default: '{% if distro in ["RHEL6","RHEL7","RHEL8","pkg_CENTOS6","pkg_CENTOS7","pkg_CENTOS8","pkg_RHEL6","pkg_RHEL7","pkg_RHEL8"] -%}{{redhat}}{% elif distro in ["UBUNTU14","pkg_UBUNTU14","pkg_UBUNTU16","UBUNTU16","pkg_UBUNTU18","UBUNTU18"] -%}{{ubuntu}}{% elif distro in ["F20","F21"] -%}{{fedora}}{% endif -%}'
+      default: '{% if distro in ["RHEL6","RHEL7","RHEL8","pkg_CENTOS6","pkg_CENTOS7","pkg_CENTOS8","pkg_RHEL6","pkg_RHEL7","pkg_RHEL8"] -%}{{redhat}}{% elif distro in ["pkg_UBUNTU16","UBUNTU16","pkg_UBUNTU18","UBUNTU18"] -%}{{ubuntu}}{% elif distro in ["F20","F21"] -%}{{fedora}}{% endif -%}'
     redhat:
       type: "string"
       immutable: true

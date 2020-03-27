@@ -17,12 +17,14 @@ A list of planned features—different for every release, of course–should fol
 
 ## 3. Pre-release procedure
 
-- [ ] Test every feature manually in Ubuntu 14.
 - [ ] Test every feature manually in CentOS/RHEL 6.
 - [ ] Test every feature manually in CentOS/RHEL 7.
-- [ ] Ask someone else to test every feature manually in Ubuntu 14.
+- [ ] Test every feature manually in Ubuntu 16.
+- [ ] Test every feature manually in Ubuntu 18.
 - [ ] Ask someone else to test every feature manually in CentOS/RHEL 6.
 - [ ] Ask someone else to test every feature manually in CentOS/RHEL 7.
+- [ ] Ask someone else to test every feature manually in Ubuntu 16.
+- [ ] Ask someone else to test every feature manually in Ubuntu 18.
 - [ ] If something failed, fix and repeat from the beginning.
 - [ ] If something failed and can't be fixed, write it down, make it a priority for the next patch release, get a KB article out.
 - [ ] Make sure that change logs are up to date.
@@ -38,15 +40,14 @@ Valid for minor releases. For patches see [RELEASE_HOWTO.md](https://github.com/
 - [ ] Change the dev version in [st2web/package.json](https://github.com/StackStorm/st2web/blob/master/package.json#L4): e.g. if `1.2.0` is released then `1.3dev` should be in the file.
 - [ ] Change the dev version in [st2client](https://github.com/StackStorm/st2/blob/master/st2client/st2client/__init__.py) and [st2common](https://github.com/StackStorm/st2/blob/master/st2common/st2common/__init__.py): same rules as in the previous step apply.
 - [ ] Change the dev version in [st2docs/version.txt](https://github.com/StackStorm/st2docs/blob/master/version.txt#L1): e.g. if `1.3.0` is released then `1.4dev` should be in the file.
-- [ ] Add new version in [st2docs/docs/source/conf.py] (https://github.com/StackStorm/st2docs/blob/master/docs/source/conf.py#L79) e.g. if `1.3.0` is release then `1.3` should be added to the list.
+- [ ] Add new version in [st2docs/docs/source/conf.py](https://github.com/StackStorm/st2docs/blob/master/docs/source/conf.py#L79) e.g. if `1.3.0` is release then `1.3` should be added to the list.
 - [ ] Set the version values in the KV store of the build box:
 ```
-st2 key set st2_stage_v1.2_UBUNTU14 ubuntu-staging202
 st2 key set st2_stable_version 1.2
 st2 key set st2_unstable_version 1.3dev
 st2 key set st2_master_build_number 1
 ```
-- [ ] Make sure packaging is completed for st2web, st2flow, Mistral, and st2 itself (x3: Ubuntu 14, RHEL6, RHEL7).
+- [ ] Make sure packaging is completed for st2web, st2flow, Mistral, and st2 itself (x4: RHEL6, RHEL7).
 - [ ] Make sure `pytests` are passing and no sudden upstream issues happened (hi, oslo.utils!).
 - [ ] Create a temporary version tag say v1.3.0 if releasing v1.3.0 so that st2workroom_test passes. Also, remove tag before finalize.
 - [ ] Run `st2cd.package-publish-release` to push the packages to the download server and finalize the release.
@@ -59,10 +60,12 @@ st2 key set st2_master_build_number 1
 - [ ] Get some rest, grab a cup of coffee, meditate, listen to delightful music, hug someone. Calm down. The next step is going to be very exciting.
 - [ ] Change the version in [st2workroom](https://github.com/StackStorm/st2workroom/blob/ef992a96b721a6c5bf225991749ef52d86ccec1a/hieradata/role/st2.yaml#L8-L11). __This is the point where people start getting your release by default. That's it. It's done.__
 - [ ] Announce to the team that the code is out, bathe in fame and glory.
-- [ ] Test every feature manually in Ubuntu 14.
+- [ ] Test every feature manually in Ubuntu 16.
+- [ ] Test every feature manually in Ubuntu 18.
 - [ ] Test every feature manually in CentOS/RHEL 6.
 - [ ] Test every feature manually in CentOS/RHEL 7.
-- [ ] Ask someone else to test every feature manually in Ubuntu 14.
+- [ ] Ask someone else to test every feature manually in Ubuntu 16.
+- [ ] Ask someone else to test every feature manually in Ubuntu 18.
 - [ ] Ask someone else to test every feature manually in CentOS/RHEL 6.
 - [ ] Ask someone else to test every feature manually in CentOS/RHEL 7.
 - [ ] If something failed, fix and repeat from the beginning (I know, I know).
