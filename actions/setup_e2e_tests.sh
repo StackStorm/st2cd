@@ -73,8 +73,6 @@ elif [[ -n "$DEBTEST" ]]; then
     # Restart MongoDB for the config changes above to take an affect
     if [[ "$SUBTYPE" == 'xenial' || "${SUBTYPE}" == "bionic" ]]; then
       sudo systemctl restart mongod
-    else
-      sudo service mongod restart
     fi
 
     sudo apt-get -q -y install build-essential jq python-pip python-dev wget
@@ -86,9 +84,7 @@ elif [[ -n "$DEBTEST" ]]; then
     fi
 
     # Install from GitHub
-    # Ubuntu 16.04 has both bats and jq packages, so we don't need to do this
-    # once we drop Ubuntu 14.04 support
-    git clone --branch add_per_test_timing_information --depth 1 https://github.com/Kami/bats-core.git
+    git clone https://github.com/bats-core/bats-core.git
     (cd bats-core; sudo ./install.sh /usr/local)
 else
     echo "Unknown Operating System."
