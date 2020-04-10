@@ -9,7 +9,7 @@
             pattern: "st2cd.webui_pkg"
             type: "equals"
     action:
-        ref: "slack.post_message"
+        ref: "slack.chat.postMessage"
         parameters:
-            message: "```[{{trigger.action_name}} - {{trigger.parameters.environment}}: {{trigger.status.upper()}}]\n    DL_HOST: {{trigger.parameters.dl_server}}\n    BRANCH: {{trigger.parameters.branch}}\n    BUILD: {{trigger.parameters.build}}```"
+            text: "```[{{trigger.action_name}} - {{trigger.parameters.environment}}: {{trigger.status.upper()}}]\n    DL_HOST: {{trigger.parameters.dl_server}}\n    BRANCH: {{trigger.parameters.branch}}\n    BUILD: {{trigger.parameters.build}}```"
     pack: "st2cd"

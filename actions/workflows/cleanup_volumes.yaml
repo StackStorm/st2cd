@@ -40,15 +40,15 @@ tasks:
         do:
           - notify_failure
   notify_success:
-    action: slack.post_message
+    action: slack.chat.postMessage
     input:
       channel: <% ctx().notify_channel %>
-      message: '[SUCCEEDED] Unused volumes older than <% ctx().age %> seconds are deleted'
+      text: '[SUCCEEDED] Unused volumes older than <% ctx().age %> seconds are deleted'
   notify_failure:
-    action: slack.post_message
+    action: slack.chat.postMessage
     input:
       channel: <% ctx().notify_channel %>
-      message: '[FAILED] Unable to delete unused volumes'
+      text: '[FAILED] Unable to delete unused volumes'
     next:
       - do:
           - fail

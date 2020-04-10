@@ -9,8 +9,8 @@
             pattern: "st2cd\\.destroy_vm"
             type: "matchregex"
     action:
-        ref: "slack.post_message"
+        ref: "slack.chat.postMessage"
         parameters:
             channel: "#thunderdome"
-            message: "{% if trigger.status != 'succeeded' %}*{% endif %}[{{trigger.status.upper()}}]{% if trigger.status != 'succeeded' %}*{% endif %} {{trigger.parameters.hostname}} was {% if trigger.status != 'succeeded' %}*NOT* {% endif %}destroyed\n"
+            text: "{% if trigger.status != 'succeeded' %}*{% endif %}[{{trigger.status.upper()}}]{% if trigger.status != 'succeeded' %}*{% endif %} {{trigger.parameters.hostname}} was {% if trigger.status != 'succeeded' %}*NOT* {% endif %}destroyed\n"
     pack: "st2cd"

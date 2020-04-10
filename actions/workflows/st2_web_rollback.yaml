@@ -62,15 +62,15 @@
       on-failure: "slack_failure"
     -
       name: "slack_success"
-      ref: "slack.post_message"
+      ref: "slack.chat.postMessage"
       params:
         channel: "#thunderdome"
-        message: "```[st2web rollback]\n STATUS: SUCCESS\n HOSTNAME: {{hostname}}\n CURRENT_WEB: {{previous[hostname].stdout}}\n URL: http://{{hostname}}:3000```"
+        text: "```[st2web rollback]\n STATUS: SUCCESS\n HOSTNAME: {{hostname}}\n CURRENT_WEB: {{previous[hostname].stdout}}\n URL: http://{{hostname}}:3000```"
     -
       name: "slack_failure"
-      ref: "slack.post_message"
+      ref: "slack.chat.postMessage"
       params:
         channel: "#thunderdome"
-        message: "```[st2web rollback]\n STATUS: FAILURE\n HOSTNAME: {{hostname}}\n ```"
+        text: "```[st2web rollback]\n STATUS: FAILURE\n HOSTNAME: {{hostname}}\n ```"
 
   default: "stop_st2web"
