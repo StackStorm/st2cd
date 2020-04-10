@@ -11,7 +11,7 @@ criteria:
     pattern: "slack"
     type: "equals"
 action:
-  ref: slack.post_message
+  ref: slack.chat.postMessage
   parameters:
     channel: "#thunderdome"
-    message: "{{trigger.execution_id}}: {{trigger.message}}"
+    text: "{{trigger.execution_id}}: {{trigger.message}}"
