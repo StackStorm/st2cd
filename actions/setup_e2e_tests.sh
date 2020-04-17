@@ -49,7 +49,7 @@ if [[ -n "$RHTEST" ]]; then
         sudo yum install -y python-pip jq
     else
         # For RHEL/CentOS 8 and above
-        sudo yum install -y python3-pip wget
+        sudo yum install -y python3-pip wget jq
         PIP="pip3"
     fi
 
