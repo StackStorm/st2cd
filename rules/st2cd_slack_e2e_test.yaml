@@ -9,8 +9,8 @@
             pattern: "st2cd.e2e_tests"
             type: "equals"
     action:
-        ref: "slack.post_message"
+        ref: "slack.chat.postMessage"
         parameters:
-            channel: "{% if trigger.status == 'succeeded' %}#thunderdome{% else %}#stackstorm{% endif %}"
-            message: "{% if trigger.status != 'succeeded' %}channel\n{% endif %}```[{{trigger.action_name}} - {{trigger.parameters.environment}}: {{trigger.status.upper()}}]\n    HOST: {{trigger.parameters.hostname}}\n    BRANCH: {{trigger.parameters.branch}}\n    SHA: {{trigger.parameters.revision}}\n    BUILD: {{trigger.parameters.build}}```"
+            channel: "{% if trigger.status == 'succeeded' %}#thunderdome{% else %}#opstown{% endif %}"
+            text: "{% if trigger.status != 'succeeded' %}channel\n{% endif %}```[{{trigger.action_name}} - {{trigger.parameters.environment}}: {{trigger.status.upper()}}]\n    HOST: {{trigger.parameters.hostname}}\n    BRANCH: {{trigger.parameters.branch}}\n    SHA: {{trigger.parameters.revision}}\n    BUILD: {{trigger.parameters.build}}```"
     pack: "st2cd"

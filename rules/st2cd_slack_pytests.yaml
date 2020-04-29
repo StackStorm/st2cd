@@ -9,8 +9,8 @@
             pattern: "st2cd.pytests"
             type: "equals"
     action:
-        ref: "slack.post_message"
+        ref: "slack.chat.postMessage"
         parameters:
-            channel: "{% if trigger.status == 'succeeded' %}#thunderdome{% else %}#stackstorm{% endif %}"
-            message: "{% if trigger.status != 'succeeded' %}channel\n{% endif %}```[{{trigger.action_name}}: {{trigger.status.upper()}}]\n    BRANCH: {{trigger.parameters.branch}}\n    SHA: {{trigger.parameters.revision}}\n    BUILD: {{trigger.result.tasks[1].result.result.value}}```"
+            channel: "{% if trigger.status == 'succeeded' %}#thunderdome{% else %}#opstown{% endif %}"
+            text: "{% if trigger.status != 'succeeded' %}channel\n{% endif %}```[{{trigger.action_name}}: {{trigger.status.upper()}}]\n    BRANCH: {{trigger.parameters.branch}}\n    SHA: {{trigger.parameters.revision}}\n    BUILD: {{trigger.result.tasks[1].result.result.value}}```"
     pack: "st2cd"

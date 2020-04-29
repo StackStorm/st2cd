@@ -46,22 +46,28 @@ parameters:
     type: string
     description: Planned purpose of the VM
   distro:
-    default: UBUNTU14
+    default: UBUNTU18
     enum:
       - RHEL6
       - RHEL7
+      - RHEL8
+      # TODO: Remove Fedora
       - F20
       - F21
-      - UBUNTU14
       - UBUNTU16
       - UBUNTU18
-      - pkg_UBUNTU14
       - pkg_UBUNTU16
       - pkg_UBUNTU18
       - pkg_RHEL6
       - pkg_RHEL7
+      - pkg_RHEL8
+      # TODO: Remove these
       - pkg_CENTOS6
       - pkg_CENTOS7
+      - pkg_CENTOS8
+      # TODO: Remove this
       - ubuntu
+      # TODO: Remove these
       - centos6
       - centos7
+      - centos8

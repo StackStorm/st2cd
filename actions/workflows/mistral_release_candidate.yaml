@@ -16,7 +16,7 @@ input:
       - '#thunderdome'
   - notify_failure_channels:
       - '#thunderdome'
-      - '#stackstorm'
+      - '#opstown'
   - webui_base_url: https://st2cicd.uswest2.stackstorm.net
 tasks:
   test:

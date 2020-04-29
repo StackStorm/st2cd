@@ -1,8 +1,20 @@
 #!/bin/bash
 set -e
 
-VERSION=$1
-BRANCH=`echo ${VERSION} | cut -d "." -f1-2`
+BRANCH=$1
+
+VERSION=
+# Try to convert the branch to a major.minor version number
+# master              ->  master
+# 0.1.0               ->  0.1
+# v0.1.0              ->  v0.1
+# testing             -> testing
+# something/python.py -> something/python.py
+if [[ $BRANCH =~ v?[[:digit:]]{1,}\.[[:digit:]]{1,} ]]; then
+    VERSION=$(echo ${BRANCH} | cut -d "." -f1-2 | sed 's/^v//')
+fi
+
+PIP="pip"
 
 # Install OS specific pre-reqs (Better moved to puppet at some point.)
 DEBTEST=`lsb_release -a 2> /dev/null | grep Distributor | awk '{print $3}'`
@@ -29,13 +41,16 @@ if [[ -n "$RHTEST" ]]; then
         sudo service mongod restart
     fi
 
-    sudo yum install -y python-pip wget
-    if [[ "$RHVERSION" -ge 7 ]]; then
-        sudo yum install -y jq
-    else
+    if [[ "$RHVERSION" -eq 6 ]]; then
         # For RHEL/CentOS 6
-        sudo yum install -y epel-release
-        sudo yum install -y jq
+        sudo yum install -y python-pip jq epel-release
+    elif [[ "$RHVERSION" -eq 7 ]]; then
+        # For RHEL/CentOS 7
+        sudo yum install -y python-pip jq
+    else
+        # For RHEL/CentOS 8 and above
+        sudo yum install -y python3-pip wget jq
+        PIP="pip3"
     fi
 
     # Remove bats-core if it already exists (this happens when test workflows
@@ -58,8 +73,6 @@ elif [[ -n "$DEBTEST" ]]; then
     # Restart MongoDB for the config changes above to take an affect
     if [[ "$SUBTYPE" == 'xenial' || "${SUBTYPE}" == "bionic" ]]; then
       sudo systemctl restart mongod
-    else
-      sudo service mongod restart
     fi
 
     sudo apt-get -q -y install build-essential jq python-pip python-dev wget
@@ -71,9 +84,7 @@ elif [[ -n "$DEBTEST" ]]; then
     fi
 
     # Install from GitHub
-    # Ubuntu 16.04 has both bats and jq packages, so we don't need to do this
-    # once we drop Ubuntu 14.04 support
-    git clone --branch add_per_test_timing_information --depth 1 https://github.com/Kami/bats-core.git
+    git clone https://github.com/bats-core/bats-core.git
     (cd bats-core; sudo ./install.sh /usr/local)
 else
     echo "Unknown Operating System."
@@ -107,14 +118,16 @@ if [[ -d st2tests ]]; then
 fi
 
 # Install packs for testing
-if [[ ${BRANCH} == "master" ]]; then
-    echo "Installing st2tests from '${BRANCH}' branch at location: `pwd`..."
+# If we didn't recognize a version string, treat it like a branch
+if [[ -z "$VERSION" ]]; then
+    echo "Installing st2tests from '${BRANCH}' branch at location: $(pwd)..."
     # Can use --recurse-submodules with Git 2.13 and later
     git clone --recursive -b ${BRANCH} --depth 1 https://github.com/StackStorm/st2tests.git
 else
-    echo "Installing st2tests from 'v${BRANCH}' branch at location: `pwd`"
+    echo "Installing st2tests from 'v${VERSION}' branch at location: $(pwd)"
     # Can use --recurse-submodules with Git 2.13 and later
-    git clone --recursive -b v${BRANCH} --depth 1 https://github.com/StackStorm/st2tests.git
+    # Treat $VERSION like a version string and prepend 'v'
+    git clone --recursive -b v${VERSION} --depth 1 https://github.com/StackStorm/st2tests.git
 fi
 echo "Installing Packs: tests, asserts, fixtures, webui..."
 sudo cp -R st2tests/packs/* /opt/stackstorm/packs/
@@ -131,8 +144,8 @@ st2ctl reload --register-all
 
 # Robotframework requirements
 cd st2tests
-sudo pip install --upgrade "pip>=9.0,<9.1"
-sudo pip install --upgrade "virtualenv==15.1.0"
+sudo ${PIP} install --upgrade "pip>=9.0,<9.1"
+sudo ${PIP} install --upgrade "virtualenv==15.1.0"
 
 # wheel==0.30.0 doesn't support python 2.6 (default on el6)
 if [[ "$RHVERSION" == 6 ]]; then
@@ -141,7 +154,7 @@ else
     virtualenv --no-download venv
 fi
 . venv/bin/activate
-pip install -r test-requirements.txt
+${PIP} install -r test-requirements.txt
 
 
 # Restart st2 primarily reload the keyvalue configuration

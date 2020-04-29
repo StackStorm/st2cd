@@ -147,40 +147,40 @@ tasks:
           - delete_volumes
 
   notify_success:
-    action: slack.post_message
+    action: slack.chat.postMessage
     input:
       channel: <% ctx().notify_channel %>
-      message: '[SUCCEEDED] <% ctx().hostname %> was destroyed'
+      text: '[SUCCEEDED] <% ctx().hostname %> was destroyed'
 
   notify_multiple_instances_failure:
-    action: slack.post_message
+    action: slack.chat.postMessage
     input:
       channel: <% ctx().notify_failure_channel %>
-      message: '[FAILED] More than one instance for <% ctx().hostname %> were identified'
+      text: '[FAILED] More than one instance for <% ctx().hostname %> were identified'
     next:
       - do:
           - fail
 
   notify_destroy_instance_failure:
-    action: slack.post_message
+    action: slack.chat.postMessage
     input:
       channel: <% ctx().notify_failure_channel %>
-      message: '[FAILED] <% ctx().hostname %> was not destroyed'
+      text: '[FAILED] <% ctx().hostname %> was not destroyed'
     next:
       - do:
           - fail
 
   notify_delete_cname_failure:
-    action: slack.post_message
+    action: slack.chat.postMessage
     input:
       channel: <% ctx().notify_failure_channel %>
-      message: '[FAILED] <% ctx().hostname %> was destroyed but CNAME was not deleted'
+      text: '[FAILED] <% ctx().hostname %> was destroyed but CNAME was not deleted'
 
   notify_delete_volumes_failure:
-    action: slack.post_message
+    action: slack.chat.postMessage
     input:
       channel: <% ctx().notify_failure_channel %>
-      message: '[FAILED] <% ctx().hostname %> was destroyed but volumes were not deleted'
+      text: '[FAILED] <% ctx().hostname %> was destroyed but volumes were not deleted'
     next:
       - do:
           - fail

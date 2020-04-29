@@ -15,7 +15,7 @@ parameters:
         enum:
             - RHEL6
             - RHEL7
-            - UBUNTU14
+            - RHEL8
             - UBUNTU16
             - UBUNTU18
         position: 1

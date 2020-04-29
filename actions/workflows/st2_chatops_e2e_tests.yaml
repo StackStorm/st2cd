@@ -23,6 +23,16 @@ input:
   - chatops_e2e_tests_slack_user_username_el7
   - chatops_e2e_tests_slack_user_api_token_el7
 
+  - chatops_e2e_tests_slack_channel_el8
+  - chatops_e2e_tests_slack_bot_username_el8
+  - chatops_e2e_tests_slack_bot_api_token_el8
+  - chatops_e2e_tests_slack_user_username_el8
+  - chatops_e2e_tests_slack_user_api_token_el8
+
+vars:
+  - ubuntu_version: null
+  - redhat_version: null
+
 tasks:
   switch_on_ubuntu_version:
     action: core.remote
@@ -31,7 +41,7 @@ tasks:
       cmd: "which lsb_release 1>/dev/null && { echo -n '\"'; lsb_release --release | awk '{ print $2 }' | tr -d '\\n'; echo '\"'; } || exit 1"
     next:
       - publish:
-          - ubuntu_version: <% result().get(ctx().host_ip).stdout %>
+          - ubuntu_version: <% succeeded() and result().get(ctx().host_ip).stdout %>
         do:
           - log_ubuntu_version
       - when: <% succeeded() and result().get(ctx().host_ip).stdout = '16.04' %>
@@ -44,16 +54,17 @@ tasks:
           - websocket:
         do:
           - run_with_slack_u18
-      - when: <% failed() or (succeeded() and not ["16.04", "18.04"].contains(result().get(ctx().host_ip).stdout)) %>
-        publish:
-          - ubuntu_version: <% result().get(ctx().host_ip).stdout %>
+      - when: <% succeeded() and not ["16.04", "18.04"].contains(result().get(ctx().host_ip).stdout) %>
+        do:
+          - switch_on_redhat_version
+      - when: <% failed() %>
         do:
           - switch_on_redhat_version
 
   log_ubuntu_version:
     action: core.echo
     input:
-      message: <% ctx().ubuntu_version %>
+      message: <% str(ctx().ubuntu_version) %>
 
   switch_on_redhat_version:
     action: core.remote
@@ -62,7 +73,7 @@ tasks:
       cmd: "echo -n '\"'; [[ -e /etc/redhat-release ]] && cat /etc/redhat-release 2>/dev/null | sed -r 's/^[a-zA-Z ]*([0-9]){1,}\\..*$/\\1/' | tr -d '\\n'; echo '\"'"
     next:
       - publish:
-          - redhat_version: <% result().get(ctx().host_ip).stdout %>
+          - redhat_version: <% succeeded() and result().get(ctx().host_ip).stdout %>
         do:
           - log_redhat_version
       - when: <% succeeded() and result().get(ctx().host_ip).stdout = '7' %>
@@ -70,16 +81,22 @@ tasks:
           - websocket: /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem
         do:
           - run_with_slack_el7
-      - when: <% failed() or (succeeded() and not ["7"].contains(result().get(ctx().host_ip).stdout)) %>
+      - when: <% succeeded() and result().get(ctx().host_ip).stdout = '8' %>
         publish:
-          - redhat_version: <% result().get(ctx().host_ip).stdout %>
+          - websocket: /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem
+        do:
+          - run_with_slack_el8
+      - when: <% succeeded() and not ["7"].contains(result().get(ctx().host_ip).stdout) and not ["8"].contains(result().get(ctx().host_ip).stdout) %>
+        do:
+          - log_skipping
+      - when: <% failed() %>
         do:
           - log_skipping
 
   log_redhat_version:
     action: core.echo
     input:
-      message: <% ctx().redhat_version %>
+      message: <% str(ctx().redhat_version) %>
 
   log_skipping:
     action: core.echo
@@ -124,3 +141,16 @@ tasks:
       slack_bot_api_token: "{{ ctx().chatops_e2e_tests_slack_bot_api_token_el7 }}"
       slack_user_username: "{{ ctx().chatops_e2e_tests_slack_user_username_el7 }}"
       slack_user_api_token: "{{ ctx().chatops_e2e_tests_slack_user_api_token_el7 }}"
+
+  # Run the tests with Slack, ST2 IUT on RHEL/CentOS 8
+  run_with_slack_el8:
+    action: st2cd.st2_chatops_e2e_tests_with_slack
+    input:
+      host_ip: <% ctx().host_ip %>
+      st2_auth_token: <% ctx().env.ST2_AUTH_TOKEN %>
+      websocket: <% ctx().websocket %>
+      slack_channel: "{{ ctx().chatops_e2e_tests_slack_channel_el8 }}"
+      slack_bot_username: "{{ ctx().chatops_e2e_tests_slack_bot_username_el8 }}"
+      slack_bot_api_token: "{{ ctx().chatops_e2e_tests_slack_bot_api_token_el8 }}"
+      slack_user_username: "{{ ctx().chatops_e2e_tests_slack_user_username_el8 }}"
+      slack_user_api_token: "{{ ctx().chatops_e2e_tests_slack_user_api_token_el8 }}"
