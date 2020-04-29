@@ -2,8 +2,7 @@
 name: st2_pkg_test_stable_rhel8_enterprise
 pack: st2cd
 description: Test stable packages
-# TODO: Enable once we have release a stable version that supports RHEL 8
-enabled: false
+enabled: true
 
 trigger:
   type: core.st2.CronTimer
@@ -22,7 +21,7 @@ action:
     distro: RHEL8
     pkg_env: production
     release: stable
-    version: "3.1.0"
+    version: "3.2.0"
     enterprise: true
     enterprise_key: "{{st2kv.system.enterprise_key_prd_stable}}"
     chatops: true

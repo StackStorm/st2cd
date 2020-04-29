@@ -30,8 +30,7 @@
         description: "Space seperated list of operating systems supported by st2 e.g. 'rhel6 rhel7 u16 u18'"
         required: true
         position: 4
-        # TODO: Add rhel8 to this
-        default: rhel6 rhel7 u16 u18
+        default: rhel6 rhel7 rhel8 u16 u18
     local_repo:
         type: string
         description: Location where to clone the repo. Programmatically determined if not provided.
