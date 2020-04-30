@@ -18,17 +18,27 @@ tasks:
         publish:
           - local_repo_sfx: <% result().stdout %>
         do:
-          - prep
+          - get_host
       - when: <% succeeded() and (ctx().host != null) %>
         publish:
           - local_repo_sfx: <% result().stdout %>
         do:
           - prep
+  get_host:
+     action: linux.dig
+     input:
+       hostname: st2-build-slave-ubuntu.service.consul
+       rand: true
+       count: 1
+     next:
+       - when: <% succeeded() %>
+         publish:
+           - host: <% result().result[0] %>
+         do:
+           - prep
   prep:
     next:
-      - publish:
-          - host: localhost
-        do:
+      - do:
           - prep_bwc_enterprise_pkg
   prep_bwc_enterprise_pkg:
     action: st2cd.bwc_prep_release_for_enterprise_pkg
