@@ -18,27 +18,17 @@ tasks:
         publish:
           - local_repo_sfx: <% result().stdout %>
         do:
-          - get_host
+          - prep
       - when: <% succeeded() and (ctx().host != null) %>
         publish:
           - local_repo_sfx: <% result().stdout %>
         do:
           - prep
-  get_host:
-    action: linux.dig
-    input:
-      hostname: st2-build-slave-ubuntu.service.consul
-      rand: true
-      count: 1
-    next:
-      - when: <% succeeded() %>
-        publish:
-          - host: <% result().result[0] %>
-        do:
-          - prep
   prep:
     next:
-      - do:
+      - publish:
+          - host: localhost
+        do:
           - prep_bwc_enterprise_pkg
   prep_bwc_enterprise_pkg:
     action: st2cd.bwc_prep_release_for_enterprise_pkg
@@ -95,6 +85,22 @@ tasks:
       version: <% ctx().version %>
       fork: extremenetworks
       local_repo: <% 'bwc_ui_' + ctx().local_repo_sfx %>
+      hosts: <% ctx().host %>
+      cwd: <% ctx().cwd %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - prep_st2flow
+      - when: <% failed() %>
+        do:
+          - cleanup_on_failure
+ prep_st2flow:
+    action: st2cd.st2_prep_release_for_gui
+    input:
+      project: st2flow
+      version: <% ctx().version %>
+      fork: extremenetworks
+      local_repo: <% 'st2flow_' + ctx().local_repo_sfx %>
       hosts: <% ctx().host %>
       cwd: <% ctx().cwd %>
     next:
