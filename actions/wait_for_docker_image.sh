@@ -16,7 +16,7 @@ fi
 
 function docker_tag_exists() {
 	ORG_LCASE=`echo "${ORG}" | tr '[:upper:]' '[:lower:]'`
-    URI="https://hub.docker.com/v2/repositories/${ORG_LCASE}/${IMAGE}/tags"
+	URI="https://hub.docker.com/v2/repositories/${ORG_LCASE}/${IMAGE}/tags"
 	echo ${URI}
     curl --silent --fail -lSL ${URI} | grep \"${VERSION}\" >/dev/null
 }
