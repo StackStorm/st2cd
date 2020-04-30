@@ -25,17 +25,17 @@ tasks:
         do:
           - prep
   get_host:
-     action: linux.dig
-     input:
-       hostname: st2-build-slave-ubuntu.service.consul
-       rand: true
-       count: 1
-     next:
-       - when: <% succeeded() %>
-         publish:
-           - host: <% result().result[0] %>
-         do:
-           - prep
+    action: linux.dig
+    input:
+      hostname: st2-build-slave-ubuntu.service.consul
+      rand: true
+      count: 1
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - host: <% result().result[0] %>
+        do:
+          - prep
   prep:
     next:
       - do:
