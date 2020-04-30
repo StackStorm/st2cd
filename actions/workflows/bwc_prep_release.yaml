@@ -100,6 +100,22 @@ tasks:
     next:
       - when: <% succeeded() %>
         do:
+          - prep_st2flow
+      - when: <% failed() %>
+        do:
+          - cleanup_on_failure
+ prep_st2flow:
+    action: st2cd.st2_prep_release_for_gui
+    input:
+      project: st2flow
+      version: <% ctx().version %>
+      fork: extremenetworks
+      local_repo: <% 'st2flow_' + ctx().local_repo_sfx %>
+      hosts: <% ctx().host %>
+      cwd: <% ctx().cwd %>
+    next:
+      - when: <% succeeded() %>
+        do:
           - prep_ewc_docs
       - when: <% failed() %>
         do:
