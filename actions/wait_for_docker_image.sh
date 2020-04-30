@@ -15,7 +15,9 @@ if [[ -z "${ORG}" || -z "${IMAGE}" || -z "${VERSION}" ]]; then
 fi
 
 function docker_tag_exists() {
-    URI="https://hub.docker.com/v2/repositories/$1/tags"
+	ORG_LCASE=`echo "${ORG}" | tr '[:upper:]' '[:lower:]'`
+    URI="https://hub.docker.com/v2/repositories/${ORG_LCASE}/${IMAGE}/tags"
+	echo ${URI}
     curl --silent --fail -lSL ${URI} | grep \"${VERSION}\" >/dev/null
 }
 
