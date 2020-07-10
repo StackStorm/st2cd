@@ -78,7 +78,7 @@
       ref: "core.remote_sudo"
       params:
         hosts: "{{dl_server}}"
-        cmd: "cp -Rf /tmp/flow-{{version}}.tar.gz /var/www/sites/releases/html/st2enterprise/apt/trusty/st2flow/ && cp -Rf /tmp/flow-{{version}}.tar.gz /var/www/sites/releases/html/st2enterprise/yum/el/7/st2flow/ && cp -Rf /tmp/flow-{{version}}.tar.gz /var/www/sites/releases/html/st2enterprise/yum/el/6/st2flow/"
+        cmd: "cp -Rf /tmp/flow-{{version}}.tar.gz /var/www/sites/releases/html/st2enterprise/apt/trusty/st2flow/ && cp -Rf /tmp/flow-{{version}}.tar.gz /var/www/sites/releases/html/st2enterprise/yum/el/7/st2flow/ && cp -Rf /tmp/flow-{{version}}.tar.gz /var/www/sites/releases/html/st2enterprise/yum/el/8/st2flow/"
         timeout: 1800
       on-success: "clean_repo"
     -

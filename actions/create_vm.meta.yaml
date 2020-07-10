@@ -42,7 +42,6 @@
     distro:
       default: "UBUNTU18"
       enum:
-        - "RHEL6"
         - "RHEL7"
         - "RHEL8"
         # TODO: Remove Fedora

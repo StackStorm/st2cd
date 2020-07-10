@@ -41,10 +41,7 @@ if [[ -n "$RHTEST" ]]; then
         sudo service mongod restart
     fi
 
-    if [[ "$RHVERSION" -eq 6 ]]; then
-        # For RHEL/CentOS 6
-        sudo yum install -y python-pip jq epel-release
-    elif [[ "$RHVERSION" -eq 7 ]]; then
+    if [[ "$RHVERSION" -eq 7 ]]; then
         # For RHEL/CentOS 7
         sudo yum install -y python-pip jq
     else
@@ -59,11 +56,6 @@ if [[ -n "$RHTEST" ]]; then
         rm -rf bats-core
     fi
 
-    # Install from GitHub
-    # RHEL 7+ has both bats and jq package, so we don't need to do this once we
-    # drop RHEL 6 support
-    git clone --branch add_per_test_timing_information --depth 1 https://github.com/Kami/bats-core.git
-    (cd bats-core; sudo ./install.sh /usr/local)
 elif [[ -n "$DEBTEST" ]]; then
     DEBVERSION=`lsb_release --release | awk '{ print $2 }'`
     SUBTYPE=`lsb_release -a 2>&1 | grep Codename | grep -v "LSB" | awk '{print $2}'`
@@ -147,12 +139,7 @@ cd st2tests
 sudo ${PIP} install --upgrade "pip>=9.0,<9.1"
 sudo ${PIP} install --upgrade "virtualenv==15.1.0"
 
-# wheel==0.30.0 doesn't support python 2.6 (default on el6)
-if [[ "$RHVERSION" == 6 ]]; then
-    virtualenv --always-copy --no-download venv -p /opt/stackstorm/st2/bin/python2.7
-else
-    virtualenv --no-download venv
-fi
+virtualenv --no-download venv
 . venv/bin/activate
 ${PIP} install -r test-requirements.txt
 
