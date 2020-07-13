@@ -43,17 +43,11 @@ if [[ -n "$RHTEST" ]]; then
 
     if [[ "$RHVERSION" -eq 7 ]]; then
         # For RHEL/CentOS 7
-        sudo yum install -y python-pip jq
+        sudo yum install -y python-pip jq bats
     else
         # For RHEL/CentOS 8 and above
-        sudo yum install -y python3-pip wget jq
+        sudo yum install -y python3-pip wget jq bats
         PIP="pip3"
-    fi
-
-    # Remove bats-core if it already exists (this happens when test workflows
-    # are re-run on a server when tests are debugged)
-    if [[ -d bats-core ]]; then
-        rm -rf bats-core
     fi
 
 elif [[ -n "$DEBTEST" ]]; then
