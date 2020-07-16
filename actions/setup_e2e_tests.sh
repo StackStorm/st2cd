@@ -46,9 +46,12 @@ if [[ -n "$RHTEST" ]]; then
         sudo yum install -y python-pip jq bats
     else
         # For RHEL/CentOS 8 and above
-        # TODO: Where to source bats for EL 8...
         sudo yum install -y python3-pip wget jq 
         PIP="pip3"
+        # bats not available in epel for EL 8, Install from GitHub
+        rm -rf bats-core
+        git clone --branch add_per_test_timing_information --depth 1 https://github
+        (cd bats-core; sudo ./install.sh /usr/local)
     fi
 
 elif [[ -n "$DEBTEST" ]]; then
