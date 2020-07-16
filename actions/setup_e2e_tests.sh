@@ -46,7 +46,8 @@ if [[ -n "$RHTEST" ]]; then
         sudo yum install -y python-pip jq bats
     else
         # For RHEL/CentOS 8 and above
-        sudo yum install -y python3-pip wget jq bats
+        # TODO: Where to source bats for EL 8...
+        sudo yum install -y python3-pip wget jq 
         PIP="pip3"
     fi
 
