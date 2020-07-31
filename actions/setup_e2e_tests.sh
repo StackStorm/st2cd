@@ -48,10 +48,8 @@ if [[ -n "$RHTEST" ]]; then
         # For RHEL/CentOS 8 and above
         sudo yum install -y python3-pip wget jq 
         PIP="pip3"
-        # bats not available in epel for EL 8, Install from GitHub
-        rm -rf bats-core
-        git clone --branch add_per_test_timing_information --depth 1 https://github
-        (cd bats-core; sudo ./install.sh /usr/local)
+        # bats not available in epel for EL 8, Install from npm
+        sudo npm install --global bats
     fi
 
 elif [[ -n "$DEBTEST" ]]; then
