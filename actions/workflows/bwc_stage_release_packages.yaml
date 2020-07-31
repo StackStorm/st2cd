@@ -7,7 +7,6 @@ input:
   - username: stackstorm
   - wait
   - distros:
-      RHEL6: el6
       RHEL7: el7
       RHEL8: el8
       UBUNTU16: u16

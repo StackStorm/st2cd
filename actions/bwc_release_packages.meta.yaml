@@ -10,7 +10,6 @@ parameters:
     type: array
     immutable: true
     default:
-      - RHEL6
       - RHEL7
       - RHEL8
       - UBUNTU16

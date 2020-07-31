@@ -17,12 +17,12 @@ A list of planned features—different for every release, of course–should fol
 
 ## 3. Pre-release procedure
 
-- [ ] Test every feature manually in CentOS/RHEL 6.
 - [ ] Test every feature manually in CentOS/RHEL 7.
+- [ ] Test every feature manually in CentOS/RHEL 8.
 - [ ] Test every feature manually in Ubuntu 16.
 - [ ] Test every feature manually in Ubuntu 18.
-- [ ] Ask someone else to test every feature manually in CentOS/RHEL 6.
 - [ ] Ask someone else to test every feature manually in CentOS/RHEL 7.
+- [ ] Ask someone else to test every feature manually in CentOS/RHEL 8.
 - [ ] Ask someone else to test every feature manually in Ubuntu 16.
 - [ ] Ask someone else to test every feature manually in Ubuntu 18.
 - [ ] If something failed, fix and repeat from the beginning.
@@ -47,7 +47,7 @@ st2 key set st2_stable_version 1.2
 st2 key set st2_unstable_version 1.3dev
 st2 key set st2_master_build_number 1
 ```
-- [ ] Make sure packaging is completed for st2web, st2flow, Mistral, and st2 itself (x4: Ubuntu 16.04, Ubuntu 18.04, RHEL6, RHEL7).
+- [ ] Make sure packaging is completed for st2web, st2flow, Mistral, and st2 itself (x4: Ubuntu 16.04, Ubuntu 18.04, RHEL7, RHEL8).
 - [ ] Make sure `pytests` are passing and no sudden upstream issues happened (hi, oslo.utils!).
 - [ ] Create a temporary version tag say v1.3.0 if releasing v1.3.0 so that st2workroom_test passes. Also, remove tag before finalize.
 - [ ] Run `st2cd.package-publish-release` to push the packages to the download server and finalize the release.
@@ -62,12 +62,12 @@ st2 key set st2_master_build_number 1
 - [ ] Announce to the team that the code is out, bathe in fame and glory.
 - [ ] Test every feature manually in Ubuntu 16.
 - [ ] Test every feature manually in Ubuntu 18.
-- [ ] Test every feature manually in CentOS/RHEL 6.
 - [ ] Test every feature manually in CentOS/RHEL 7.
+- [ ] Test every feature manually in CentOS/RHEL 8.
 - [ ] Ask someone else to test every feature manually in Ubuntu 16.
 - [ ] Ask someone else to test every feature manually in Ubuntu 18.
-- [ ] Ask someone else to test every feature manually in CentOS/RHEL 6.
 - [ ] Ask someone else to test every feature manually in CentOS/RHEL 7.
+- [ ] Ask someone else to test every feature manually in CentOS/RHEL 8.
 - [ ] If something failed, fix and repeat from the beginning (I know, I know).
 - [ ] If something failed and can't be fixed, write it down, make it a priority for the next patch release, get a KB article out.
 
