@@ -2,7 +2,6 @@
 version: '1.0'
 input:
   - host
-  - host_fqdn
   - env
   - protocol
 tasks:

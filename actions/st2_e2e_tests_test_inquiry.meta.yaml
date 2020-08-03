@@ -9,10 +9,6 @@ parameters:
   host:
     type: string
     required: true
-  host_fqdn:
-    type: string
-    description: FQDN of the ST2 VM under test
-    required: true
   env:
     type: object
     required: true
