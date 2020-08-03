@@ -17,6 +17,5 @@ parameters:
       - st2-rbac-backend
       - st2flow
       - st2web
-      - st2mistral
       - st2chatops
       - st2

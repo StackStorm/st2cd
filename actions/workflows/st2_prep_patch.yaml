@@ -44,41 +44,8 @@ tasks:
       project: st2
       version: <% ctx().version %>
       fork: <% ctx().fork %>
-      update_mistral: true
       update_changelog: true
       local_repo: <% 'st2_' + ctx().local_repo_sfx %>
-      hosts: <% ctx().host %>
-      cwd: <% ctx().cwd %>
-    next:
-      - when: <% succeeded() %>
-        do:
-          - prep_mistral
-      - when: <% failed() %>
-        do:
-          - cleanup_on_failure
-  prep_mistral:
-    action: st2cd.st2_prep_patch_for_mistral
-    input:
-      project: mistral
-      version: <% ctx().version %>
-      fork: <% ctx().fork %>
-      local_repo: <% 'mistral_' + ctx().local_repo_sfx %>
-      hosts: <% ctx().host %>
-      cwd: <% ctx().cwd %>
-    next:
-      - when: <% succeeded() %>
-        do:
-          - prep_mistralclient
-      - when: <% failed() %>
-        do:
-          - cleanup_on_failure
-  prep_mistralclient:
-    action: st2cd.st2_prep_patch_for_mistralclient
-    input:
-      project: python-mistralclient
-      version: <% ctx().version %>
-      fork: <% ctx().fork %>
-      local_repo: <% 'mistralclient_' + ctx().local_repo_sfx %>
       hosts: <% ctx().host %>
       cwd: <% ctx().cwd %>
     next:

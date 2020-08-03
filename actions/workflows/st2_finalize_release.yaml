@@ -79,15 +79,6 @@ tasks:
     next:
       - when: <% succeeded() %>
         do:
-          - mistral_tag_release
-  mistral_tag_release:
-    action: st2cd.mistral_tag_release
-    input:
-      host: <% ctx().host %>
-      version: <% ctx().version %>
-    next:
-      - when: <% succeeded() %>
-        do:
           - push_st2client
   push_st2client:
     action: st2cd.pypi_upload

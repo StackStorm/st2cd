@@ -35,7 +35,6 @@ A list of planned features—different for every release, of course–should fol
 Valid for minor releases. For patches see [RELEASE_HOWTO.md](https://github.com/StackStorm/st2cd/blob/master/RELEASE_HOWTO.md).
 
 - [ ] Make sure the build box (st2build002 at the time of writing) is working correctly.
-- [ ] Note whether Mistral has a new version branch: you'll need it for st2workroom later.
 - [ ] Launch `st2cd.prepare-for-release` workflow: `st2_release_version` has to have a patch (e.g. `1.2.0`), `st2_base_url` should __not__ be `localhost` (e.g. `http://st2build002:9101/v1/`).
 - [ ] Change the dev version in [st2web/package.json](https://github.com/StackStorm/st2web/blob/master/package.json#L4): e.g. if `1.2.0` is released then `1.3dev` should be in the file.
 - [ ] Change the dev version in [st2client](https://github.com/StackStorm/st2/blob/master/st2client/st2client/__init__.py) and [st2common](https://github.com/StackStorm/st2/blob/master/st2common/st2common/__init__.py): same rules as in the previous step apply.
@@ -47,7 +46,7 @@ st2 key set st2_stable_version 1.2
 st2 key set st2_unstable_version 1.3dev
 st2 key set st2_master_build_number 1
 ```
-- [ ] Make sure packaging is completed for st2web, st2flow, Mistral, and st2 itself (x4: Ubuntu 16.04, Ubuntu 18.04, RHEL7, RHEL8).
+- [ ] Make sure packaging is completed for st2web, st2flow, and st2 itself (x4: Ubuntu 16.04, Ubuntu 18.04, RHEL7, RHEL8).
 - [ ] Make sure `pytests` are passing and no sudden upstream issues happened (hi, oslo.utils!).
 - [ ] Create a temporary version tag say v1.3.0 if releasing v1.3.0 so that st2workroom_test passes. Also, remove tag before finalize.
 - [ ] Run `st2cd.package-publish-release` to push the packages to the download server and finalize the release.

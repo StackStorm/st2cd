@@ -167,69 +167,6 @@ if [[ ! -z "${MODIFIED}" ]]; then
 fi
 
 
-# SET NEW MISTRAL VERSION
-MISTRAL_VERSION=st2-${VERSION}
-MISTRALCLIENT_REPO=https://github.com/StackStorm/python-mistralclient.git
-MISTRALCLIENT_REPO_NAME=python-mistralclient.git
-
-# Check if the branch exists in the python-mistralclient repo.
-MISTRAL_BRANCH_EXISTS=`git ls-remote --heads ${MISTRALCLIENT_REPO} | grep refs/heads/${MISTRAL_VERSION} || true`
-
-if [[ -z "${MISTRAL_BRANCH_EXISTS}" ]]; then
-    >&2 echo "WARNING: Branch ${MISTRAL_VERSION} does not exist in ${MISTRALCLIENT_REPO}."
-fi
-
-# Replace the python-mistralclient version number in st2.
-OLD_REQUIREMENT=${MISTRALCLIENT_REPO_NAME}
-NEW_REQUIREMENT=${MISTRALCLIENT_REPO_NAME}@${MISTRAL_VERSION}
-
-ST2_ACTION_IN_REQ_FILE="st2actions/in-requirements.txt"
-
-if [[ ! -e "${ST2_ACTION_IN_REQ_FILE}" ]]; then
-    >&2 echo "ERROR: Requirement file ${ST2_ACTION_IN_REQ_FILE} does not exist."
-    exit 1
-fi  
-
-NEW_REQUIREMENT_STR_MATCH=`grep "${NEW_REQUIREMENT}" ${ST2_ACTION_IN_REQ_FILE} || true`
-if [[ -z "${NEW_REQUIREMENT_STR_MATCH}" ]]; then
-    echo "Updating requirement in ${ST2_ACTION_IN_REQ_FILE} to \"${NEW_REQUIREMENT}\"..."
-    sed -i "s/${OLD_REQUIREMENT}/${NEW_REQUIREMENT}/g" ${ST2_ACTION_IN_REQ_FILE}
-
-    NEW_REQUIREMENT_STR_MATCH=`grep "${NEW_REQUIREMENT}" ${ST2_ACTION_IN_REQ_FILE} || true`
-    if [[ -z "${NEW_REQUIREMENT_STR_MATCH}" ]]; then
-        >&2 echo "ERROR: Unable to update the mistralclient version in ${ST2_ACTION_IN_REQ_FILE}."
-        exit 1
-    fi
-fi
-
-ST2_REQ_FILE="requirements.txt"
-
-if [[ ! -e "${ST2_REQ_FILE}" ]]; then
-    >&2 echo "ERROR: Requirement file ${ST2_REQ_FILE} does not exist."
-    exit 1
-fi
-
-NEW_REQUIREMENT_STR_MATCH=`grep "${NEW_REQUIREMENT}" ${ST2_REQ_FILE} || true`
-if [[ -z "${NEW_REQUIREMENT_STR_MATCH}" ]]; then
-    echo "Updating requirement in ${ST2_REQ_FILE} to \"${NEW_REQUIREMENT}\"..."
-    sed -i "s/${OLD_REQUIREMENT}/${NEW_REQUIREMENT}/g" ${ST2_REQ_FILE}
-
-    NEW_REQUIREMENT_STR_MATCH=`grep "${NEW_REQUIREMENT}" ${ST2_REQ_FILE} || true`
-    if [[ -z "${NEW_REQUIREMENT_STR_MATCH}" ]]; then
-        >&2 echo "ERROR: Unable to update the mistralclient version in ${ST2_REQ_FILE}."
-        exit 1
-    fi
-fi
-
-MODIFIED=`git status | grep modified || true`
-if [[ ! -z "${MODIFIED}" ]]; then
-    echo "Committing the mistralclient version update on branch ${BRANCH}..."
-    git add -A
-    git commit -qm "Update mistralclient version - ${MISTRAL_VERSION}"
-    PUSH=1
-fi
-
-
 # PUSH COMMITS TO RELEASE BRANCH
 if [[ ${PUSH} -eq 1 ]]; then
     echo "Pushing commits to origin ${BRANCH}..."

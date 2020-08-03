@@ -21,24 +21,3 @@ tasks:
       env: <% ctx().env %>
       cmd: st2 run tests.test_inquiry_chain <% ctx().st2_cli_args %>
       timeout: 180
-    next:
-      - when: <% succeeded() %>
-        do:
-          - check_if_mistral_is_available
-  check_if_mistral_is_available:
-    action: core.noop
-    next:
-      - when: <% succeeded() and ('u18' in ctx().host_fqdn.toLower() or 'el8' in ctx().host_fqdn.toLower() or 'centos8' in ctx().host_fqdn.toLower()) %>
-        do:
-          # Mistral is not available on Ubuntu Bionic or RHEL8, so skip Mistral tests
-          - noop
-      - when: <% succeeded() and (not 'u18' in ctx().host_fqdn.toLower()) and (not 'el8' in ctx().host_fqdn.toLower()) and (not 'centos8' in ctx().host_fqdn.toLower()) %>
-        do:
-          - test_inquiry_mistral
-  test_inquiry_mistral:
-    action: core.remote
-    input:
-      hosts: <% ctx().host %>
-      env: <% ctx().env %>
-      cmd: st2 run tests.test_inquiry_mistral <% ctx().st2_cli_args %>
-      timeout: 180

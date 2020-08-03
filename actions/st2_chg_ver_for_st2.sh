@@ -145,56 +145,6 @@ if [[ ! -z "${MODIFIED}" ]]; then
 fi
 
 
-# SET NEW MISTRAL VERSION
-if [ "${UPDATE_MISTRAL}" -eq "1" ]; then
-    MISTRAL_VERSION=st2-${VERSION}
-    MISTRALCLIENT_REPO_NAME="python-mistralclient"
-    MISTRALCLIENT_REPO="https://github.com/StackStorm/${MISTRALCLIENT_REPO_NAME}.git"
-    MISTRALCLIENT_REPO_ESC="https:\/\/github.com\/StackStorm\/${MISTRALCLIENT_REPO_NAME}.git"
-    MISTRAL_REQ_STR="git+${MISTRALCLIENT_REPO}@${MISTRAL_VERSION}#egg=${MISTRALCLIENT_REPO_NAME}"
-
-    # Check if the branch exists in the python-mistralclient repo.
-    MISTRAL_BRANCH_EXISTS=`git ls-remote --heads ${MISTRALCLIENT_REPO} | grep refs/heads/${MISTRAL_VERSION} || true`
-    if [[ -z "${MISTRAL_BRANCH_EXISTS}" ]]; then
-        >&2 echo "WARNING: Branch ${MISTRAL_VERSION} does not exist in ${MISTRALCLIENT_REPO}."
-    fi
-
-    # Replace the python-mistralclient version number in st2 requirements.txt.
-    REQ_FILES=(
-        "st2actions/in-requirements.txt"
-        "requirements.txt"
-    )
-
-    for REQ_FILE in "${REQ_FILES[@]}"
-    do
-        if [[ ! -e "${REQ_FILE}" ]]; then
-            >&2 echo "ERROR: Requirement file ${REQ_FILE} does not exist."
-            exit 1
-        fi
-
-        MISTRAL_REQ_STR_MATCH=`grep "${MISTRAL_REQ_STR}" ${REQ_FILE} || true`
-        if [[ -z "${MISTRAL_REQ_STR_MATCH}" ]]; then
-            echo "Updating mistralclient version in ${REQ_FILE} to \"${MISTRAL_VERSION}\"..."
-            sed -i -e "s/\(${MISTRALCLIENT_REPO_ESC}\).*\(\#egg=${MISTRALCLIENT_REPO_NAME}\)/\1@${MISTRAL_VERSION}\2/" ${REQ_FILE}
-
-            MISTRAL_REQ_STR_MATCH=`grep "${MISTRAL_REQ_STR}" ${REQ_FILE} || true`
-            if [[ -z "${MISTRAL_REQ_STR_MATCH}" ]]; then
-                >&2 echo "ERROR: Unable to update the mistralclient version in ${REQ_FILE}."
-                exit 1
-            fi
-        fi
-    done
-
-    MODIFIED=`git status | grep modified || true`
-    if [[ ! -z "${MODIFIED}" ]]; then
-        echo "Committing the mistralclient version update on branch ${BRANCH}..."
-        git add -A
-        git commit -qm "Update mistralclient version to ${MISTRAL_VERSION}"
-        PUSH=1
-    fi
-fi
-
-
 # SET VERSION AND DATE IN CHANGELOG
 if [ "${UPDATE_CHANGELOG}" -eq "1" ]; then
     DATE=`date +%s`

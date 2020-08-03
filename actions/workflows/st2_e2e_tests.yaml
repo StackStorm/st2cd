@@ -70,26 +70,6 @@ tasks:
     next:
       - when: <% succeeded() %>
         do:
-          - check_if_mistral_is_available
-  check_if_mistral_is_available:
-    action: core.noop
-    next:
-      - when: <% succeeded() and ('u18' in ctx().host_fqdn.toLower() or 'el8' in ctx().host_fqdn.toLower() or 'centos8' in ctx().host_fqdn.toLower()) %>
-        do:
-          # Mistral is not available on Ubuntu Bionic or RHEL 8, so skip them
-          - run_inquiry_tests
-      - when: <% succeeded() and (not 'u18' in ctx().host_fqdn.toLower()) and (not 'el8' in ctx().host_fqdn.toLower()) and (not 'centos8' in ctx().host_fqdn.toLower()) %>
-        do:
-          # Run Mistral tests after basic and quickstart
-          - run_mistral_tests
-  run_mistral_tests:
-    action: st2cd.st2_e2e_tests_test_mistral
-    input:
-      host_fqdn: <% ctx().host_ip %>
-      env: <% ctx().st2_cli_env %>
-    next:
-      - when: <% succeeded() %>
-        do:
           - run_inquiry_tests
   run_inquiry_tests:
     action: st2cd.st2_e2e_tests_test_inquiry
