@@ -5,18 +5,16 @@ PROJECT=$1
 VERSION=$2
 FORK=$3
 BRANCH=$4
-UPDATE_MISTRAL=$5
-UPDATE_CHANGELOG=$6
-LOCAL_REPO=$7
+UPDATE_CHANGELOG=$5
+LOCAL_REPO=$6
 GIT_REPO="git@github.com:${FORK}/${PROJECT}.git"
 CWD=`pwd`
 PUSH=0
 
 # Temporary workaround until we fix "False" default value for boolean
 # See https://github.com/StackStorm/st2/issues/4649
-if [ "$#" -eq 5 ]; then
-    # UPDATE_MISTRAL and UPDATE_CHANGELOG not provided due to bug in StackStorm
-    UPDATE_MISTRAL="0"
+if [ "$#" -eq 4 ]; then
+    # UPDATE_CHANGELOG not provided due to bug in StackStorm
     UPDATE_CHANGELOG="0"
 fi
 
