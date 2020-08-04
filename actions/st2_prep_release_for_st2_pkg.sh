@@ -8,7 +8,6 @@ LOCAL_REPO=$4
 GIT_REPO="git@github.com:${FORK}/${PROJECT}.git"
 SHORT_VERSION=`echo ${VERSION} | cut -d "." -f1-2`
 DEV_VERSION="$(sed "s/\(.\)\(.\)/\1.\2/" <<< "$((${SHORT_VERSION//.}+1))")dev"
-MISTRAL_VERSION="st2-${VERSION}"
 BRANCH="v${SHORT_VERSION}"
 CWD=`pwd`
 
@@ -44,21 +43,6 @@ echo "Currently at directory `pwd`..."
 ####################################
 # MASTER
 ####################################
-
-# Update mistral 'mistral_version' to latest dev "X.Ydev" at 'rake/build/environment.rb'
-VERSION_FILE="rake/build/environment.rb"
-NEW_MISTRAL_VERSION_STR="envpass :mistral_version, '${DEV_VERSION}'"
-NEW_MISTRAL_VERSION_STR_MATCH=`grep "${NEW_MISTRAL_VERSION_STR}" ${VERSION_FILE} || true`
-if [[ -z "${NEW_MISTRAL_VERSION_STR_MATCH}" ]]; then
-    echo "[master] Setting 'mistral_version' in '${VERSION_FILE}' to latest dev: '${DEV_VERSION}'..."
-    sed -i -e "s/\(envpass :mistral_version, \).*/\1'${DEV_VERSION}'/" ${VERSION_FILE}
-
-    NEW_MISTRAL_VERSION_STR_MATCH=`grep "${NEW_MISTRAL_VERSION_STR}" ${VERSION_FILE} || true`
-    if [[ -z "${NEW_MISTRAL_VERSION_STR_MATCH}" ]]; then
-        >&2 echo "[master] ERROR: Unable to update the 'mistral_version' to latest dev in '${VERSION_FILE}'."
-        exit 1
-    fi
-fi
 
 # Update 'BRANCH' to latest stable "vX.Y" branch at 'scripts/st2_bootstrap.sh'
 VERSION_FILE="scripts/st2_bootstrap.sh"
@@ -97,45 +81,10 @@ if [[ -z "${NEW_VERSION_STR_MATCH}" ]]; then
     fi
 fi
 
-# Update mistral 'ST2MISTRAL_GITREV' branch to latest stable 'st2-X.Y' at 'rake/build/environment.rb'
-VERSION_FILE="rake/build/environment.rb"
-NEW_MISTRAL_VERSION_STR="envpass :gitrev,[ ]*'${MISTRAL_VERSION}',[ ]*from: 'ST2MISTRAL_GITREV'"
-NEW_MISTRAL_VERSION_STR_MATCH=`grep "${NEW_MISTRAL_VERSION_STR}" ${VERSION_FILE} || true`
-if [[ -z "${NEW_MISTRAL_VERSION_STR_MATCH}" ]]; then
-    echo "[${BRANCH}] Setting 'ST2MISTRAL_GITREV' branch in '${VERSION_FILE}' to latest stable '${MISTRAL_VERSION}'..."
-    sed -i -e "s/\(envpass :gitrev,[ ]*'\).*\(',[ ]*from: 'ST2MISTRAL_GITREV'\)/\1${MISTRAL_VERSION}\2/" ${VERSION_FILE}
-
-    NEW_MISTRAL_VERSION_STR_MATCH=`grep "${NEW_MISTRAL_VERSION_STR}" ${VERSION_FILE} || true`
-    if [[ -z "${NEW_MISTRAL_VERSION_STR_MATCH}" ]]; then
-        >&2 echo "[${BRANCH}] ERROR: Unable to update the 'ST2MISTRAL_GITREV' in '${VERSION_FILE}'."
-        exit 1
-    fi
-fi
-
-# Update mistral 'mistral_version' to latest stable 'X.Y' version at 'rake/build/environment.rb'
-VERSION_FILE="rake/build/environment.rb"
-NEW_MISTRAL_VERSION_STR="envpass :mistral_version, '${VERSION}'"
-NEW_MISTRAL_VERSION_STR_MATCH=`grep "${NEW_MISTRAL_VERSION_STR}" ${VERSION_FILE} || true`
-if [[ -z "${NEW_MISTRAL_VERSION_STR_MATCH}" ]]; then
-    echo "[${BRANCH}] Setting 'mistral_version' in '${VERSION_FILE}' to latest stable '${VERSION}'..."
-    sed -i -e "s/\(envpass :mistral_version, \).*/\1'${VERSION}'/" ${VERSION_FILE}
-
-    NEW_MISTRAL_VERSION_STR_MATCH=`grep "${NEW_MISTRAL_VERSION_STR}" ${VERSION_FILE} || true`
-    if [[ -z "${NEW_MISTRAL_VERSION_STR_MATCH}" ]]; then
-        >&2 echo "[${BRANCH}] ERROR: Unable to update the 'mistral_version' in '${VERSION_FILE}'."
-        exit 1
-    fi
-fi
-
 # Update 'ST2_GITREV' in '.circleci/config.yml'
 CIRCLE_YML_FILE=".circleci/config.yml"
 echo "[${BRANCH}] Setting 'ST2_GITREV' in '${CIRCLE_YML_FILE}' to '${BRANCH}'..."
 sed -i -e "s/#\s*\(ST2_GITREV:\s*\).*/\1${BRANCH}/" ${CIRCLE_YML_FILE}
-
-# Update 'ST2MISTRAL_GITREV' in '.circleci/config.yml'
-echo "[${BRANCH}] Setting 'ST2MISTRAL_GITREV' in '${CIRCLE_YML_FILE}' to '${MISTRAL_VERSION}'..."
-sed -i -e "s/#\s*\(ST2MISTRAL_GITREV:\s*\).*/\1${MISTRAL_VERSION}/" ${CIRCLE_YML_FILE}
-
 
 MODIFIED=`git status | grep modified || true`
 if [[ ! -z "${MODIFIED}" ]]; then

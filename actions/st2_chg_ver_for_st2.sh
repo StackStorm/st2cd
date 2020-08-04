@@ -5,18 +5,16 @@ PROJECT=$1
 VERSION=$2
 FORK=$3
 BRANCH=$4
-UPDATE_MISTRAL=$5
-UPDATE_CHANGELOG=$6
-LOCAL_REPO=$7
+UPDATE_CHANGELOG=$5
+LOCAL_REPO=$6
 GIT_REPO="git@github.com:${FORK}/${PROJECT}.git"
 CWD=`pwd`
 PUSH=0
 
 # Temporary workaround until we fix "False" default value for boolean
 # See https://github.com/StackStorm/st2/issues/4649
-if [ "$#" -eq 5 ]; then
-    # UPDATE_MISTRAL and UPDATE_CHANGELOG not provided due to bug in StackStorm
-    UPDATE_MISTRAL="0"
+if [ "$#" -eq 4 ]; then
+    # UPDATE_CHANGELOG not provided due to bug in StackStorm
     UPDATE_CHANGELOG="0"
 fi
 
@@ -142,56 +140,6 @@ if [[ ! -z "${MODIFIED}" ]]; then
     git add -A
     git commit -qm "Update version to ${VERSION}"
     PUSH=1
-fi
-
-
-# SET NEW MISTRAL VERSION
-if [ "${UPDATE_MISTRAL}" -eq "1" ]; then
-    MISTRAL_VERSION=st2-${VERSION}
-    MISTRALCLIENT_REPO_NAME="python-mistralclient"
-    MISTRALCLIENT_REPO="https://github.com/StackStorm/${MISTRALCLIENT_REPO_NAME}.git"
-    MISTRALCLIENT_REPO_ESC="https:\/\/github.com\/StackStorm\/${MISTRALCLIENT_REPO_NAME}.git"
-    MISTRAL_REQ_STR="git+${MISTRALCLIENT_REPO}@${MISTRAL_VERSION}#egg=${MISTRALCLIENT_REPO_NAME}"
-
-    # Check if the branch exists in the python-mistralclient repo.
-    MISTRAL_BRANCH_EXISTS=`git ls-remote --heads ${MISTRALCLIENT_REPO} | grep refs/heads/${MISTRAL_VERSION} || true`
-    if [[ -z "${MISTRAL_BRANCH_EXISTS}" ]]; then
-        >&2 echo "WARNING: Branch ${MISTRAL_VERSION} does not exist in ${MISTRALCLIENT_REPO}."
-    fi
-
-    # Replace the python-mistralclient version number in st2 requirements.txt.
-    REQ_FILES=(
-        "st2actions/in-requirements.txt"
-        "requirements.txt"
-    )
-
-    for REQ_FILE in "${REQ_FILES[@]}"
-    do
-        if [[ ! -e "${REQ_FILE}" ]]; then
-            >&2 echo "ERROR: Requirement file ${REQ_FILE} does not exist."
-            exit 1
-        fi
-
-        MISTRAL_REQ_STR_MATCH=`grep "${MISTRAL_REQ_STR}" ${REQ_FILE} || true`
-        if [[ -z "${MISTRAL_REQ_STR_MATCH}" ]]; then
-            echo "Updating mistralclient version in ${REQ_FILE} to \"${MISTRAL_VERSION}\"..."
-            sed -i -e "s/\(${MISTRALCLIENT_REPO_ESC}\).*\(\#egg=${MISTRALCLIENT_REPO_NAME}\)/\1@${MISTRAL_VERSION}\2/" ${REQ_FILE}
-
-            MISTRAL_REQ_STR_MATCH=`grep "${MISTRAL_REQ_STR}" ${REQ_FILE} || true`
-            if [[ -z "${MISTRAL_REQ_STR_MATCH}" ]]; then
-                >&2 echo "ERROR: Unable to update the mistralclient version in ${REQ_FILE}."
-                exit 1
-            fi
-        fi
-    done
-
-    MODIFIED=`git status | grep modified || true`
-    if [[ ! -z "${MODIFIED}" ]]; then
-        echo "Committing the mistralclient version update on branch ${BRANCH}..."
-        git add -A
-        git commit -qm "Update mistralclient version to ${MISTRAL_VERSION}"
-        PUSH=1
-    fi
 fi
 
 

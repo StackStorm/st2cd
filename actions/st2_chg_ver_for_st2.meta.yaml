@@ -25,20 +25,15 @@ parameters:
         description: Branch to update
         default: master
         position: 3
-    update_mistral:
-        type: boolean
-        description: If true, update mistralclient version in requirements.txt.
-        default: false
-        position: 4
     update_changelog:
         type: boolean
         description: If true, update version in changelog.
         default: false
-        position: 5
+        position: 4
     local_repo:
         type: string
         description: Location where to clone the repo. Programmatically determined if not provided.
-        position: 6
+        position: 5
     dir:
         immutable: true
         default: /home/stanley/
