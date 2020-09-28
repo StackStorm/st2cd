@@ -2,7 +2,7 @@
 name: st2_pkg_test_stable_u16_enterprise
 pack: st2cd
 description: Test stable packages
-enabled: true
+enabled: false
 
 trigger:
   type: core.st2.CronTimer
