@@ -16,7 +16,7 @@ PUSH=0
 BRANCH_EXISTS=`git ls-remote --heads ${GIT_REPO} | grep refs/heads/${BRANCH} || true`
 
 if [[ ! -z "${BRANCH_EXISTS}" ]]; then
-    >&2 echo "ERROR: Branch ${BRANCH} already exist in ${GIT_REPO}."
+    >&2 echo "ERROR: Branch ${BRANCH} already exist in ${GIT_REPO}. If you are trying to include changes made after running the 'prep release' step, then simply merge your changes into the existing release branch ${BRANCH}. This step creates release branches (vX.Y) and changelogs across the various repos, and during the release you can incorporate changes/fixes into those release branches. Changes must be merged into these release branches in order to be included in the final release."
     exit 1
 fi
 
