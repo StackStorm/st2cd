@@ -131,7 +131,7 @@ tasks:
     action: circle_ci.run_build
     input:
       project: st2apidocs
-      username: stackstorm
+      username: StackStorm
       branch: master
       build_parameters:
         ST2_BRANCH: <% 'v' + ctx().major_minor_version %>
