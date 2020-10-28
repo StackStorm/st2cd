@@ -1,6 +1,7 @@
 ---
 version: '1.0'
 description: Stage st2 packages for release.
+
 input:
   - version
   - projects
@@ -10,8 +11,10 @@ input:
       RHEL8: el8
       UBUNTU16: u16
       UBUNTU18: u18
+
 vars:
   - username: stackstorm
+
 tasks:
   init:
     action: core.local
