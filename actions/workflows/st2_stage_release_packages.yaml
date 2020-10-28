@@ -10,6 +10,8 @@ input:
       RHEL8: el8
       UBUNTU16: u16
       UBUNTU18: u18
+vars:
+  - username: stackstorm
 tasks:
   init:
     action: core.local
@@ -26,7 +28,7 @@ tasks:
       items: project in <% ctx().projects %>
     action: circle_ci.run_build
     input:
-      project: stackstorm/<% item(project) %>
+      project: <% ctx().username %>/<% item(project) %>
       branch: <% ctx().branch %>
     next:
       - when: <% succeeded() and (ctx().wait) %>
@@ -39,5 +41,5 @@ tasks:
       items: package_job in <% ctx().package_jobs %>
     action: st2cd.wait_for_package
     input:
-      project: stackstorm/<% item(package_job)[0] %>
+      project: <% ctx().username %>/<% item(package_job)[0] %>
       build_number: <% str(item(package_job)[1]) %>
