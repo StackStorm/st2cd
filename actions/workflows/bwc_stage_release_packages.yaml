@@ -13,7 +13,7 @@ input:
       UBUNTU18: u18
 
 vars:
-  - username: stackstorm
+  - username: StackStorm
 
 tasks:
   init:
