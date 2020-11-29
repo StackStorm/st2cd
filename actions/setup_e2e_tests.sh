@@ -131,7 +131,7 @@ st2 run packs.setup_virtualenv packs=examples,tests,asserts,fixtures,webui,chato
 st2ctl reload --register-all
 
 cd st2tests
-virtualenv --no-download venv
+python3 -m venv venv
 . venv/bin/activate
 ${PIP} install -r test-requirements.txt
 
