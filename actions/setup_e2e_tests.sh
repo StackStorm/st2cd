@@ -127,7 +127,7 @@ if [ -f st2tests/conf/st2.ci.conf ]; then
 fi
 
 sudo cp -R /usr/share/doc/st2/examples /opt/stackstorm/packs/
-st2 run packs.setup_virtualenv packs=examples,tests,asserts,fixtures,webui,chatops_tests
+st2 run packs.setup_virtualenv python3=true packs=examples,tests,asserts,fixtures,webui,chatops_tests
 st2ctl reload --register-all
 
 cd st2tests
