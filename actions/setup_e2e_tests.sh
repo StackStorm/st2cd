@@ -43,10 +43,10 @@ if [[ -n "$RHTEST" ]]; then
 
     if [[ "$RHVERSION" -eq 7 ]]; then
         # For RHEL/CentOS 7
-        sudo yum install -y python-pip jq bats
+        sudo yum install -y bats jq python3-pip python3-virtualenv
     else
         # For RHEL/CentOS 8 and above
-        sudo yum install -y python3-pip wget jq 
+        sudo yum install -y jq python3-pip python3-virtualenv wget
         PIP="pip3"
         # bats not available in epel for EL 8, Install from npm
         sudo npm install --global bats
@@ -63,7 +63,7 @@ elif [[ -n "$DEBTEST" ]]; then
       sudo systemctl restart mongod
     fi
 
-    sudo apt-get -q -y install build-essential jq python-pip python-dev wget
+    sudo apt-get -q -y install build-essential jq python3-pip python3-dev python3-venv wget
 
     # Remove bats-core if it already exists (this happens when test workflows
     # are re-run on a server when tests are debugged)
