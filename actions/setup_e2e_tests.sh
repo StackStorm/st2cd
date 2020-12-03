@@ -133,7 +133,7 @@ st2ctl reload --register-all
 cd st2tests
 python3 -m venv venv
 . venv/bin/activate
-${PIP} install -r test-requirements.txt
+${PIP} install -r test-requirements.txt  # TODO: This should eventually use python3 -m pip
 
 
 # Restart st2 primarily reload the keyvalue configuration
