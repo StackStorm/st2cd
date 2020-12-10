@@ -12,7 +12,7 @@ if [ $# -ne 2 ]; then
     exit 1
 fi
 
-PACKAGES=(st2actions st2api st2auth st2common st2debug st2reactor python-st2client)
+PACKAGES=(st2actions st2api st2auth st2common st2reactor python-st2client)
 SERVICE_NAMES=(st2actionrunner st2notifier st2resultstracker st2sensorcontainer st2rulesengine st2api st2workflowengine)
 
 function verify_debian_package_version_is_installed() {
