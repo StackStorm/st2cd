@@ -49,13 +49,13 @@ echo "Currently at directory `pwd`..."
 COMMON_INIT_FILES=(
     "st2common/st2common/__init__.py"
     "st2client/st2client/__init__.py"
-
     "st2actions/st2actions/__init__.py"
     "st2api/st2api/__init__.py"
     "st2auth/st2auth/__init__.py"
     "st2debug/st2debug/__init__.py"
     "st2reactor/st2reactor/__init__.py"
     "st2stream/st2stream/__init__.py"
+    "st2tests/st2tests/__init__.py"
 )
 
 # Add all the runners
