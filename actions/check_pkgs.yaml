@@ -12,5 +12,5 @@
       position: 0
     packages:
       type: "string"
-      default: "st2common st2reactor st2actions st2api st2stream st2auth st2debug"
+      default: "st2common st2reactor st2actions st2api st2stream st2auth"
       position: 1
