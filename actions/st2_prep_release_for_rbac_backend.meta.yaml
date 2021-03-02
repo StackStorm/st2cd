@@ -1,14 +1,14 @@
 ---
-name: st2_prep_release_for_enterprise_rbac_backend
-description: Prepare the st2 enterprise RBAC backend repo for release
+name: st2_prep_release_for_rbac_backend
+description: Prepare the ST2 RBAC backend repo for release
 enabled: true
 runner_type: remote-shell-script
-entry_point: st2_prep_release_for_enterprise_rbac_backend.sh
+entry_point: st2_prep_release_for_rbac_backend.sh
 parameters:
     project:
         type: string
-        description: Project name for st2 enterprise rbac backend
-        default: st2-enterprise-rbac-backend
+        description: Project name for ST2 RBAC backend
+        default: st2-rbac-backend
         position: 0
     version:
         type: string
@@ -18,7 +18,7 @@ parameters:
     fork:
         type: string
         description: Fork to use
-        default: extremenetworks
+        default: StackStorm
         position: 2
     local_repo:
         type: string

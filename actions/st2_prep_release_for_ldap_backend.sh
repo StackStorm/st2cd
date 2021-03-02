@@ -43,7 +43,7 @@ git checkout -b ${BRANCH} origin/master
 
 
 # SET NEW ST2 VERSION INFO
-VERSION_FILE="st2rbac_enterprise_backend/__init__.py"
+VERSION_FILE="st2auth_ldap/__init__.py"
 VERSION_STR="__version__ = '${VERSION}'"
 
 VERSION_STR_MATCH=`grep "${VERSION_STR}" ${VERSION_FILE} || true`

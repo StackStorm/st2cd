@@ -1,14 +1,14 @@
 ---
-name: st2_prep_release_for_enterprise_ldap
-description: Prepare the st2 enterprise ldap repo for release
+name: st2_prep_release_for_ldap_backend
+description: Prepare the ST2 LDAP repo for release
 enabled: true
 runner_type: remote-shell-script
-entry_point: st2_prep_release_for_enterprise_ldap.sh
+entry_point: st2_prep_release_for_ldap_backend.sh
 parameters:
     project:
         type: string
-        description: Project name for st2 enterprise ldap auth backend
-        default: st2-enterprise-auth-backend-ldap
+        description: Project name for ST2 LDAP auth backend
+        default: st2-auth-ldap
         position: 0
     version:
         type: string
@@ -18,7 +18,7 @@ parameters:
     fork:
         type: string
         description: Fork to use
-        default: extremenetworks
+        default: StackStorm
         position: 2
     local_repo:
         type: string
