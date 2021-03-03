@@ -15,6 +15,7 @@ if [[ $BRANCH =~ v?[[:digit:]]{1,}\.[[:digit:]]{1,} ]]; then
 fi
 
 PIP="pip"
+PYTHON3=python3.6  # Can't just specify python3 on Ubuntu Xenial
 
 # Install OS specific pre-reqs (Better moved to puppet at some point.)
 DEBTEST=$(lsb_release -a 2> /dev/null | grep Distributor | awk '{print $3}')
@@ -161,7 +162,7 @@ sudo ${PIP} install --upgrade "virtualenv==15.1.0"
 # Bash find the virtualenv executable.
 # Also, it's 2021, but we still have to tell virtualenv to configure the
 # virtualenv to use Python 3.
-PATH=$PATH:$HOME/.local/bin virtualenv --no-download --python=python3 venv
+PATH=$PATH:$HOME/.local/bin virtualenv --no-download --python=$PYTHON3 venv
 . venv/bin/activate
 # Set pip and virtualenv within the virtualenv to ensure the Python 3-only
 # dependencies can be successfully installed
