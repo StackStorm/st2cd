@@ -20,12 +20,14 @@ PIP="pip"
 DEBTEST=`lsb_release -a 2> /dev/null | grep Distributor | awk '{print $3}'`
 RHTEST=`cat /etc/redhat-release 2> /dev/null | sed -e "s~\(.*\)release.*~\1~g"`
 
-# Decrease interval for MongoDB TTL expire thread. By default it runs every 60 seconds which
-# means we would need to wait at least 60 seconds in our key expire end to end tests.
-# By decreasing it, we can speed up those tests
-# TODO: Use db.adminCommand, but for that we need to fix admin user permissions in bootstrap script
-echo "Updating MongoDB config..."
-echo -e "\nsetParameter:\n  ttlMonitorSleepSecs: 1" | sudo tee -a /etc/mongod.conf > /dev/null
+if ! grep -q ttlMonitorSleepSecs /etc/mongod.conf; then
+    # Decrease interval for MongoDB TTL expire thread. By default it runs every 60 seconds which
+    # means we would need to wait at least 60 seconds in our key expire end to end tests.
+    # By decreasing it, we can speed up those tests
+    # TODO: Use db.adminCommand, but for that we need to fix admin user permissions in bootstrap script
+    echo "Updating MongoDB config..."
+    echo -e "\nsetParameter:\n  ttlMonitorSleepSecs: 1" | sudo tee -a /etc/mongod.conf > /dev/null
+fi
 sudo cat /etc/mongod.conf
 
 if [[ -n "$RHTEST" ]]; then
@@ -90,11 +92,17 @@ if [[ ! -e "${CRYPTO_KEY_FILE}" ]]; then
     sudo chgrp st2packs ${CRYPTO_KEY_FILE}
 fi
 
-# This looks overly complicated...
-sudo bash -c "cat <<keyvalue_options >>${ST2_CONF}
+if ! grep -qE "encryption_key_path[[:space:]]*=[[:space:]]*${CRYPTO_KEY_FILE}" ${ST2_CONF}; then
+    # Add a new keyvalue.encryption_key_path
+    # This looks overly complicated...
+    sudo bash -c "cat <<keyvalue_options >>${ST2_CONF}
 [keyvalue]
-encryption_key_path=${CRYPTO_KEY_FILE}
+encryption_key_path = ${CRYPTO_KEY_FILE}
 keyvalue_options"
+elif ! grep -qE "encryption_key_path[[:space:]]*=[[:space:]]*" ${ST2_CONF}; then
+    # If keyvalue.encryption_key_path exists, then modify it
+    sed -i "s|^encryption_key_path[[:space:]]*=[[:space:]]*[^[:space:]]\{1,\}$|encryption_key_path = ${CRYPTO_KEY_FILE}|" ${ST2_CONF}
+fi
 
 # Reload required for testing st2 upgrade
 st2ctl reload --register-all
@@ -122,8 +130,11 @@ sudo cp -R st2tests/packs/* /opt/stackstorm/packs/
 
 echo "Apply st2 CI configuration if it exists..."
 if [ -f st2tests/conf/st2.ci.conf ]; then
-    sudo cp -f /etc/st2/st2.conf /etc/st2/st2.conf.bkup
-    sudo crudini --merge  /etc/st2/st2.conf < st2tests/conf/st2.ci.conf
+    # Skip the CI config if it's already applied
+    if [[ ! $(grep -qE 'enable_common_libs[[:space:]]*=[[:space:]]*True' /etc/st2/st2.conf) ]]; then
+        sudo cp -f /etc/st2/st2.conf /etc/st2/st2.conf.bkup
+        sudo crudini --merge  /etc/st2/st2.conf < st2tests/conf/st2.ci.conf
+    fi
 fi
 
 sudo cp -R /usr/share/doc/st2/examples /opt/stackstorm/packs/
