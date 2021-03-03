@@ -151,6 +151,10 @@ if [[ -z "$VERSION" ]]; then
 else
     PIP_VERSION=$(curl --silent https://raw.githubusercontent.com/StackStorm/st2/v${VERSION}/Makefile | grep 'PIP_VERSION ?= ' | awk '{ print $3 }')
 fi
+# Fallback
+if [[ -z "$PIP_VERSION" ]]; then
+    PIP_VERSION=$(curl --silent https://raw.githubusercontent.com/StackStorm/st2/master/Makefile | grep 'PIP_VERSION ?= ' | awk '{ print $3 }')
+fi
 sudo ${PIP} install --upgrade "pip==$PIP_VERSION"
 sudo ${PIP} install --upgrade "virtualenv==15.1.0"
 
