@@ -140,8 +140,22 @@ fi
 sudo ${PIP} install --upgrade "pip==$PIP_VERSION"
 sudo ${PIP} install --upgrade "virtualenv==15.1.0"
 
-virtualenv --no-download venv
+# I'm not entirely sure what the original author of this script (who very well
+# could have been me) was thinking. At least on Ubuntu Xenial, installing the
+# Python virtualenv package will not install it in any of the system
+# directories, it will install it in your ~/.local/bin directory.
+# However, this must have worked at some point in time, and so instead of
+# calling the virtualenv binary  by it's full path (which may be different on
+# other operating systems), we simply extend PATH with $HOME/.local/bin to help
+# Bash find the virtualenv executable.
+PATH=$PATH:$HOME/.local/bin virtualenv --no-download venv
 . venv/bin/activate
+# Set pip and virtualenv within the virtualenv to ensure the Python 3-only
+# dependencies can be successfully installed
+${PIP} install --upgrade "pip==$PIP_VERSION"
+${PIP} install --upgrade "virtualenv==15.1.0"
+
+# Install the test dependencies
 ${PIP} install -r test-requirements.txt
 
 
