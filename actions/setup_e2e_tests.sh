@@ -140,6 +140,8 @@ fi
 
 sudo cp -R /usr/share/doc/st2/examples /opt/stackstorm/packs/
 st2 run packs.setup_virtualenv packs=examples,tests,asserts,fixtures,webui,chatops_tests
+sudo touch /opt/stackstorm/chatops/.hubot_history
+sudo chown stanley:stanley /opt/stackstorm/chatops/.hubot_history
 st2ctl reload --register-all
 
 # Robotframework requirements
