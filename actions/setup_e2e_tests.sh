@@ -132,7 +132,12 @@ st2ctl reload --register-all
 
 # Robotframework requirements
 cd st2tests
-sudo ${PIP} install --upgrade "pip>=9.0,<9.1"
+if [[ -z "$VERSION" ]]; then
+    PIP_VERSION=$(curl --silent https://raw.githubusercontent.com/StackStorm/st2/${BRANCH}/Makefile | grep 'PIP_VERSION ?= ' | awk '{ print $3 }')
+else
+    PIP_VERSION=$(curl --silent https://raw.githubusercontent.com/StackStorm/st2/v${VERSION}/Makefile | grep 'PIP_VERSION ?= ' | awk '{ print $3 }')
+fi
+sudo ${PIP} install --upgrade "pip==$PIP_VERSION"
 sudo ${PIP} install --upgrade "virtualenv==15.1.0"
 
 virtualenv --no-download venv
