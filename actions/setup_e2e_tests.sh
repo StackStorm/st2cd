@@ -17,8 +17,8 @@ fi
 PIP="pip"
 
 # Install OS specific pre-reqs (Better moved to puppet at some point.)
-DEBTEST=`lsb_release -a 2> /dev/null | grep Distributor | awk '{print $3}'`
-RHTEST=`cat /etc/redhat-release 2> /dev/null | sed -e "s~\(.*\)release.*~\1~g"`
+DEBTEST=$(lsb_release -a 2> /dev/null | grep Distributor | awk '{print $3}')
+RHTEST=$(cat /etc/redhat-release 2> /dev/null | sed -e "s~\(.*\)release.*~\1~g")
 
 if ! grep -q ttlMonitorSleepSecs /etc/mongod.conf; then
     # Decrease interval for MongoDB TTL expire thread. By default it runs every 60 seconds which
@@ -31,7 +31,7 @@ fi
 sudo cat /etc/mongod.conf
 
 if [[ -n "$RHTEST" ]]; then
-    RHVERSION=`cat /etc/redhat-release 2> /dev/null | sed -r 's/([^0-9]*([0-9]*)){1}.*/\2/'`
+    RHVERSION=$(cat /etc/redhat-release 2> /dev/null | sed -r 's/([^0-9]*([0-9]*)){1}.*/\2/')
     echo "*** Detected Distro is ${RHTEST} - ${RHVERSION} ***"
 
     echo "Restarting MongoDB..."
@@ -55,8 +55,8 @@ if [[ -n "$RHTEST" ]]; then
     fi
 
 elif [[ -n "$DEBTEST" ]]; then
-    DEBVERSION=`lsb_release --release | awk '{ print $2 }'`
-    SUBTYPE=`lsb_release -a 2>&1 | grep Codename | grep -v "LSB" | awk '{print $2}'`
+    DEBVERSION=$(lsb_release --release | awk '{ print $2 }')
+    SUBTYPE=$(lsb_release -a 2>&1 | grep Codename | grep -v "LSB" | awk '{print $2}')
     echo "*** Detected Distro is ${DEBTEST} - ${DEBVERSION} ***"
 
     echo "Restarting MongoDB..."
