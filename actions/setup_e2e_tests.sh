@@ -159,7 +159,9 @@ sudo ${PIP} install --upgrade "virtualenv==15.1.0"
 # calling the virtualenv binary  by it's full path (which may be different on
 # other operating systems), we simply extend PATH with $HOME/.local/bin to help
 # Bash find the virtualenv executable.
-PATH=$PATH:$HOME/.local/bin virtualenv --no-download venv
+# Also, it's 2021, but we still have to tell virtualenv to configure the
+# virtualenv to use Python 3.
+PATH=$PATH:$HOME/.local/bin virtualenv --no-download --python=python3 venv
 . venv/bin/activate
 # Set pip and virtualenv within the virtualenv to ensure the Python 3-only
 # dependencies can be successfully installed
