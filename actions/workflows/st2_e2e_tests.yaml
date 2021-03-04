@@ -12,7 +12,6 @@ input:
   - windows_username
   - windows_password
   - st2tests_version
-  - enterprise
   - chatops
 tasks:
   init:
@@ -78,10 +77,7 @@ tasks:
       env: <% ctx().st2_cli_env %>
       protocol: <% ctx().protocol %>
     next:
-      - when: <% succeeded() and ctx().enterprise %>
-        do:
-          - run_enterprise_tests
-      - when: <% succeeded() and not ctx().enterprise %>
+      - when: <% succeeded() %>
         do:
           # - run_windows_tests
           - echo_st2_cli_env
@@ -103,21 +99,9 @@ tasks:
   #     env: <% ctx().st2_cli_env %>
   #     protocol: <% ctx().protocol %>
   #   next:
-  #     - when: <% succeeded() and ctx().enterprise %>
-  #       do:
-  #         - run_enterprise_tests
-  #     - when: <% succeeded() and not ctx().enterprise %>
+  #     - when: <% succeeded() %>
   #       do:
   #         - run_docs_tests
-  run_enterprise_tests:
-    action: st2cd.st2_enterprise_tests
-    input:
-      host_ip: <% ctx().host_ip %>
-    next:
-      - when: <% succeeded() %>
-        do:
-          - echo_st2_cli_env
-          - run_docs_tests
   run_docs_tests:
     action: core.remote
     input:
