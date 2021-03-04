@@ -3,7 +3,6 @@
 # st2cd
 ############################################
 # st2_pkg_test_stable_{{os}}.yaml
-# st2_pkg_test_stable_{{os}}_enterprise.yaml
 set -e
 
 PROJECT=$1
@@ -46,7 +45,6 @@ function git_repo {
 function update_existing_rules {
     for os in $OSES; do
         sed -i "s/${PREV_VERSION}/${VERSION}/g" ./rules/st2_pkg_test_stable_${os}.yaml
-        sed -i "s/${PREV_VERSION}/${VERSION}/g" ./rules/st2_pkg_test_stable_${os}_enterprise.yaml
     done
 }
 
