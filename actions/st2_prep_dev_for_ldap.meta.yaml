@@ -1,6 +1,6 @@
 ---
 name: st2_prep_dev_for_ldap
-description: Prepare the st2 enterprise ldap repo for next iteration of development
+description: Prepare the ST2 LDAP repo for next iteration of development
 enabled: true
 runner_type: remote-shell-script
 entry_point: st2_chg_ver_for_ldap.sh
