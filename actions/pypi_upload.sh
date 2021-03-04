@@ -78,6 +78,17 @@ if [ "${REPO}" != "${PROJECT}" ]; then
     cd ./${PROJECT}
 fi
 
+# Use the same readme renderer that PyPI uses to catch syntax issues in the
+# README.rst file
+# https://pypi.org/help/#description-content-type
+# https://pypi.org/project/readme-renderer
+# https://packaging.python.org/tutorials/packaging-projects/#description
+echo "Checking README.rst syntax"
+virtualenv venv-st2client-readme-checker
+. venv-st2client-readme-checker/bin/activate
+pip install --upgrade readme_renderer
+python -m readme_renderer README.rst
+deactivate
 
 echo "Currently at directory `pwd`..."
 sudo pip install -U twine wheel
