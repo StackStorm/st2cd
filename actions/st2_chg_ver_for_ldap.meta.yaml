@@ -1,29 +1,34 @@
 ---
-name: bwc_prep_dev_for_enterprise_pkg
-description: Prepare the bwc (st2 enterprise) packaging repo for next iteration of development
+name: st2_chg_ver_for_ldap
+description: Change the version for the ST2 LDAP repo
 enabled: true
 runner_type: remote-shell-script
-entry_point: bwc_prep_dev_for_pkg_suite.sh
+entry_point: st2_chg_ver_for_ldap.sh
 parameters:
     project:
         type: string
-        description: Project name for bwc (st2 enterprise) packaging
-        default: bwc-enterprise-package
+        description: Project name for ST2 LDAP auth backend
+        default: st2-auth-ldap
         position: 0
     version:
         type: string
-        description: Version to use for the next release. Should include the patch e.g. 0.1.0
+        description: Version for the patch release. Should include the patch e.g. 0.1.0
         required: true
         position: 1
     fork:
         type: string
         description: Fork to use
-        default: extremenetworks
+        default: StackStorm
         position: 2
+    branch:
+        type: string
+        description: Branch to update
+        default: master
+        position: 3
     local_repo:
         type: string
         description: Location where to clone the repo. Programmatically determined if not provided.
-        position: 3
+        position: 4
     dir:
         immutable: true
         default: /home/stanley/

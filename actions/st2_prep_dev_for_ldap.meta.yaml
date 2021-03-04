@@ -1,14 +1,14 @@
 ---
-name: bwc_prep_dev_for_pkg_suite
-description: Prepare any bwc packaging suite repo for next iteration of development
+name: st2_prep_dev_for_ldap
+description: Prepare the st2 enterprise ldap repo for next iteration of development
 enabled: true
 runner_type: remote-shell-script
-entry_point: bwc_prep_dev_for_pkg_suite.sh
+entry_point: st2_chg_ver_for_ldap.sh
 parameters:
     project:
         type: string
-        description: Project name for the package suite
-        required: true
+        description: Project name for ST2 LDAP auth backend
+        default: st2-auth-ldap
         position: 0
     version:
         type: string
@@ -20,10 +20,15 @@ parameters:
         description: Fork to use
         default: StackStorm
         position: 2
+    branch:
+        type: string
+        description: Branch to update
+        default: master
+        position: 3
     local_repo:
         type: string
         description: Location where to clone the repo. Programmatically determined if not provided.
-        position: 3
+        position: 4
     dir:
         immutable: true
         default: /home/stanley/

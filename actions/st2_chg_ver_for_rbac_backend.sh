@@ -18,8 +18,7 @@ if [[ -z "${BRANCH_EXISTS}" ]]; then
     exit 1
 fi
 
-
-# GIT CLONE SPECIFIC BRANCH
+# GIT CLONE AND BRANCH
 if [[ -z ${LOCAL_REPO} ]]; then
     CURRENT_TIMESTAMP=`date +'%s'`
     RANDOM_NUMBER=`awk -v min=100 -v max=999 'BEGIN{srand(); print int(min+rand()*(max-min+1))}'`
@@ -38,18 +37,18 @@ cd ${LOCAL_REPO}
 echo "Currently at directory `pwd`..."
 
 
-# SET NEW ST2 VERSION INFO
-VERSION_FILE="package.json"
-VERSION_STR="\"st2_version\": \"${VERSION}\""
+# SET ST2 VERSION INFO
+VERSION_FILE="st2rbac_backend/__init__.py"
+VERSION_STR="__version__ = '${VERSION}'"
 
 VERSION_STR_MATCH=`grep "${VERSION_STR}" ${VERSION_FILE} || true`
 if [[ -z "${VERSION_STR_MATCH}" ]]; then
     echo "Setting version in ${VERSION_FILE} to ${VERSION}..."
-    sed -i -e "s/\(^  \"st2_version\": \"\).*\(\"\)/\1${VERSION}\2/" ${VERSION_FILE}
+    sed -i -e "s/\(__version__ = \).*/\1'${VERSION}'/" ${VERSION_FILE}
 
     VERSION_STR_MATCH=`grep "${VERSION_STR}" ${VERSION_FILE} || true`
     if [[ -z "${VERSION_STR_MATCH}" ]]; then
-        >&2 echo "ERROR: Unable to update the st2 version in ${VERSION_FILE}."
+        >&2 echo "ERROR: Unable to update the version in ${VERSION_FILE}."
         exit 1
     fi
 fi

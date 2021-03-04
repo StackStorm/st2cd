@@ -1,24 +1,24 @@
 ---
-name: st2_prep_dev_for_enterprise_ldap
-description: Prepare the st2 enterprise ldap repo for next iteration of development
+name: st2_chg_ver_for_rbac_backend
+description: Change the version for the st2-rbac-backend repo
 enabled: true
 runner_type: remote-shell-script
-entry_point: st2_chg_ver_for_enterprise_ldap.sh
+entry_point: st2_chg_ver_for_rbac_backend.sh
 parameters:
     project:
         type: string
-        description: Project name for st2 enterprise ldap auth backend
-        default: st2-enterprise-auth-backend-ldap
+        description: Github project name
+        default: st2-rbac-backend
         position: 0
     version:
         type: string
-        description: Version to use for the next release. Should include the patch e.g. 0.1.0
+        description: Version for the patch release. Should include the patch e.g. 0.1.0
         required: true
         position: 1
     fork:
         type: string
         description: Fork to use
-        default: extremenetworks
+        default: StackStorm
         position: 2
     branch:
         type: string
