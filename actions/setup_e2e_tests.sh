@@ -132,7 +132,7 @@ st2ctl reload --register-all
 
 # Robotframework requirements
 cd st2tests
-sudo ${PIP} install --upgrade "pip>=9.0,<9.1"
+sudo ${PIP} install --upgrade "pip==20.0.2"
 sudo ${PIP} install --upgrade "virtualenv==15.1.0"
 
 virtualenv --no-download venv
