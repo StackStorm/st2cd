@@ -19,7 +19,7 @@ vars:
   - wait_for_winrm_count: 0
   - ec2_instance_password: ""
   - ec2_instance_id:
-  - ec2_instance_user_data: "<powershell>\n# download the script\n(New-Object System.Net.WebClient).DownloadFile('https://raw.githubusercontent.com/ansible/ansible/devel/examples/scripts/ConfigureRemotingForAnsible.ps1', './ConfigureRemotingForAnsible.ps1')\n# execute the script\n./ConfigureRemotingForAnsible.ps1\n</powershell>"
+  - ec2_instance_user_data: "<powershell>\n#Setup for TLS v1.2\n[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12;\n# download the script\n(New-Object System.Net.WebClient).DownloadFile('https://raw.githubusercontent.com/ansible/ansible/devel/examples/scripts/ConfigureRemotingForAnsible.ps1', './ConfigureRemotingForAnsible.ps1')\n# execute the script\n./ConfigureRemotingForAnsible.ps1\n</powershell>"
   - vm_info:
       id:
       private_ip_address:
