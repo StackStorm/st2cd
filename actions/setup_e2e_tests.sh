@@ -148,15 +148,17 @@ st2ctl reload --register-all
 cd st2tests
 if [[ -z "$VERSION" ]]; then
     PIP_VERSION=$(curl --silent https://raw.githubusercontent.com/StackStorm/st2/${BRANCH}/Makefile | grep 'PIP_VERSION ?= ' | awk '{ print $3 }')
+    VENV_VERSION=$(curl --silent https://raw.githubusercontent.com/StackStorm/st2/${BRANCH}/fixed-requirements.txt | grep '^virtualenv.*=' | tr '<>=' '   ' | awk '{ print $2 }')
 else
     PIP_VERSION=$(curl --silent https://raw.githubusercontent.com/StackStorm/st2/v${VERSION}/Makefile | grep 'PIP_VERSION ?= ' | awk '{ print $3 }')
+    VENV_VERSION=$(curl --silent https://raw.githubusercontent.com/StackStorm/st2/v${VERSION}/fixed-requirements.txt | grep '^virtualenv.*=' | tr '<>=' '   ' | awk '{ print $2 }')
 fi
 # Fallback
 if [[ -z "$PIP_VERSION" ]]; then
     PIP_VERSION=$(curl --silent https://raw.githubusercontent.com/StackStorm/st2/master/Makefile | grep 'PIP_VERSION ?= ' | awk '{ print $3 }')
 fi
 sudo ${PIP} install --upgrade "pip==$PIP_VERSION"
-sudo ${PIP} install --upgrade "virtualenv==15.1.0"
+sudo ${PIP} install --upgrade "virtualenv==$VENV_VERSION"
 
 # I'm not entirely sure what the original author of this script (who very well
 # could have been me) was thinking. At least on Ubuntu Xenial, installing the
@@ -173,7 +175,7 @@ PATH=$PATH:$HOME/.local/bin virtualenv --no-download --python=$PYTHON3 venv
 # Set pip and virtualenv within the virtualenv to ensure the Python 3-only
 # dependencies can be successfully installed
 ${PIP} install --upgrade "pip==$PIP_VERSION"
-${PIP} install --upgrade "virtualenv==15.1.0"
+${PIP} install --upgrade "virtualenv==$VENV_VERSION"
 
 # Install the test dependencies
 ${PIP} install -r test-requirements.txt
