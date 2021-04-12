@@ -38,15 +38,30 @@ git clone ${GIT_REPO} ${LOCAL_REPO}
 cd ${LOCAL_REPO}
 echo "Currently at directory `pwd`..."
 
-
-# CREATE RELEASE BRANCH AND SET NEW ST2 VERSION INFO
 echo "Creating new branch ${BRANCH}..."
 git checkout -b ${BRANCH} origin/master
 
-# XXX: No changes need to be made to the repo today. 
 
-echo "Pushing branch ${BRANCH} to github"
-git push origin ${BRANCH}
+# SET NEW ST2 VERSION INFO
+VERSION_FILE="st2auth_ldap/__init__.py"
+VERSION_STR="__version__ = '${VERSION}'"
+
+VERSION_STR_MATCH=`grep "${VERSION_STR}" ${VERSION_FILE} || true`
+if [[ -z "${VERSION_STR_MATCH}" ]]; then
+    echo "Setting version in ${VERSION_FILE} to ${VERSION}..."
+    sed -i -e "s/\(__version__ = \).*/\1'${VERSION}'/" ${VERSION_FILE}
+
+    VERSION_STR_MATCH=`grep "${VERSION_STR}" ${VERSION_FILE} || true`
+    if [[ -z "${VERSION_STR_MATCH}" ]]; then
+        >&2 echo "ERROR: Unable to update the st2 version in ${VERSION_FILE}."
+        exit 1
+    fi
+fi
+
+git add ${VERSION_FILE}
+git commit -qm "Update version info for release - ${VERSION}"
+git push origin ${BRANCH} -q
+
 
 # CLEANUP
 cd ${CWD}

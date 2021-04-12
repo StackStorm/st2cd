@@ -1,29 +1,29 @@
 ---
-name: bwc_prep_patch_for_bwc_topology
-description: Prepare the bwc topology repo for patch release
+name: st2_prep_dev_for_ldap
+description: Prepare the ST2 LDAP repo for next iteration of development
 enabled: true
 runner_type: remote-shell-script
-entry_point: bwc_chg_ver_for_bwc_topology.sh
+entry_point: st2_chg_ver_for_ldap.sh
 parameters:
     project:
         type: string
-        description: Project name for bwc topology
-        default: bwc-topology
+        description: Project name for ST2 LDAP auth backend
+        default: st2-auth-ldap
         position: 0
     version:
         type: string
-        description: Version to use for the patch release. Should include the patch e.g. 0.1.0
+        description: Version to use for the next release. Should include the patch e.g. 0.1.0
         required: true
         position: 1
     fork:
         type: string
         description: Fork to use
-        default: extremenetworks
+        default: StackStorm
         position: 2
     branch:
         type: string
         description: Branch to update
-        default: v{{version.split('.')[0]}}.{{version.split('.')[1]}}
+        default: master
         position: 3
     local_repo:
         type: string

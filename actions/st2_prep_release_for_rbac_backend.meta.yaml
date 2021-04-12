@@ -1,14 +1,14 @@
 ---
-name: bwc_prep_release_for_pkg_suite
-description: Prepare any bwc packaging suite repo for release
+name: st2_prep_release_for_rbac_backend
+description: Prepare the ST2 RBAC backend repo for release
 enabled: true
 runner_type: remote-shell-script
-entry_point: bwc_prep_release_for_pkg_suite.sh
+entry_point: st2_prep_release_for_rbac_backend.sh
 parameters:
     project:
         type: string
-        description: Project name for the package suite
-        required: true
+        description: Project name for ST2 RBAC backend
+        default: st2-rbac-backend
         position: 0
     version:
         type: string

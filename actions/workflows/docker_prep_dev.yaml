@@ -55,45 +55,6 @@ tasks:
       hosts: <% ctx().host %>
       cwd: <% ctx().cwd %>
     next:
-      - when: <% succeeded() %>
-        do:
-          - wait_for_community_docker_image
-      - when: <% failed() %>
-        do:
-          - cleanup_on_failure
-
-  # If it is acceptable for the enterprise build to fail, this wait is not required
-  wait_for_community_docker_image:
-    action: st2cd.wait_for_docker_image
-    input:
-      org: <% ctx().org %>
-      image: st2web
-      version: <% ctx().dev_version %>
-      tries: 10
-      check_delay: 60
-      hosts: <% ctx().host %>
-      cwd: <% ctx().cwd %>
-      timeout: 650
-    next:
-      - when: <% succeeded() %>
-        do:
-          - prep_st2enterprise_dockerfiles
-      - when: <% failed() %>
-        do:
-          - cleanup_on_failure
-
-  # st2enterprise-dockerfiles requires st2-dockerfiles images
-  prep_st2enterprise_dockerfiles:
-    action: st2cd.docker_chg_ver
-    input:
-      project: st2enterprise-dockerfiles
-      version: <% ctx().dev_version %>
-      org: extremenetworks
-      branch: master
-      local_repo: <% 'st2enterprise_dockerfiles_' + ctx().local_repo_sfx %>
-      hosts: <% ctx().host %>
-      cwd: <% ctx().cwd %>
-    next:
       - when: <% failed() %>
         do:
           - cleanup_on_failure

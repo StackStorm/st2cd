@@ -41,9 +41,6 @@ parameters:
   st2tests_version:
     type: string
     description: Branch or version string used for the release. Should include the patch e.g. 0.1.0
-  enterprise:
-    type: boolean
-    default: false
   chatops:
     type: boolean
     default: false

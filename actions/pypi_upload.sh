@@ -78,7 +78,6 @@ if [ "${REPO}" != "${PROJECT}" ]; then
     cd ./${PROJECT}
 fi
 
-
 echo "Currently at directory `pwd`..."
 sudo pip install -U twine wheel
 
