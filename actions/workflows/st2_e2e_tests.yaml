@@ -79,29 +79,25 @@ tasks:
     next:
       - when: <% succeeded() %>
         do:
-          # - run_windows_tests
           - echo_st2_cli_env
-          - run_docs_tests
+          - run_windows_tests
   echo_st2_cli_env:
     action: core.echo
     input:
       message: <% str(ctx().st2_cli_env) %>
-  #     - when: <% succeeded() %>
-  #       do:
-  #         - run_windows_tests
-  # run_windows_tests:
-  #   action: st2cd.st2_e2e_tests_test_windows
-  #   input:
-  #     host: <% ctx().host_ip %>
-  #     windows_host: <% ctx().windows_host_ip %>
-  #     windows_username: <% ctx().windows_username %>
-  #     windows_password: <% ctx().windows_password %>
-  #     env: <% ctx().st2_cli_env %>
-  #     protocol: <% ctx().protocol %>
-  #   next:
-  #     - when: <% succeeded() %>
-  #       do:
-  #         - run_docs_tests
+  run_windows_tests:
+    action: st2cd.st2_e2e_tests_test_windows
+    input:
+      host: <% ctx().host_ip %>
+      windows_host: <% ctx().windows_host_ip %>
+      windows_username: <% ctx().windows_username %>
+      windows_password: <% ctx().windows_password %>
+      env: <% ctx().st2_cli_env %>
+      protocol: <% ctx().protocol %>
+    next:
+      - when: <% succeeded() %>
+        do:
+          - run_docs_tests
   run_docs_tests:
     action: core.remote
     input:
