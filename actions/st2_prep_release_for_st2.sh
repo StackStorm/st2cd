@@ -115,6 +115,11 @@ done
 # Set version attribute for all the bundled packs (core, linux, examples, etc.)
 BUNDLED_PACKS_METADATA_FILES=($(find contrib/ -mindepth 2 -maxdepth 2 -name pack.yaml))
 
+# Set version attribute for all the requirements.txt that refer to st2-auth-ldap
+LDAP_REQUIREMENT_FILES=($(find ./ -maxdepth 2 -name "*requirements.txt" | xargs grep -l "egg=st2-auth-ldap"))
+# Set version attribute for all the requirements.txt that refer to st2-auth-ldap
+RBAC_REQUIREMENT_FILES=($(find ./ -maxdepth 2 -name "*requirements.txt" | xargs grep -l "egg=st2-rbac-backend"))
+
 # Temporary disable fail on failure for grep step where failure is OK
 set +e
 
@@ -147,6 +152,48 @@ if [ "${IS_DEV_VERSION}" = "false" ]; then
             VERSION_STR_MATCH=`grep "${VERSION}" ${PACK_METADATA_FILE} || true`
             if [[ -z "${VERSION_STR_MATCH}" ]]; then
                 >&2 echo "ERROR: Unable to update the version in >${PACK_METADATA_FILE}."
+                exit 1
+            fi
+        fi
+    done
+    for REQUIREMENT_FILE in "${LDAP_REQUIREMENT_FILES[@]}"
+    do
+        echo "Setting ldap branch version in: ${REQUIREMENT_FILE}"
+
+        if [[ ! -e "${REQUIREMENT_FILE}" ]]; then
+            >&2 echo "ERROR: Requirement file ${REQUIREMENT_FILE} does not exist."
+            exit 1
+        fi
+
+        VERSION_STR_MATCH=`grep "git+https://github.com/StackStorm/st2-auth-ldap.git@${BRANCH}#egg=st2-auth-ldap" ${REQUIREMENT_FILE}`
+        if [[ -z "${VERSION_STR_MATCH}" ]]; then
+            echo "Setting ldap version branch in ${REQUIREMENT_FILE} to ${BRANCH}..."
+            sed -i -E "s/^git\+https:\/\/github.com\/StackStorm\/st2-auth-ldap\.git@(.*?)st2-auth-ldap$/git\+https:\/\/github.com\/StackStorm\/st2-auth-ldap\.git@${BRANCH}#egg=st2-auth-ldap/" ${REQUIREMENT_FILE}
+
+            VERSION_STR_MATCH=`grep "st2-auth-ldap.git@${BRANCH}" ${REQUIREMENT_FILE} || true`
+            if [[ -z "${VERSION_STR_MATCH}" ]]; then
+                >&2 echo "ERROR: Unable to update the ldap version in >${REQUIREMENT_FILE}."
+                exit 1
+            fi
+        fi
+    done
+    for REQUIREMENT_FILE in "${RBAC_REQUIREMENT_FILES[@]}"
+    do
+        echo "Setting rbac branch version in: ${REQUIREMENT_FILE}"
+
+        if [[ ! -e "${REQUIREMENT_FILE}" ]]; then
+            >&2 echo "ERROR: Requirement file ${REQUIREMENT_FILE} does not exist."
+            exit 1
+        fi
+
+        VERSION_STR_MATCH=`grep "git+https://github.com/StackStorm/st2-rbac-backend.git@${BRANCH}#egg=st2-rbac-backend" ${REQUIREMENT_FILE}`
+        if [[ -z "${VERSION_STR_MATCH}" ]]; then
+            echo "Setting rbac version branch in ${REQUIREMENT_FILE} to ${BRANCH}..."
+            sed -i -E "s/^git\+https:\/\/github.com\/StackStorm\/st2-rbac-backend\.git@(.*?)st2-rbac-backend$/git\+https:\/\/github.com\/StackStorm\/st2-rbac-backend\.git@${BRANCH}#egg=st2-rbac-backend/" ${REQUIREMENT_FILE}
+
+            VERSION_STR_MATCH=`grep "st2-rbac-backend.git@${BRANCH}" ${REQUIREMENT_FILE} || true`
+            if [[ -z "${VERSION_STR_MATCH}" ]]; then
+                >&2 echo "ERROR: Unable to update the rbac version in >${REQUIREMENT_FILE}."
                 exit 1
             fi
         fi
