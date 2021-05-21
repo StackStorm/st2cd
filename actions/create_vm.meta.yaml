@@ -50,6 +50,7 @@
         # Keep these
         - "UBUNTU16"
         - "UBUNTU18"
+        - "UBUNTU20"
     notification_channel:
       type: "string"
       description: "used by rule with actiontrigger"
