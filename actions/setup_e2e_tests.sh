@@ -21,6 +21,10 @@ PYTHON3=python3.6  # Can't just specify python3 on Ubuntu Xenial
 DEBTEST=$(lsb_release -a 2> /dev/null | grep Distributor | awk '{print $3}')
 RHTEST=$(cat /etc/redhat-release 2> /dev/null | sed -e "s~\(.*\)release.*~\1~g")
 
+if [[ -n "$DEBTEST" && "${SUBTYPE}" == "focal" ]]; then
+    PYTHON3=python3.8  # Need to use python 3.8 on focal
+fi
+
 if ! grep -q ttlMonitorSleepSecs /etc/mongod.conf; then
     # Decrease interval for MongoDB TTL expire thread. By default it runs every 60 seconds which
     # means we would need to wait at least 60 seconds in our key expire end to end tests.
@@ -62,11 +66,15 @@ elif [[ -n "$DEBTEST" ]]; then
 
     echo "Restarting MongoDB..."
     # Restart MongoDB for the config changes above to take an affect
-    if [[ "$SUBTYPE" == 'xenial' || "${SUBTYPE}" == "bionic" ]]; then
-      sudo systemctl restart mongod
-    fi
+    sudo systemctl restart mongod
 
-    sudo apt-get -q -y install build-essential jq python-pip python-dev wget
+    if [[ -"${SUBTYPE}" == "focal" ]]; then
+        sudo apt-get -q -y install build-essential jq python3-pip python3-dev wget
+    else
+        # TODO: Refactor to remove, what we don't need and whether to use
+        # python3 variants for all distros now
+        sudo apt-get -q -y install build-essential jq python-pip python-dev wget
+    fi
 
     # Remove bats-core if it already exists (this happens when test workflows
     # are re-run on a server when tests are debugged)
