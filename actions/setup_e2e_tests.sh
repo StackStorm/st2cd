@@ -21,9 +21,6 @@ PYTHON3=python3.6  # Can't just specify python3 on Ubuntu Xenial
 DEBTEST=$(lsb_release -a 2> /dev/null | grep Distributor | awk '{print $3}')
 RHTEST=$(cat /etc/redhat-release 2> /dev/null | sed -e "s~\(.*\)release.*~\1~g")
 
-if [[ -n "$DEBTEST" && "${SUBTYPE}" == "focal" ]]; then
-    PYTHON3=python3.8  # Need to use python 3.8 on focal
-fi
 
 if ! grep -q ttlMonitorSleepSecs /etc/mongod.conf; then
     # Decrease interval for MongoDB TTL expire thread. By default it runs every 60 seconds which
@@ -63,6 +60,9 @@ elif [[ -n "$DEBTEST" ]]; then
     DEBVERSION=$(lsb_release --release | awk '{ print $2 }')
     SUBTYPE=$(lsb_release -a 2>&1 | grep Codename | grep -v "LSB" | awk '{print $2}')
     echo "*** Detected Distro is ${DEBTEST} - ${DEBVERSION} ***"
+    if [[ "${SUBTYPE}" == "focal" ]]; then
+        PYTHON3=python3.8  # Need to use python 3.8 on focal
+    fi
 
     echo "Restarting MongoDB..."
     # Restart MongoDB for the config changes above to take an affect
