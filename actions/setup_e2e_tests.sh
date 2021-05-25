@@ -68,7 +68,7 @@ elif [[ -n "$DEBTEST" ]]; then
     # Restart MongoDB for the config changes above to take an affect
     sudo systemctl restart mongod
 
-    if [[ -"${SUBTYPE}" == "focal" ]]; then
+    if [[ "${SUBTYPE}" == "focal" ]]; then
         sudo apt-get -q -y install build-essential jq python3-pip python3-dev wget
     else
         # TODO: Refactor to remove, what we don't need and whether to use
