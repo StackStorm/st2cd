@@ -5,17 +5,17 @@ input:
   - host_ip
   - env
 
-  - chatops_e2e_tests_slack_channel_u16
-  - chatops_e2e_tests_slack_bot_username_u16
-  - chatops_e2e_tests_slack_bot_api_token_u16
-  - chatops_e2e_tests_slack_user_username_u16
-  - chatops_e2e_tests_slack_user_api_token_u16
-
   - chatops_e2e_tests_slack_channel_u18
   - chatops_e2e_tests_slack_bot_username_u18
   - chatops_e2e_tests_slack_bot_api_token_u18
   - chatops_e2e_tests_slack_user_username_u18
   - chatops_e2e_tests_slack_user_api_token_u18
+
+  - chatops_e2e_tests_slack_channel_u20
+  - chatops_e2e_tests_slack_bot_username_u20
+  - chatops_e2e_tests_slack_bot_api_token_u20
+  - chatops_e2e_tests_slack_user_username_u20
+  - chatops_e2e_tests_slack_user_api_token_u20
 
   - chatops_e2e_tests_slack_channel_el7
   - chatops_e2e_tests_slack_bot_username_el7
@@ -51,11 +51,6 @@ tasks:
           - ubuntu_version: <% succeeded() and result().get(ctx().host_ip).stdout %>
         do:
           - log_ubuntu_version
-      - when: <% succeeded() and result().get(ctx().host_ip).stdout = '16.04' %>
-        publish:
-          - websocket:
-        do:
-          - run_with_slack_u16
       - when: <% succeeded() and result().get(ctx().host_ip).stdout = '18.04' %>
         publish:
           - websocket:
@@ -66,7 +61,7 @@ tasks:
           - websocket:
         do:
           - run_with_slack_u20
-      - when: <% succeeded() and not ["16.04", "18.04", "20.04"].contains(result().get(ctx().host_ip).stdout) %>
+      - when: <% succeeded() and not ["18.04", "20.04"].contains(result().get(ctx().host_ip).stdout) %>
         do:
           - switch_on_redhat_version
       - when: <% failed() %>
@@ -114,19 +109,6 @@ tasks:
     action: core.echo
     input:
       message: "Skipping ChatOps end-to-end tests: <% ctx().ubuntu_version %><% ctx().redhat_version %>"
-
-  # Run the tests with Slack, ST2 IUT on Ubuntu 16.04
-  run_with_slack_u16:
-    action: st2cd.st2_chatops_e2e_tests_with_slack
-    input:
-      host_ip: <% ctx().host_ip %>
-      st2_auth_token: <% ctx().env.ST2_AUTH_TOKEN %>
-      websocket: <% ctx().websocket %>
-      slack_channel: <% ctx().chatops_e2e_tests_slack_channel_u16 %>
-      slack_bot_username: "{{ ctx().chatops_e2e_tests_slack_bot_username_u16 }}"
-      slack_bot_api_token: "{{ ctx().chatops_e2e_tests_slack_bot_api_token_u16 }}"
-      slack_user_username: "{{ ctx().chatops_e2e_tests_slack_user_username_u16 }}"
-      slack_user_api_token: "{{ ctx().chatops_e2e_tests_slack_user_api_token_u16 }}"
 
   # Run the tests with Slack, ST2 IUT on Ubuntu 18.04
   run_with_slack_u18:

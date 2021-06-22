@@ -48,7 +48,6 @@
         - "F20"
         - "F21"
         # Keep these
-        - "UBUNTU16"
         - "UBUNTU18"
         - "UBUNTU20"
     notification_channel:

@@ -53,10 +53,8 @@ parameters:
       # TODO: Remove Fedora
       - F20
       - F21
-      - UBUNTU16
       - UBUNTU18
       - UBUNTU20
-      - pkg_UBUNTU16
       - pkg_UBUNTU18
       - pkg_UBUNTU20
       - pkg_RHEL7
