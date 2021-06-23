@@ -29,13 +29,6 @@ input:
   - chatops_e2e_tests_slack_user_username_el8
   - chatops_e2e_tests_slack_user_api_token_el8
 
-  - chatops_e2e_tests_slack_channel_u20
-  - chatops_e2e_tests_slack_bot_username_u20
-  - chatops_e2e_tests_slack_bot_api_token_u20
-  - chatops_e2e_tests_slack_user_username_u20
-  - chatops_e2e_tests_slack_user_api_token_u20
-
-
 vars:
   - ubuntu_version: null
   - redhat_version: null
