@@ -56,6 +56,29 @@ parameters:
     secret: true
     immutable: true
 
+  chatops_e2e_tests_slack_channel_u20:
+    type: string
+    default: "{{ st2kv.system.chatops_e2e_tests_slack_channel_u20 }}"
+    immutable: true
+  chatops_e2e_tests_slack_bot_username_u20:
+    type: string
+    default: "{{ st2kv.system.chatops_e2e_tests_slack_bot_username_u20 }}"
+    immutable: true
+  chatops_e2e_tests_slack_bot_api_token_u20:
+    type: string
+    default: "{{ st2kv.system.chatops_e2e_tests_slack_bot_api_token_u20 }}"
+    secret: true
+    immutable: true
+  chatops_e2e_tests_slack_user_username_u20:
+    type: string
+    default: "{{ st2kv.system.chatops_e2e_tests_slack_user_username_u20 }}"
+    immutable: true
+  chatops_e2e_tests_slack_user_api_token_u20:
+    type: string
+    default: "{{ st2kv.system.chatops_e2e_tests_slack_user_api_token_u20 }}"
+    secret: true
+    immutable: true
+
   chatops_e2e_tests_slack_channel_el7:
     type: string
     default: "{{ st2kv.system.chatops_e2e_tests_slack_channel_el7 }}"
