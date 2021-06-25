@@ -27,10 +27,10 @@
         position: 3
     oses:
         type: string
-        description: "Space seperated list of operating systems supported by st2 e.g. 'rhel7 rhel8 u16 u18'"
+        description: "Space seperated list of operating systems supported by st2 e.g. 'rhel7 rhel8 u18 u20'"
         required: true
         position: 4
-        default: rhel7 rhel8 u16 u18
+        default: rhel7 rhel8 u18 u20
     local_repo:
         type: string
         description: Location where to clone the repo. Programmatically determined if not provided.

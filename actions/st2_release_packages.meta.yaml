@@ -12,8 +12,8 @@ parameters:
     default:
       - RHEL7
       - RHEL8
-      - UBUNTU16
       - UBUNTU18
+      - UBUNTU20
   version:
     type: string
     required: true

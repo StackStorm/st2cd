@@ -1,5 +1,5 @@
 ---
-name: st2_pkg_test_stable_u16
+name: st2_pkg_test_stable_u20
 pack: st2cd
 description: Test stable packages
 enabled: true
@@ -17,8 +17,8 @@ criteria: {}
 action:
   ref: st2ci.st2_pkg_e2e_test
   parameters:
-    hostname: st2-pkg-stable-u16
-    distro: UBUNTU16
+    hostname: st2-pkg-stable-u20
+    distro: UBUNTU20
     pkg_env: production
     release: stable
     version: "3.4.1"
