@@ -101,16 +101,16 @@ if [[ ! -e "${CRYPTO_KEY_FILE}" ]]; then
     sudo chgrp st2packs ${CRYPTO_KEY_FILE}
 fi
 
-if ! grep -qE "encryption_key_path[[:space:]]*=[[:space:]]*${CRYPTO_KEY_FILE}" ${ST2_CONF}; then
+if ! grep -qE "encryption_key_path[[:space:]]*=[[:space:]]*" ${ST2_CONF}; then
     # Add a new keyvalue.encryption_key_path
     # This looks overly complicated...
     sudo bash -c "cat <<keyvalue_options >>${ST2_CONF}
 [keyvalue]
 encryption_key_path = ${CRYPTO_KEY_FILE}
 keyvalue_options"
-elif ! grep -qE "encryption_key_path[[:space:]]*=[[:space:]]*" ${ST2_CONF}; then
+elif ! grep -qE "encryption_key_path[[:space:]]*=[[:space:]]*${CRYPTO_KEY_FILE}" ${ST2_CONF}; then
     # If keyvalue.encryption_key_path exists, then modify it
-    sed -i "s|^encryption_key_path[[:space:]]*=[[:space:]]*[^[:space:]]\{1,\}$|encryption_key_path = ${CRYPTO_KEY_FILE}|" ${ST2_CONF}
+    sudo sed -i "s|^encryption_key_path[[:space:]]*=[[:space:]]*[^[:space:]]\{1,\}$|encryption_key_path = ${CRYPTO_KEY_FILE}|" ${ST2_CONF}
 fi
 
 # Reload required for testing st2 upgrade
