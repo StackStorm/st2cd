@@ -78,6 +78,8 @@ if [ "${REPO}" != "${PROJECT}" ]; then
     cd ./${PROJECT}
 fi
 
+sed -i "s/'3.6.0'/'3.6.0.post0'/" st2client/__init__.py
+
 echo "Currently at directory `pwd`..."
 sudo pip install -U twine wheel
 
