@@ -71,12 +71,15 @@ do
         exit 1
     fi
 
-    VERSION_STR="__version__ = '${VERSION}'"
+    # The black lint checker forces us to use double quotes for these
+    # but we check for both single quotes and double quotes to ensure
+    # that we find them all
+    VERSION_STR="__version__ = ['\"]${VERSION}['\"]"
 
     VERSION_STR_MATCH=`grep "${VERSION_STR}" ${INIT_FILE} || true`
     if [[ -z "${VERSION_STR_MATCH}" ]]; then
         echo "Setting version in ${INIT_FILE} to ${VERSION}..."
-        sed -i -e "s/\(__version__ = \).*/\1'${VERSION}'/" ${INIT_FILE}
+        sed -i -e "s/\(__version__ = \).*/\1\"${VERSION}\"/" ${INIT_FILE}
 
         VERSION_STR_MATCH=`grep "${VERSION_STR}" ${INIT_FILE} || true`
         if [[ -z "${VERSION_STR_MATCH}" ]]; then
