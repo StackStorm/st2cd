@@ -6,7 +6,7 @@ BUILD_NUMBER=$1
 REPO=$2
 
 cd $REPO
-ST2VER=`grep version st2common/st2common/__init__.py | awk '{print $3}' | tr -d "'"`
+ST2VER=`grep version st2common/st2common/__init__.py | awk '{print $3}' | tr -d "['\"]"`
 CLIENTVER="${ST2VER}.${BUILD_NUMBER}"
 
 echo "ST2VER: ${ST2VER}"
@@ -20,4 +20,4 @@ sed -i "s/^VER :=.*/VER=${ST2VER}/g" */Makefile
 sed -i "s/RELEASE=[0-9]\+/RELEASE=${BUILD_NUMBER}/g" st2client/Makefile
 sed -i "s~version=.*~version=\"${ST2VER}\",~" *!(st2client)/setup.py
 sed -i "s~version=.*~version=\"${CLIENTVER}\",~" st2client/setup.py
-sed -i "s~__version__ =.*~__version__ = '${CLIENTVER}',~" st2client/st2client/__init__.py
+sed -i "s~__version__ =.*~__version__ = \"${CLIENTVER}\",~" st2client/st2client/__init__.py

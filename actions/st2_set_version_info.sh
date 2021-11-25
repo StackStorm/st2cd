@@ -30,7 +30,7 @@ else
     exit 1
 fi
 
-VERSIONOUT=`sed -i -e "s/\(__version__ = \).*/\1'${VERSION}'/" ${ST2CLIENT_INIT}`
+VERSIONOUT=`sed -i -e "s/\(__version__ = \).*/\1\"${VERSION}\"/" ${ST2CLIENT_INIT}`
 if [[ $? == 0 ]]
 then
     OUT=`$GIT add ${ST2CLIENT_INIT} > ${OUTPUT} && $GIT commit -qm "Setting st2client version info for release - ${VERSION}" > ${OUTPUT}`
