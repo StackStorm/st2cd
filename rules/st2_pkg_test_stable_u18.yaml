@@ -11,6 +11,7 @@ trigger:
     hour: 6
     minute: 0
     second: 0
+    day_of_week: 2
 
 criteria: {}
 
@@ -21,5 +22,5 @@ action:
     distro: UBUNTU18
     pkg_env: production
     release: stable
-    version: "3.5.0"
+    version: "3.6.0"
     chatops: true
