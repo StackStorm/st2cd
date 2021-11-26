@@ -14,10 +14,10 @@ cd ${REPO}
 OUT=`$GIT checkout ${BASE_BRANCH} -q > $OUTPUT && $GIT pull origin ${BASE_BRANCH} -q > $OUTPUT && $GIT checkout -b ${BRANCH} -q`
 if [[ $? == 0 ]]
 then
-  VERSIONOUT=`sed -i -e "s/\(__version__ = \).*/\1'${VERSION}'/" ${ST2COMMON_INIT}`
+  VERSIONOUT=`sed -i -e "s/\(__version__ = \).*/\1\"${VERSION}\"/" ${ST2COMMON_INIT}`
   if [[ $? == 0 ]]
   then
-    VERSIONOUT=`sed -i -e "s/\(__version__ = \).*/\1'${VERSION}'/" ${ST2CLIENT_INIT}`
+    VERSIONOUT=`sed -i -e "s/\(__version__ = \).*/\1\"${VERSION}\"/" ${ST2CLIENT_INIT}`
   else
     echo "Failed setting version in ${ST2CLIENT_INIT}"
     cat ${OUTPUT}

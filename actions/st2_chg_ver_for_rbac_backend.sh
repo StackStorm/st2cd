@@ -39,12 +39,16 @@ echo "Currently at directory `pwd`..."
 
 # SET ST2 VERSION INFO
 VERSION_FILE="st2rbac_backend/__init__.py"
-VERSION_STR="__version__ = '${VERSION}'"
+
+# The black lint checker forces us to use double quotes for these
+# but we check for both single quotes and double quotes to ensure
+# that we find them all
+VERSION_STR="__version__ = ['\"]${VERSION}['\"]"
 
 VERSION_STR_MATCH=`grep "${VERSION_STR}" ${VERSION_FILE} || true`
 if [[ -z "${VERSION_STR_MATCH}" ]]; then
     echo "Setting version in ${VERSION_FILE} to ${VERSION}..."
-    sed -i -e "s/\(__version__ = \).*/\1'${VERSION}'/" ${VERSION_FILE}
+    sed -i -e "s/\(__version__ = \).*/\1\"${VERSION}\"/" ${VERSION_FILE}
 
     VERSION_STR_MATCH=`grep "${VERSION_STR}" ${VERSION_FILE} || true`
     if [[ -z "${VERSION_STR_MATCH}" ]]; then
