@@ -59,11 +59,6 @@ parameters:
       - pkg_UBUNTU20
       - pkg_RHEL7
       - pkg_RHEL8
-      # TODO: Remove these
+      # TODO: Remove these - seem to be referenced in upgrade workflow
       - pkg_CENTOS7
-      - pkg_CENTOS8
-      # TODO: Remove this
-      - ubuntu
-      # TODO: Remove these
-      - centos7
-      - centos8
+      - pkg_ROCKY8

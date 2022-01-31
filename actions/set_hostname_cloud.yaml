@@ -23,9 +23,9 @@
         # Keep these though
         - "UBUNTU18"
         - "UBUNTU20"
-        # TODO: Remove these
+        # TODO: Remove these - but appear to be used in upgrade workflow
         - "pkg_CENTOS7"
-        - "pkg_CENTOS8"
+        - "pkg_ROCKY8"
         # Keep these though
         - "pkg_RHEL7"
         - "pkg_RHEL8"
@@ -33,7 +33,7 @@
         - "pkg_UBUNTU20"
     cmd:
       immutable: true
-      default: '{% if distro in ["RHEL7","RHEL8","pkg_CENTOS7","pkg_CENTOS8","pkg_RHEL7","pkg_RHEL8"] -%}{{redhat}}{% elif distro in ["pkg_UBUNTU18","UBUNTU18","pkg_UBUNTU20","UBUNTU20"] -%}{{ubuntu}}{% elif distro in ["F20","F21"] -%}{{fedora}}{% endif -%}'
+      default: '{% if distro in ["RHEL7","RHEL8","pkg_CENTOS7","pkg_ROCKY8","pkg_RHEL7","pkg_RHEL8"] -%}{{redhat}}{% elif distro in ["pkg_UBUNTU18","UBUNTU18","pkg_UBUNTU20","UBUNTU20"] -%}{{ubuntu}}{% elif distro in ["F20","F21"] -%}{{fedora}}{% endif -%}'
     redhat:
       type: "string"
       immutable: true
