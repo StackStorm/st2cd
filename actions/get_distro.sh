@@ -34,7 +34,7 @@ __parse_version_string() {
 #                 enough.
 #----------------------------------------------------------------------------------------------------------------------
 __sort_release_files() {
-    KNOWN_RELEASE_FILES=$(echo "(arch|centos|debian|ubuntu|fedora|redhat|suse|\
+    KNOWN_RELEASE_FILES=$(echo "(arch|centos|debian|ubuntu|fedora|redhat|rocky|suse|\
         mandrake|mandriva|gentoo|slackware|turbolinux|unitedlinux|lsb|system|\
         oracle|os)(-|_)(release|version)" | sed -r 's:[[:space:]]::g')
     primary_release_files=""
@@ -50,7 +50,7 @@ __sort_release_files() {
     done
 
     # Now let's sort by know files importance, max important goes last in the max_prio list
-    max_prio="redhat-release centos-release oracle-release"
+    max_prio="redhat-release centos-release rocky-release oracle-release"
     for entry in $max_prio; do
         if [ "$(echo "${primary_release_files}" | grep "$entry")" != "" ]; then
             primary_release_files=$(echo "${primary_release_files}" | sed -e "s:\(.*\)\($entry\)\(.*\):\2 \1 \3:g")
@@ -140,6 +140,8 @@ __gather_linux_system_info() {
             redhat             )
                 if [ "$(egrep 'CentOS' /etc/${rsource})" != "" ]; then
                     n="CentOS"
+                elif [ "$(egrep 'Rocky' /etc/${rsource})" != "" ]; then
+                    n="Rocky"
                 elif [ "$(egrep 'Scientific' /etc/${rsource})" != "" ]; then
                     n="Scientific Linux"
                 elif [ "$(egrep 'Red Hat Enterprise Linux' /etc/${rsource})" != "" ]; then
@@ -148,6 +150,7 @@ __gather_linux_system_info() {
                 ;;
             arch               ) n="Arch Linux"     ;;
             centos             ) n="CentOS"         ;;
+            rocky              ) n="Rocky"          ;;
             debian             ) n="Debian"         ;;
             ubuntu             ) n="Ubuntu"         ;;
             fedora             ) n="Fedora"         ;;

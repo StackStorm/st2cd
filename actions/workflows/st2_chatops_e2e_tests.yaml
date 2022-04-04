@@ -142,7 +142,7 @@ tasks:
       slack_user_username: "{{ ctx().chatops_e2e_tests_slack_user_username_el7 }}"
       slack_user_api_token: "{{ ctx().chatops_e2e_tests_slack_user_api_token_el7 }}"
 
-  # Run the tests with Slack, ST2 IUT on RHEL/CentOS 8
+  # Run the tests with Slack, ST2 IUT on RHEL/CentOS/Rocky 8
   run_with_slack_el8:
     action: st2cd.st2_chatops_e2e_tests_with_slack
     input:

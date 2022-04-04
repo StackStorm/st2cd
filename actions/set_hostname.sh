@@ -8,6 +8,7 @@ DISTRO_LCASE=`echo "${DISTRO}" | awk '{print tolower($0)}'`
 
 SUPPORTED_DISTROS=(
     "centos"
+    "rocky"
     "fedora"
     "redhat"
     "ubuntu"
@@ -22,7 +23,7 @@ ORIGINAL_HOSTNAME=$(hostname)
 
 if [[ ${DISTRO_LCASE} = "ubuntu" ]]; then
     sed -i -e "s/\(preserve_hostname: \)false/\1true/" /etc/cloud/cloud.cfg && echo "${HOSTNAME}" > /etc/hostname && hostname ${HOSTNAME}
-elif [[ ${DISTRO_LCASE} = "redhat" || ${DISTRO_LCASE} = "centos" ]]; then
+elif [[ ${DISTRO_LCASE} = "redhat" || ${DISTRO_LCASE} = "centos" || ${DISTRO_LCASE} = "rocky" ]]; then
     # Note: We also want to make sure /etc/hostname file matches
     sed -i -e "s/\(HOSTNAME=\).*/\1${HOSTNAME}/" /etc/sysconfig/network && echo "${HOSTNAME}" > /etc/hostname && hostname ${HOSTNAME}
     hostnamectl set-hostname --static ${HOSTNAME}
