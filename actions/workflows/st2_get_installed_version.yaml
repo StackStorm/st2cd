@@ -18,6 +18,11 @@ tasks:
           - distro: <% result().get(ctx().host).stdout %>
         do:
           - get_version_centos
+      - when: <% succeeded() and (result().get(ctx().host).stdout.toLower() = rocky) %>
+        publish:
+          - distro: <% result().get(ctx().host).stdout %>
+        do:
+          - get_version_rocky
       - when: <% succeeded() and (result().get(ctx().host).stdout.toLower() = redhat) %>
         publish:
           - distro: <% result().get(ctx().host).stdout %>
@@ -29,6 +34,20 @@ tasks:
         do:
           - get_version_ubuntu
   get_version_centos:
+    with:
+      items: package in <% ctx().packages %>
+      concurrency: <% ctx().packages.count() %>
+    action: core.remote_sudo
+    input:
+      hosts: <% ctx().host %>
+      cmd: if [[ ! -z `yum info installed <% item(package) %> -q -e 0 2>/dev/null` ]]; then echo `yum info installed <% item(package) %> -q -e 0 2>/dev/null | grep Version | awk '{print $3}'`-`yum info installed <% item(package) %> -q -e 0 2>/dev/null | grep Release | awk '{print $3}' || true`; fi
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - result: <% result() %>
+        do:
+          - noop
+  get_version_rocky:
     with:
       items: package in <% ctx().packages %>
       concurrency: <% ctx().packages.count() %>

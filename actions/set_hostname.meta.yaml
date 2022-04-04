@@ -18,6 +18,7 @@ parameters:
             - Ubuntu
             - Fedora
             - CentOS
+            - Rocky
             - RedHat
         position: 1
     sudo:

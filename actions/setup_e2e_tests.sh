@@ -49,7 +49,7 @@ if [[ -n "$RHTEST" ]]; then
         # For RHEL/CentOS 7
         sudo yum install -y python-pip jq bats
     else
-        # For RHEL/CentOS 8 and above
+        # For RHEL/CentOS/Rocky 8 and above
         sudo yum install -y python3-pip wget jq 
         PIP="pip3"
         # bats not available in epel for EL 8, Install from npm
