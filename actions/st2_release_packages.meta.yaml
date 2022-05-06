@@ -10,8 +10,8 @@ parameters:
     type: array
     immutable: true
     default:
-      - RHEL7
-      - RHEL8
+      - CENTOS7
+      - ROCKY8
       - UBUNTU18
       - UBUNTU20
   version:

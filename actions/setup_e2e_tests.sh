@@ -51,6 +51,7 @@ if [[ -n "$RHTEST" ]]; then
     else
         # For RHEL/CentOS/Rocky 8 and above
         sudo yum install -y python3-pip wget jq 
+        PYTHON3=python3.8
         PIP="pip3"
         # bats not available in epel for EL 8, Install from npm
         sudo npm install --global bats
