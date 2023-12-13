@@ -86,7 +86,7 @@ sudo pip install --upgrade "six==1.11.0"
 
 python setup.py sdist bdist_wheel
 
-twine upload dist/* -r pypi
+twine upload --skip-existing dist/* -r pypi
 if [[ $? != 0 ]]; then exit 1; fi
 
 
