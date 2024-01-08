@@ -15,8 +15,6 @@ input:
   - distro
 vars:
   - check_cname_count: 0
-  - wait_for_password_iteration_count: 0
-  - wait_for_winrm_count: 0
   - ec2_instance_password: ""
   - ec2_instance_id:
   - ec2_instance_user_data: "<powershell>\n#Setup for TLS v1.2\n[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12;\n# download the script\n(New-Object System.Net.WebClient).DownloadFile('https://raw.githubusercontent.com/ansible/ansible/stable-2.12/examples/scripts/ConfigureRemotingForAnsible.ps1', './ConfigureRemotingForAnsible.ps1')\n# execute the script\n./ConfigureRemotingForAnsible.ps1\n</powershell>"
@@ -104,7 +102,10 @@ tasks:
   wait_for_password_data:
     # Note: AWS EC2 says it may take up to 15 minutes for password data to become
     # available
-    delay: 60
+    retry:
+      delay: 60
+      when: <% (failed() or result().result[0]["PasswordData"].isEmpty()) %>
+      count: 15
     action: aws.ec2_get_password_data
     input:
       InstanceId: <% ctx().ec2_instance_id %>
@@ -114,16 +115,9 @@ tasks:
           - ec2_instance_password_data: <% result().result[0]["PasswordData"] %>
         do:
           - decrypt_password_data
-      - when: <% failed() and (ctx().wait_for_password_iteration_count >= 15) %>
+      - when: <% failed() %>
         do:
           - destroy_vm_on_failure
-      - when: <%
-            (failed() or result().result[0]["PasswordData"].isEmpty()) and
-            (ctx().wait_for_password_iteration_count < 15) %>
-        publish:
-          - wait_for_password_iteration_count: <% ctx().wait_for_password_iteration_count + 1 %>
-        do:
-          - wait_for_password_data
   decrypt_password_data:
     action: st2cd.aws_decrypt_password_data
     input:
@@ -139,7 +133,9 @@ tasks:
         do:
           - destroy_vm_on_failure
   wait_for_winrm:
-    delay: 60
+    retry:
+      delay: 60
+      count: 5
     action: windows.wait_for_winrm
     input:
       host: <% ctx().ec2_instance_private_ip %>
@@ -153,14 +149,9 @@ tasks:
       - when: <% succeeded() %>
         do:
           - add_tags
-      - when: <% failed() and (ctx().wait_for_winrm_count >= 5) %>
+      - when: <% failed() %>
         do:
           - destroy_vm_on_failure
-      - when: <% failed() and (ctx().wait_for_winrm_count < 5) %>
-        publish:
-          - wait_for_winrm_count: <% ctx().wait_for_winrm_count + 1 %>
-        do:
-          - wait_for_winrm
   add_tags:
     action: aws.ec2_create_tags
     input:

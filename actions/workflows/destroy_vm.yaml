@@ -8,7 +8,6 @@ input:
   - used_dns: false
   - used_id: false
 vars:
-  - volume_to_delete_iteration_count: 0
   - notify_channel: '#thunderdome'
   - notify_failure_channel: '#opstown'
 tasks:
@@ -128,7 +127,9 @@ tasks:
           - notify_delete_cname_failure
           - delete_volumes
   delete_volumes:
-    delay: 120
+    retry:
+      delay: 120
+      count: 10
     with: volume in <% ctx().volumes %>
     action: aws.ec2_delete_volume
     input:
@@ -137,14 +138,9 @@ tasks:
       - when: <% succeeded() %>
         do:
           - notify_success
-      - when: <% failed() and (ctx().volume_to_delete_iteration_count >= 10) %>
+      - when: <% failed() %>
         do:
           - notify_delete_volumes_failure
-      - when: <% failed() and (ctx().volume_to_delete_iteration_count < 10) %>
-        publish:
-          - volume_to_delete_iteration_count: <% ctx().volume_to_delete_iteration_count + 1 %>
-        do:
-          - delete_volumes
 
   notify_success:
     action: slack.chat.postMessage
