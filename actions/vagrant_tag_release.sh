@@ -60,6 +60,10 @@ if [[ -z "${TAGGED}" ]]; then
     git tag -a ${TAGGED_VERSION} -m "Creating tag ${TAGGED_VERSION} for branch ${BRANCH}"
     git push origin ${TAGGED_VERSION} -q
 else
+    # TODO: Have this script figure out if the new tag is pointing to the same
+    #       commit as the old tag. If they're pointing to the same commit,
+    #       nothing needs to be done. If they're pointing to different commits,
+    #       then we should update the existing tag to point to the newer commit.
     echo "Tag ${TAGGED_VERSION} already exists."
 fi
 
