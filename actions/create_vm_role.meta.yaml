@@ -55,10 +55,18 @@ parameters:
       - F21
       - UBUNTU18
       - UBUNTU20
+      - UBUNTU22
+      - UBUNTU24
+      - CENTOS7
+      - ROCKY8
+      - ROCKY9
       - pkg_UBUNTU18
       - pkg_UBUNTU20
+      - pkg_UBUNTU22
+      - pkg_UBUNTU24
       - pkg_RHEL7
       - pkg_RHEL8
       # TODO: Remove these - seem to be referenced in upgrade workflow
       - pkg_CENTOS7
       - pkg_ROCKY8
+      - pkg_ROCKY9
