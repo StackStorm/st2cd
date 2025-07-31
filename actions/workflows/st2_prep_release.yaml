@@ -1,29 +1,25 @@
 ---
 version: '1.0'
 description: Prepare st2 for release.
+
 input:
   - version
   - fork
   - host
   - cwd
+
 vars:
-  - local_repo_sfx:
+  - local_repo_sfx: <% "".join([now().format("%s"), "_", random(100,1000)]) %>
+
 tasks:
   init:
-    action: core.local
-    input:
-      cmd: echo `date +'%s'`_`awk -v min=100 -v max=999 'BEGIN{srand(); print int(min+rand()*(max-min+1))}'`
+    action: core.noop
     next:
-      - when: <% succeeded() and (ctx().host = null) %>
-        publish:
-          - local_repo_sfx: <% result().stdout %>
-        do:
-          - get_host
-      - when: <% succeeded() and (ctx().host != null) %>
-        publish:
-          - local_repo_sfx: <% result().stdout %>
-        do:
-          - prep
+      - do: get_host
+        when: <% (ctx(host) = null) %>
+      - do: prep_st2
+        when: <% (ctx().host != null) %>
+
   get_host:
     action: linux.dig
     input:
@@ -31,15 +27,11 @@ tasks:
       rand: true
       count: 1
     next:
-      - when: <% succeeded() %>
+      - do: prep_st2
+        when: <% succeeded() %>
         publish:
           - host: <% result().result[0] %>
-        do:
-          - prep
-  prep:
-    next:
-      - do:
-          - prep_st2
+
   prep_st2:
     action: st2cd.st2_prep_release_for_st2
     input:
@@ -50,12 +42,11 @@ tasks:
       hosts: <% ctx().host %>
       cwd: <% ctx().cwd %>
     next:
-      - when: <% succeeded() %>
-        do:
-          - prep_st2docs
-      - when: <% failed() %>
-        do:
-          - cleanup_on_failure
+      - do: prep_st2docs
+        when: <% succeeded() %>
+      - do: cleanup_on_failure
+        when: <% failed() %>
+
   prep_st2docs:
     action: st2cd.st2_prep_release_for_st2docs
     input:
@@ -66,12 +57,11 @@ tasks:
       hosts: <% ctx().host %>
       cwd: <% ctx().cwd %>
     next:
-      - when: <% succeeded() %>
-        do:
-          - prep_st2tests
-      - when: <% failed() %>
-        do:
-          - cleanup_on_failure
+      - do: prep_st2tests
+        when: <% succeeded() %>
+      - do: cleanup_on_failure
+        when: <% failed() %>
+
   prep_st2tests:
     action: st2cd.st2_prep_release_for_st2tests
     input:
@@ -82,12 +72,11 @@ tasks:
       hosts: <% ctx().host %>
       cwd: <% ctx().cwd %>
     next:
-      - when: <% succeeded() %>
-        do:
-          - prep_st2web
-      - when: <% failed() %>
-        do:
-          - cleanup_on_failure
+      - do: prep_st2web
+        when: <% succeeded() %>
+      - do: cleanup_on_failure
+        when: <% failed() %>
+
   prep_st2web:
     action: st2cd.st2_prep_release_for_gui
     input:
@@ -98,12 +87,11 @@ tasks:
       hosts: <% ctx().host %>
       cwd: <% ctx().cwd %>
     next:
-      - when: <% succeeded() %>
-        do:
-          - prep_st2chatops
-      - when: <% failed() %>
-        do:
-          - cleanup_on_failure
+      - do: prep_st2chatops
+        when: <% succeeded() %>
+      - do: cleanup_on_failure
+        when: <% failed() %>
+
   prep_st2chatops:
     action: st2cd.st2_prep_release_for_gui
     input:
@@ -114,12 +102,11 @@ tasks:
       hosts: <% ctx().host %>
       cwd: <% ctx().cwd %>
     next:
-      - when: <% succeeded() %>
-        do:
-          - prep_ldap_backend
-      - when: <% failed() %>
-        do:
-          - cleanup_on_failure
+      - do: prep_ldap_backend
+        when: <% succeeded() %>
+      - do: cleanup_on_failure
+        when: <% failed() %>
+
   prep_ldap_backend:
     action: st2cd.st2_prep_release_for_ldap_backend
     input:
@@ -130,12 +117,11 @@ tasks:
       hosts: <% ctx().host %>
       cwd: <% ctx().cwd %>
     next:
-      - when: <% succeeded() %>
-        do:
-          - prep_rbac_backend
-      - when: <% failed() %>
-        do:
-          - cleanup_on_failure
+      - do: prep_rbac_backend
+        when: <% succeeded() %>
+      - do: cleanup_on_failure
+        when: <% failed() %>
+
   prep_rbac_backend:
     action: st2cd.st2_prep_release_for_rbac_backend
     input:
@@ -146,12 +132,11 @@ tasks:
       hosts: <% ctx().host %>
       cwd: <% ctx().cwd %>
     next:
-      - when: <% succeeded() %>
-        do:
-          - prep_st2_pkg
-      - when: <% failed() %>
-        do:
-          - cleanup_on_failure
+      - do: prep_st2_pkg
+        when: <% succeeded() %>
+      - do: cleanup_on_failure
+        when: <% failed() %>
+
   prep_st2_pkg:
     action: st2cd.st2_prep_release_for_st2_pkg
     input:
@@ -162,24 +147,22 @@ tasks:
       hosts: <% ctx().host %>
       cwd: <% ctx().cwd %>
     next:
-      - when: <% failed() %>
-        do:
-          - cleanup_on_failure
+      - do: cleanup_on_failure
+        when: <% failed() %>
+
 
   cleanup_on_failure:
     action: core.noop
     next:
-      - when: <% ctx().local_repo_sfx %>
-        do:
-          - cleanup
-      - when: <% not ctx().local_repo_sfx %>
-        do:
-          - fail
+      - do: cleanup
+        when: <% ctx().local_repo_sfx %>
+      - do: fail
+        when: <% not ctx().local_repo_sfx %>
+
   cleanup:
     action: core.remote
     input:
       cmd: <% 'rm -rf ' + ctx().cwd + '/st2*' + ctx().local_repo_sfx %>
       hosts: <% ctx().host %>
     next:
-      - do:
-          - fail
+      - do: fail

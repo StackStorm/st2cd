@@ -1,6 +1,8 @@
 ---
 version: '1.0'
 description: Create a Windows VM in AWS
+
+
 input:
   - instance_type
   - environment
@@ -13,6 +15,8 @@ input:
   - creator
   - purpose
   - distro
+
+
 vars:
   - check_cname_count: 0
   - wait_for_password_iteration_count: 0
@@ -24,13 +28,8 @@ vars:
       id:
       private_ip_address:
       private_dns_name:
-output:
-  - vm_info:
-      id: <% ctx(ec2_instance_id) %>
-      private_ip_address: <% ctx(ec2_instance_private_ip) %>
-      private_dns_name: <% ctx(ec2_instance_private_dns) %>
-  - vm_username: <% ctx().username %>
-  - vm_password: <% ctx().ec2_instance_password %>
+
+
 tasks:
   get_subnet_id:
     action: st2.kv.get
@@ -38,16 +37,16 @@ tasks:
       key: <% ctx().environment %>_subnet
     next:
       - when: <% succeeded() %>
-        do:
-          - get_ami
+        do: get_ami
+
   get_ami:
     action: st2.kv.get
     input:
       key: ami_<% ctx().distro %>
     next:
       - when: <% succeeded() %>
-        do:
-          - check_cname
+        do: check_cname
+
   check_cname:
     action: aws.r53_zone_get_cname
     input:
@@ -55,24 +54,22 @@ tasks:
       zone: <% ctx().dns_zone %>
     next:
       - when: <% succeeded() and (result().result[0] = null) %>
-        do:
-          - run_instance
+        do: run_instance
       - when: <% succeeded() and (result().result[0] != null) and (ctx().check_cname_count < 10) %>
         publish:
           - check_cname_count: <% ctx().check_cname_count + 1 %>
-        do:
-          - remove_cname
+        do: remove_cname
       - when: <% failed() %>
-        do:
-          - fail
+        do: fail
+
   remove_cname:
     action: aws.r53_zone_delete_cname
     input:
       name: <% ctx().hostname %>.<% ctx().dns_zone %>
       zone: <% ctx().dns_zone %>
     next:
-      - do:
-          - check_cname
+      - do: check_cname
+
   run_instance:
     action: aws.ec2_run_instances
     input:
@@ -90,8 +87,8 @@ tasks:
           - ec2_instance_id: <% ctx(vm_info).InstanceId %>
           - ec2_instance_private_ip: <% ctx(vm_info).PrivateIpAddress %>
           - ec2_instance_private_dns: <% ctx(vm_info).PrivateDnsName %>
-        do:
-          - wait_for_instance
+        do: wait_for_instance
+
   wait_for_instance:
     action: aws.ec2_wait_for_state
     input:
@@ -99,8 +96,8 @@ tasks:
       state: running
     next:
       - when: <% succeeded() %>
-        do:
-          - wait_for_password_data
+        do: wait_for_password_data
+
   wait_for_password_data:
     # Note: AWS EC2 says it may take up to 15 minutes for password data to become
     # available
@@ -112,18 +109,16 @@ tasks:
       - when: <% succeeded() and not result().result[0]["PasswordData"].isEmpty() %>
         publish:
           - ec2_instance_password_data: <% result().result[0]["PasswordData"] %>
-        do:
-          - decrypt_password_data
+        do: decrypt_password_data
       - when: <% failed() and (ctx().wait_for_password_iteration_count >= 15) %>
-        do:
-          - destroy_vm_on_failure
+        do: destroy_vm_on_failure
       - when: <%
             (failed() or result().result[0]["PasswordData"].isEmpty()) and
             (ctx().wait_for_password_iteration_count < 15) %>
         publish:
           - wait_for_password_iteration_count: <% ctx().wait_for_password_iteration_count + 1 %>
-        do:
-          - wait_for_password_data
+        do: wait_for_password_data
+
   decrypt_password_data:
     action: st2cd.aws_decrypt_password_data
     input:
@@ -133,11 +128,10 @@ tasks:
       - when: <% succeeded() %>
         publish:
           - ec2_instance_password: <% result().result %>
-        do:
-          - wait_for_winrm
+        do: wait_for_winrm
       - when: <% failed() %>
-        do:
-          - destroy_vm_on_failure
+        do: destroy_vm_on_failure
+
   wait_for_winrm:
     delay: 60
     action: windows.wait_for_winrm
@@ -151,16 +145,14 @@ tasks:
       timeout: 120
     next:
       - when: <% succeeded() %>
-        do:
-          - add_tags
+        do: add_tags
       - when: <% failed() and (ctx().wait_for_winrm_count >= 5) %>
-        do:
-          - destroy_vm_on_failure
+        do: destroy_vm_on_failure
       - when: <% failed() and (ctx().wait_for_winrm_count < 5) %>
         publish:
           - wait_for_winrm_count: <% ctx().wait_for_winrm_count + 1 %>
-        do:
-          - wait_for_winrm
+        do: wait_for_winrm
+
   add_tags:
     action: aws.ec2_create_tags
     input:
@@ -177,11 +169,10 @@ tasks:
           Value: <% switch(isEmpty(ctx().purpose) => "No Description", ctx().purpose => ctx().purpose) %>
     next:
       - when: <% succeeded() %>
-        do:
-          - add_cname
+        do: add_cname
       - when: <% failed() %>
-        do:
-          - destroy_vm_on_failure
+        do: destroy_vm_on_failure
+
   add_cname:
     action: aws.r53_zone_add_cname
     input:
@@ -193,8 +184,7 @@ tasks:
         publish:
           - cname: <% ctx().hostname %>.<% ctx().dns_zone %>
       - when: <% failed() %>
-        do:
-          - destroy_vm_on_failure
+        do: destroy_vm_on_failure
 
   destroy_vm_on_failure:
     action: st2cd.destroy_vm
@@ -202,5 +192,13 @@ tasks:
       hostname: <% ctx().hostname %>
       instance_id: <% ctx().ec2_instance_id %>
     next:
-      - do:
-          - fail
+      - do: fail
+
+
+output:
+  - vm_info:
+      id: <% ctx(ec2_instance_id) %>
+      private_ip_address: <% ctx(ec2_instance_private_ip) %>
+      private_dns_name: <% ctx(ec2_instance_private_dns) %>
+  - vm_username: <% ctx().username %>
+  - vm_password: <% ctx().ec2_instance_password %>

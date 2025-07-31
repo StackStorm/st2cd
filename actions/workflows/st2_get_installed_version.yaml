@@ -1,91 +1,55 @@
 ---
 version: '1.0'
+
 input:
   - host
   - packages
+
+
 vars:
   - distro: indeterminate
   - versions: indeterminate
+
+
+tasks:
+  get_distro:
+    action: st2cd.get_distro
+    input:
+      hosts: <% ctx().host %>
+    next:
+      - when: <% succeeded() %>
+        do: get_package_versions
+        publish:
+          - distro: <% result().get(ctx().host).stdout %>
+
+  get_package_versions:
+    with:
+      items: <% ctx().packages %>
+      concurrency: <% ctx().packages.count() %>
+    action: core.remote_sudo
+    input:
+      hosts: <% ctx().host %>
+      cmd: |
+        export PM=$(command -v apt-cache)
+        test -z "$PM" && PM=$(command -v dnf)
+        case "$PM" in
+          *apt-cache)
+            apt-cache policy <% item() %> | awk '/Installed: [0-9]/ {print $2}'
+            ;;
+          *dnf)
+            dnf list installed <% item() %> | awk '/<% item() %>/ {print $2}'
+            ;;
+          *)
+            echo "apt-cache or dnf package manager weren't found on this host!" >&2
+            exit 1
+            ;;
+        esac
+    next:
+      - when: <% succeeded() %>
+        publish:
+          - result: <% result() %>
+
+
 output:
   - distro: <% str(ctx().distro) %>
   - versions: <% dict(ctx().packages.zip(ctx().result.select($.values().first().get(stdout)))) %>
-tasks:
-  get_distro:
-    action: st2cd.get_distro hosts=<% ctx().host %>
-    next:
-      - when: <% succeeded() and (result().get(ctx().host).stdout.toLower() = centos) %>
-        publish:
-          - distro: <% result().get(ctx().host).stdout %>
-        do:
-          - get_version_centos
-      - when: <% succeeded() and (result().get(ctx().host).stdout.toLower() = rocky) %>
-        publish:
-          - distro: <% result().get(ctx().host).stdout %>
-        do:
-          - get_version_rocky
-      - when: <% succeeded() and (result().get(ctx().host).stdout.toLower() = redhat) %>
-        publish:
-          - distro: <% result().get(ctx().host).stdout %>
-        do:
-          - get_version_redhat
-      - when: <% succeeded() and (result().get(ctx().host).stdout.toLower() = ubuntu) %>
-        publish:
-          - distro: <% result().get(ctx().host).stdout %>
-        do:
-          - get_version_ubuntu
-  get_version_centos:
-    with:
-      items: package in <% ctx().packages %>
-      concurrency: <% ctx().packages.count() %>
-    action: core.remote_sudo
-    input:
-      hosts: <% ctx().host %>
-      cmd: if [[ ! -z `yum info installed <% item(package) %> -q -e 0 2>/dev/null` ]]; then echo `yum info installed <% item(package) %> -q -e 0 2>/dev/null | grep Version | awk '{print $3}'`-`yum info installed <% item(package) %> -q -e 0 2>/dev/null | grep Release | awk '{print $3}' || true`; fi
-    next:
-      - when: <% succeeded() %>
-        publish:
-          - result: <% result() %>
-        do:
-          - noop
-  get_version_rocky:
-    with:
-      items: package in <% ctx().packages %>
-      concurrency: <% ctx().packages.count() %>
-    action: core.remote_sudo
-    input:
-      hosts: <% ctx().host %>
-      cmd: if [[ ! -z `yum info installed <% item(package) %> -q -e 0 2>/dev/null` ]]; then echo `yum info installed <% item(package) %> -q -e 0 2>/dev/null | grep Version | awk '{print $3}'`-`yum info installed <% item(package) %> -q -e 0 2>/dev/null | grep Release | awk '{print $3}' || true`; fi
-    next:
-      - when: <% succeeded() %>
-        publish:
-          - result: <% result() %>
-        do:
-          - noop
-  get_version_redhat:
-    with:
-      items: package in <% ctx().packages %>
-      concurrency: <% ctx().packages.count() %>
-    action: core.remote_sudo
-    input:
-      hosts: <% ctx().host %>
-      cmd: if [[ ! -z `yum info installed <% item(package) %> -q -e 0 2>/dev/null` ]]; then echo `yum info installed <% item(package) %> -q -e 0 2>/dev/null | grep Version | awk '{print $3}'`-`yum info installed <% item(package) %> -q -e 0 2>/dev/null | grep Release | awk '{print $3}' || true`; fi
-    next:
-      - when: <% succeeded() %>
-        publish:
-          - result: <% result() %>
-        do:
-          - noop
-  get_version_ubuntu:
-    with:
-      items: package in <% ctx().packages %>
-      concurrency: <% ctx().packages.count() %>
-    action: core.remote_sudo
-    input:
-      hosts: <% ctx().host %>
-      cmd: "apt-cache policy <% item(package) %> | grep Installed: | grep -oE '[^ ]+$' || true"
-    next:
-      - when: <% succeeded() %>
-        publish:
-          - result: <% result() %>
-        do:
-          - noop
