@@ -7,10 +7,10 @@ input:
   - projects
   - wait
   - distros:
-      RHEL7: el7
-      RHEL8: el8
-      UBUNTU18: u18
-      UBUNTU20: u20
+      rhel7: el7
+      rhel8: el8
+      ubuntu18: u18
+      ubuntu20: u20
 
 vars:
   - username: StackStorm

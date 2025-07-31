@@ -28,10 +28,10 @@ then
   exit 3
 fi
 
-if [[ "$DISTRO" = UBUNTU* ]]
+if [[ "$DISTRO" = ubuntu* ]]
 then
   useradd ${USERNAME} -p `mkpasswd --method=sha-512 $PASSWORD ${SALT}`
-elif [[ "$DISTRO" = RHEL* ]]
+elif [[ "$DISTRO" = rhel* ]]
 then
   echo "Created user ${USERNAME}."
   sha512_pass=$(python -c "import crypt; print crypt.crypt('${PASSWORD}', '\$6\$${SALT}\$')")

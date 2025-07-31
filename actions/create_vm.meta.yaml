@@ -25,7 +25,7 @@
     base_user:
       type: "string"
       description: "Username for initial ssh test"
-      default: "{% if distro == 'UBUNTU18' %}ubuntu{% else %}ec2-user{% endif %}"
+      default: "{% if distro == 'ubuntu18' %}ubuntu{% else %}ec2-user{% endif %}"
       immutable: true
     keyfile:
       type: "string"
@@ -40,16 +40,16 @@
       description: "Short hostname"
       required: true
     distro:
-      default: "UBUNTU18"
+      default: "ubuntu18"
       enum:
-        - "RHEL7"
-        - "RHEL8"
-        # TODO: Remove Fedora
-        - "F20"
-        - "F21"
-        # Keep these
-        - "UBUNTU18"
-        - "UBUNTU20"
+        - "rhel7"
+        - "rhel8"
+        # todo: remove fedora
+        - "f20"
+        - "f21"
+        # keep these
+        - "ubuntu18"
+        - "ubuntu20"
     notification_channel:
       type: "string"
       description: "used by rule with actiontrigger"

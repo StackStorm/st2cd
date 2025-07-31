@@ -46,27 +46,27 @@ parameters:
     type: string
     description: Planned purpose of the VM
   distro:
-    default: UBUNTU18
+    default: ubuntu18
     enum:
-      - RHEL7
-      - RHEL8
-      # TODO: Remove Fedora
-      - F20
-      - F21
-      - UBUNTU18
-      - UBUNTU20
-      - UBUNTU22
-      - UBUNTU24
-      - CENTOS7
-      - ROCKY8
-      - ROCKY9
-      - pkg_UBUNTU18
-      - pkg_UBUNTU20
-      - pkg_UBUNTU22
-      - pkg_UBUNTU24
-      - pkg_RHEL7
-      - pkg_RHEL8
-      # TODO: Remove these - seem to be referenced in upgrade workflow
-      - pkg_CENTOS7
-      - pkg_ROCKY8
-      - pkg_ROCKY9
+      - rhel7
+      - rhel8
+      # todo: remove fedora
+      - f20
+      - f21
+      - ubuntu18
+      - ubuntu20
+      - ubuntu22
+      - ubuntu24
+      - centos7
+      - rocky8
+      - rocky9
+      - pkg_ubuntu18
+      - pkg_ubuntu20
+      - pkg_ubuntu22
+      - pkg_ubuntu24
+      - pkg_rhel7
+      - pkg_rhel8
+      # todo: remove these - seem to be referenced in upgrade workflow
+      - pkg_centos7
+      - pkg_rocky8
+      - pkg_rocky9

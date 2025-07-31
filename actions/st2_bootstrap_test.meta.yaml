@@ -6,7 +6,7 @@ name: st2_bootstrap_test
 pack: st2cd
 parameters:
   distro:
-    default: UBUNTU18
+    default: ubuntu18
     type: string
   environment:
     type: string

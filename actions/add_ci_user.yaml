@@ -17,10 +17,10 @@
       position: 1
     distro:
       type: "string"
-      description: "Distro info. E.g. UBUNTU, RHEL"
+      description: "Distro info. E.g. ubuntu, rhel"
       required: true
       position: 2
-      default: "UBUNTU"
+      default: "ubuntu"
     salt:
       type: "string"
       description: "Password salt"
