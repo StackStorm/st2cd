@@ -31,21 +31,16 @@ vars:
 
 
 tasks:
-  get_subnet_id:
-    action: st2.kv.get
+  get_aws_cfg:
+    action: st2.kv.get_object
     input:
-      key: <% ctx().environment %>_subnet
-    next:
-      - when: <% succeeded() %>
-        do: get_ami
-
-  get_ami:
-    action: st2.kv.get
-    input:
-      key: ami_<% ctx().distro %>
+      key: aws
     next:
       - when: <% succeeded() %>
         do: check_cname
+        publish:
+          - subnet_id: <% result.result.subnet[ctx().environment] %>
+          - ami_id: <% result().result.distro[ctx().distro].default.id %>
 
   check_cname:
     action: aws.r53_zone_get_cname
@@ -73,9 +68,9 @@ tasks:
   run_instance:
     action: aws.ec2_run_instances
     input:
-      ImageId: <% task(get_ami).result.result %>
+      ImageId: <% ctx().ami_id %>
       InstanceType: <% ctx().instance_type %>
-      SubnetId: <% task(get_subnet_id).result.result %>
+      SubnetId: <% ctx().subnet_id %>
       KeyName: <% ctx().key_name %>
       UserData: <% ctx().ec2_instance_user_data %>
       MaxCount: 1
