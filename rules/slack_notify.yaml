@@ -1,6 +1,6 @@
 ---
-name: "slack_notify"
 pack: "st2cd"
+name: "slack_notify"
 enabled: true
 description: "Notification rule to send messages to Slack"
 trigger:
@@ -11,7 +11,8 @@ criteria:
     pattern: "slack"
     type: "equals"
 action:
-  ref: slack.chat.postMessage
+  ref: chatops.post_message
   parameters:
+    route: errbot
     channel: "#thunderdome"
-    text: "{{trigger.execution_id}}: {{trigger.message}}"
+    message: "{{ trigger.execution_id }}: {{ trigger.message }}"

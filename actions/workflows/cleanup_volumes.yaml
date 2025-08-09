@@ -1,10 +1,17 @@
 ---
 version: '1.0'
 description: Clean up volumes
+
+
 input:
   - age
+
+
 vars:
   - notify_channel: '#opstown'
+  - notify_route: errbot
+
+
 tasks:
   get_volumes:
     action: aws.ec2_get_all_volumes
@@ -14,6 +21,7 @@ tasks:
           - volumes: <% result().result %>
         do:
           - select_volumes
+
   select_volumes:
     action: st2cd.ec2_filter_volumes
     input:
@@ -26,6 +34,7 @@ tasks:
           - candidates: <% result().result %>
         do:
           - delete_volumes
+
   delete_volumes:
     with:
       items: volume in <% ctx().candidates %>
@@ -39,16 +48,20 @@ tasks:
       - when: <% failed() %>
         do:
           - notify_failure
+
   notify_success:
-    action: slack.chat.postMessage
+    action: chatops.post_message
     input:
       channel: <% ctx().notify_channel %>
-      text: '[SUCCEEDED] Unused volumes older than <% ctx().age %> seconds are deleted'
+      route: <% ctx(notify_route)%>
+      message: '[SUCCEEDED] Unused volumes older than <% ctx().age %> seconds are deleted'
+
   notify_failure:
-    action: slack.chat.postMessage
+    action: chatops.post_message
     input:
       channel: <% ctx().notify_channel %>
-      text: '[FAILED] Unable to delete unused volumes'
+      route: <% ctx(notify_route)%>
+      message: '[FAILED] Unable to delete unused volumes'
     next:
       - do:
           - fail

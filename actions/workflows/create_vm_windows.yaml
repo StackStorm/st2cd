@@ -39,7 +39,7 @@ tasks:
       - when: <% succeeded() %>
         do: check_cname
         publish:
-          - subnet_id: <% result.result.subnet[ctx().environment] %>
+          - subnet_id: <% result().result.subnet[ctx().environment] %>
           - ami_id: <% result().result.distro[ctx().distro].default.id %>
 
   check_cname:

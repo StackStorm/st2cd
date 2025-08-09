@@ -1,16 +1,17 @@
 ---
-    name: "st2cd_slack_decommission"
-    description: "Post to slack on decommission"
-    enabled: false
-    trigger:
-        type: "core.st2.generic.actiontrigger"
-    criteria:
-        trigger.action_name:
-            pattern: "st2cd\\.destroy_vm"
-            type: "matchregex"
-    action:
-        ref: "slack.chat.postMessage"
-        parameters:
-            channel: "#thunderdome"
-            text: "{% if trigger.status != 'succeeded' %}*{% endif %}[{{trigger.status.upper()}}]{% if trigger.status != 'succeeded' %}*{% endif %} {{trigger.parameters.hostname}} was {% if trigger.status != 'succeeded' %}*NOT* {% endif %}destroyed\n"
-    pack: "st2cd"
+  pack: "st2cd"
+  name: "st2cd_slack_decommission"
+  description: "Post to slack on decommission"
+  enabled: false
+  trigger:
+    type: "core.st2.generic.actiontrigger"
+  criteria:
+    trigger.action_name:
+      pattern: "st2cd\\.destroy_vm"
+      type: "matchregex"
+  action:
+    ref: chatops.post_message
+    parameters:
+      route: errbot
+      channel: "#thunderdome"
+      message: "{% if trigger.status != 'succeeded' %}*{% endif %}[{{trigger.status.upper()}}]{% if trigger.status != 'succeeded' %}*{% endif %} {{trigger.parameters.hostname}} was {% if trigger.status != 'succeeded' %}*NOT* {% endif %}destroyed\n"

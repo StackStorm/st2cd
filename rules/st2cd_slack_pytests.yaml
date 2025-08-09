@@ -1,16 +1,21 @@
 ---
-    name: "st2cd_slack_pytests"
-    description: "Post results of st2cd workflows to slack"
-    enabled: true
-    trigger:
-        type: "core.st2.generic.actiontrigger"
-    criteria:
-        trigger.action_name:
-            pattern: "st2cd.pytests"
-            type: "equals"
-    action:
-        ref: "slack.chat.postMessage"
-        parameters:
-            channel: "{% if trigger.status == 'succeeded' %}#thunderdome{% else %}#opstown{% endif %}"
-            text: "{% if trigger.status != 'succeeded' %}channel\n{% endif %}```[{{trigger.action_name}}: {{trigger.status.upper()}}]\n    BRANCH: {{trigger.parameters.branch}}\n    SHA: {{trigger.parameters.revision}}\n    BUILD: {{trigger.result.tasks[1].result.result.value}}```"
-    pack: "st2cd"
+  pack: "st2cd"
+  name: "st2cd_slack_pytests"
+  description: "Post results of st2cd workflows to slack"
+  enabled: true
+  trigger:
+    type: "core.st2.generic.actiontrigger"
+  criteria:
+    trigger.action_name:
+      pattern: "st2cd.pytests"
+      type: "equals"
+  action:
+    ref: chatops.post_message
+    parameters:
+      route: errbot
+      channel: "{% if trigger.status == 'succeeded' %}#thunderdome{% else %}#opstown{% endif %}"
+      message: |
+        ```[{{trigger.action_name}}: {{trigger.status.upper()}}]
+        BRANCH: {{trigger.parameters.branch}}
+        SHA: {{trigger.parameters.revision}}
+        BUILD: {{trigger.result.tasks[1].result.result.value}}```

@@ -1,15 +1,21 @@
 ---
-    name: "st2cd_slack_webui_pkg"
-    description: "Post results of webui_packaging workflow to slack"
-    enabled: true
-    trigger:
-        type: "core.st2.generic.actiontrigger"
-    criteria:
-        trigger.action_name:
-            pattern: "st2cd.webui_pkg"
-            type: "equals"
-    action:
-        ref: "slack.chat.postMessage"
-        parameters:
-            text: "```[{{trigger.action_name}} - {{trigger.parameters.environment}}: {{trigger.status.upper()}}]\n    DL_HOST: {{trigger.parameters.dl_server}}\n    BRANCH: {{trigger.parameters.branch}}\n    BUILD: {{trigger.parameters.build}}```"
-    pack: "st2cd"
+  pack: "st2cd"
+  name: "st2cd_slack_webui_pkg"
+  description: "Post results of webui_packaging workflow to slack"
+  enabled: true
+  trigger:
+    type: "core.st2.generic.actiontrigger"
+  criteria:
+    trigger.action_name:
+      pattern: "st2cd.webui_pkg"
+      type: "equals"
+  action:
+    ref: chatops.post_message
+    parameters:
+      route: errbot
+      channel: "#development"
+      message: |
+        ```[{{ trigger.action_name }} - {{ trigger.parameters.environment }}: {{ trigger.status.upper() }}]
+        DL_HOST: {{ trigger.parameters.dl_server }
+        BRANCH: {{ trigger.parameters.branch }}
+        BUILD: {{ trigger.parameters.build }}```
