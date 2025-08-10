@@ -1,18 +1,23 @@
 ---
 version: '1.0'
 description: Run the suite of end to end tests on the st2 host
+
+
 input:
   - host_ip
   - host_fqdn
   - protocol
   - st2_username
   - st2_password
+  - windows_enabled
   - windows_host_ip
   - windows_host_fqdn
   - windows_username
   - windows_password
   - st2tests_version
   - chatops
+
+
 tasks:
   init:
     action: core.noop
@@ -25,6 +30,7 @@ tasks:
               ST2_API_URL: <% ctx().protocol %>://<% ctx().host_fqdn %>:9101
         do:
           - get_st2_token
+
   get_st2_token:
     action: st2cd.get_st2_token
     input:
@@ -38,6 +44,8 @@ tasks:
           - st2_cli_env: <% ctx().st2_cli_env.set( ST2_AUTH_TOKEN, result().get(ctx().host_ip).stdout.get(token)) %>
         do:
           - setup_e2e_tests
+
+
   setup_e2e_tests:
     action: st2cd.setup_e2e_tests
     input:
@@ -50,6 +58,7 @@ tasks:
         do:
           - run_basic_tests
           - run_quickstart_tests
+
   run_basic_tests:
     action: st2cd.st2_e2e_tests_test_basic
     input:
@@ -60,6 +69,7 @@ tasks:
   #   - when: <% succeeded() %>
   #     do:
   #       - run_quickstart_tests
+
   run_quickstart_tests:
     action: st2cd.st2_e2e_tests_test_quickstart
     input:
@@ -70,6 +80,7 @@ tasks:
       - when: <% succeeded() %>
         do:
           - run_inquiry_tests
+
   run_inquiry_tests:
     action: st2cd.st2_e2e_tests_test_inquiry
     input:
@@ -78,13 +89,15 @@ tasks:
       protocol: <% ctx().protocol %>
     next:
       - when: <% succeeded() %>
-        do:
-          - echo_st2_cli_env
-          - run_windows_tests
-  echo_st2_cli_env:
+        do: display_st2_cli_env
+      - when: <% succeeded() and ctx().windows_enabled %>
+        do: run_windows_tests
+
+  display_st2_cli_env:
     action: core.echo
     input:
       message: <% str(ctx().st2_cli_env) %>
+
   run_windows_tests:
     action: st2cd.st2_e2e_tests_test_windows
     input:
@@ -96,8 +109,8 @@ tasks:
       protocol: <% ctx().protocol %>
     next:
       - when: <% succeeded() %>
-        do:
-          - run_docs_tests
+        do: run_docs_tests
+
   run_docs_tests:
     action: core.remote
     input:
@@ -109,8 +122,9 @@ tasks:
     next:
       - when: <% succeeded() %>
         do:
-          - echo_st2_cli_env
+          - display_st2_cli_env
           - run_cli_tests
+
   run_cli_tests:
     action: core.remote
     input:
@@ -123,6 +137,7 @@ tasks:
       - when: <% succeeded() %>
         do:
           - run_chatops_tests
+
   run_chatops_tests:
     action: core.remote
     input:
@@ -133,8 +148,8 @@ tasks:
       timeout: 250
     next:
       - when: <% succeeded() and ctx().chatops %>
-        do:
-          - run_chatops_e2e_tests
+        do: run_chatops_e2e_tests
+
   run_chatops_e2e_tests:
     action: st2cd.st2_chatops_e2e_tests
     input:
