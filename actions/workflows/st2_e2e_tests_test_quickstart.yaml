@@ -1,9 +1,12 @@
 ---
 version: '1.0'
+
 input:
   - host
   - env
   - protocol
+
+
 tasks:
   init:
     action: core.noop
@@ -16,6 +19,7 @@ tasks:
           - test_quickstart_key
           - test_quickstart_rules
           - test_quickstart_packs
+
   test_quickstart:
     action: core.remote
     input:
@@ -23,6 +27,7 @@ tasks:
       env: <% ctx().env %>
       cmd: st2 run tests.test_quickstart <% ctx().st2_cli_args %>
       timeout: 180
+
   test_quickstart_key:
     action: core.remote
     input:
@@ -30,6 +35,7 @@ tasks:
       env: <% ctx().env %>
       cmd: st2 run tests.test_quickstart_key <% ctx().st2_cli_args %>
       timeout: 90
+
   test_quickstart_rules:
     action: core.remote
     input:
@@ -37,6 +43,7 @@ tasks:
       env: <% ctx().env %>
       cmd: st2 run tests.test_quickstart_rules <% ctx().st2_cli_args %>
       timeout: 600
+
   test_quickstart_packs:
     action: core.remote
     input:
@@ -51,6 +58,7 @@ tasks:
           - test_quickstart_remote_script
           - test_quickstart_passive_sensor
           - test_quickstart_polling_sensor
+
   test_quickstart_local_script:
     action: core.remote
     input:
@@ -58,6 +66,7 @@ tasks:
       env: <% ctx().env %>
       cmd: st2 run tests.test_quickstart_local_script_actions <% ctx().st2_cli_args %>
       timeout: 600
+
   test_quickstart_remote_script:
     action: core.remote
     input:
@@ -65,6 +74,7 @@ tasks:
       env: <% ctx().env %>
       cmd: st2 run tests.test_quickstart_remote_script_actions <% ctx().st2_cli_args %>
       timeout: 600
+
   test_quickstart_passive_sensor:
     action: core.remote
     input:
@@ -72,6 +82,7 @@ tasks:
       env: <% ctx().env %>
       cmd: st2 run tests.test_quickstart_passive_sensor <% ctx().st2_cli_args %>
       timeout: 600
+
   test_quickstart_polling_sensor:
     action: core.remote
     input:
@@ -85,6 +96,7 @@ tasks:
           - test_quickstart_python
           - test_quickstart_trace
           - test_quickstart_run_pack_tests_tool
+
   test_quickstart_python:
     action: core.remote
     input:
@@ -92,6 +104,7 @@ tasks:
       env: <% ctx().env %>
       cmd: st2 run tests.test_quickstart_python_actions <% ctx().st2_cli_args %>
       timeout: 600
+
   test_quickstart_trace:
     action: core.remote
     input:
@@ -99,6 +112,7 @@ tasks:
       env: <% ctx().env %>
       cmd: st2 run tests.test_quickstart_trace <% ctx().st2_cli_args %>
       timeout: 600
+
   test_quickstart_run_pack_tests_tool:
     action: core.remote
     input:
@@ -110,6 +124,7 @@ tasks:
       - when: <% succeeded() %>
         do:
           - test_quickstart_pack_install_tool
+
   test_quickstart_pack_install_tool:
     action: core.remote
     input:
@@ -121,6 +136,7 @@ tasks:
       - when: <% succeeded() %>
         do:
           - test_quickstart_key_triggers
+
   test_quickstart_key_triggers:
     action: core.remote
     input:
@@ -132,6 +148,7 @@ tasks:
       - when: <% succeeded() %>
         do:
           - test_quickstart_timer_rules
+
   test_quickstart_timer_rules:
     action: core.remote
     input:

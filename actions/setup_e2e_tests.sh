@@ -1,26 +1,17 @@
 #!/bin/bash
 set -ex
 
-BRANCH=$1
+BRANCH="$1"
 
-VERSION=
-# Try to convert the branch to a major.minor version number
-# master              ->  master
-# 0.1.0               ->  0.1
-# v0.1.0              ->  v0.1
-# testing             -> testing
-# something/python.py -> something/python.py
-if [[ $BRANCH =~ v?[[:digit:]]{1,}\.[[:digit:]]{1,} ]]; then
-    VERSION=$(echo ${BRANCH} | cut -d "." -f1-2 | sed 's/^v//')
+if [[ -z "$BRANCH" ]]; then
+    echo "Abort: Can not setup e2e tests without a branch name."
+    exit 2
 fi
 
-PIP="pip"
-PYTHON3=python3.6  # Can't just specify python3 on Ubuntu Xenial
+# Install OS specific prerequisites (TODO: Use a configuration management tool for this such as mgmt-config.)
 
-# Install OS specific pre-reqs (Better moved to puppet at some point.)
-DEBTEST=$(lsb_release -a 2> /dev/null | grep Distributor | awk '{print $3}')
-RHTEST=$(cat /etc/redhat-release 2> /dev/null | sed -e "s~\(.*\)release.*~\1~g")
-
+# Get system release information prefix with OS_ to avoid name conflicts.
+source <(sed -r 's/^/OS_/g' /etc/os-release)
 
 if ! grep -q ttlMonitorSleepSecs /etc/mongod.conf; then
     # Decrease interval for MongoDB TTL expire thread. By default it runs every 60 seconds which
@@ -32,50 +23,42 @@ if ! grep -q ttlMonitorSleepSecs /etc/mongod.conf; then
 fi
 sudo cat /etc/mongod.conf
 
-if [[ -n "$RHTEST" ]]; then
-    RHVERSION=$(cat /etc/redhat-release 2> /dev/null | sed -r 's/([^0-9]*([0-9]*)){1}.*/\2/')
-    echo "*** Detected Distro is ${RHTEST} - ${RHVERSION} ***"
 
-    echo "Restarting MongoDB..."
-    if [[ "$RHVERSION" -ge 7 ]]; then
-        # Restart MongoDB for the config changes above to take an affect
-        sudo systemctl restart mongod
-    else
-        # Restart MongoDB for the config changes above to take an affect
-        sudo service mongod restart
-    fi
-
-    if [[ "$RHVERSION" -eq 7 ]]; then
-        # For RHEL/CentOS 7
-        sudo yum install -y python-pip jq bats
-    else
-        # For RHEL/CentOS/Rocky 8 and above
-        sudo yum install -y python3-pip wget jq 
-        PYTHON3=python3.8
-        PIP="pip3"
-        # bats not available in epel for EL 8, Install from npm
-        sudo npm install --global bats
-    fi
-
-elif [[ -n "$DEBTEST" ]]; then
-    DEBVERSION=$(lsb_release --release | awk '{ print $2 }')
-    SUBTYPE=$(lsb_release -a 2>&1 | grep Codename | grep -v "LSB" | awk '{print $2}')
-    echo "*** Detected Distro is ${DEBTEST} - ${DEBVERSION} ***"
-    if [[ "${SUBTYPE}" == "focal" ]]; then
-        PYTHON3=python3.8  # Need to use python 3.8 on focal
-    fi
-
-    echo "Restarting MongoDB..."
+echo "*** Detected Distro is ${OS_ID} - ${OS_VERSION_ID} ***"
+if [[ $OS_ID =~ rocky|redhat|centos ]]; then
     # Restart MongoDB for the config changes above to take an affect
+    echo "Restarting MongoDB..."
     sudo systemctl restart mongod
 
-    if [[ "${SUBTYPE}" == "focal" ]]; then
-        sudo apt-get -q -y install build-essential jq python3-pip python3-dev wget
+    # Install dnf for consistent package management
+    command -v dnf || yum install dnf
+
+    if [[ "$OS_VERSION_ID" =~ ^8"." ]]; then
+        # Rocky 8 is installed with py36 by default, so install py38
+        # and set it as the default python interpreter.
+        sudo dnf install -y python38 python38-pip wget jq
+        sudo alternatives --set python3 /usr/bin/python3.8
+        sudo alternatives --display python3
     else
-        # TODO: Refactor to remove, what we don't need and whether to use
-        # python3 variants for all distros now
-        sudo apt-get -q -y install build-essential jq python-pip python-dev wget
+        sudo dnf install -y python3-pip wget jq
     fi
+
+    # bats not available in epel for EL 8, Install from npm
+    sudo npm install --global bats
+
+elif [[ $OS_ID =~ debian|ubuntu ]]; then
+    # Restart MongoDB for the config changes above to take an affect
+    echo "Restarting MongoDB..."
+    sudo systemctl restart mongod
+    PKGS=(
+        build-essential
+        jq
+        python3-pip
+        python3-venv
+        python3-dev
+        wget
+    )
+    sudo apt-get -q -y install ${PKGS[@]}
 
     # Remove bats-core if it already exists (this happens when test workflows
     # are re-run on a server when tests are debugged)
@@ -87,9 +70,15 @@ elif [[ -n "$DEBTEST" ]]; then
     git clone https://github.com/bats-core/bats-core.git
     (cd bats-core; sudo ./install.sh /usr/local)
 else
-    echo "Unknown Operating System."
+    echo "Aborting: Unsupported Operating System."
     exit 2
 fi
+
+# Set python3 variables
+PIP="pip3"
+PY3BIN="python3"
+PY3VER=$(python3 --version | sed -r 's/.*([[0-9]+\.[0-9]+)\.[0-9]+.*/\1/g')
+
 
 # Setup crypto key file
 ST2_CONF="/etc/st2/st2.conf"
@@ -124,17 +113,14 @@ if [[ -d st2tests ]]; then
 fi
 
 # Install packs for testing
-# If we didn't recognize a version string, treat it like a branch
-if [[ -z "$VERSION" ]]; then
-    echo "Installing st2tests from '${BRANCH}' branch at location: $(pwd)..."
-    # Can use --recurse-submodules with Git 2.13 and later
-    git clone --recursive -b ${BRANCH} --depth 1 https://github.com/StackStorm/st2tests.git
-else
-    echo "Installing st2tests from 'v${VERSION}' branch at location: $(pwd)"
-    # Can use --recurse-submodules with Git 2.13 and later
-    # Treat $VERSION like a version string and prepend 'v'
-    git clone --recursive -b v${VERSION} --depth 1 https://github.com/StackStorm/st2tests.git
-fi
+
+echo "Installing st2tests from '${BRANCH}' branch at location: $(pwd)..."
+# Can use --recurse-submodules with Git 2.13 and later
+#~ git clone --recursive -b ${BRANCH} --depth 1 https://github.com/StackStorm/st2tests.git
+echo "WARNING: Using nzlosh repo, revert to official StackStorm after testing."
+# temporarily use st2v3.9 update branch from nzlosh repo
+git clone --recursive -b st2v3.9_updates --depth 1 https://github.com/nzlosh/st2tests.git
+
 echo "Installing Packs: tests, asserts, fixtures, webui..."
 sudo cp -R st2tests/packs/* /opt/stackstorm/packs/
 
@@ -155,39 +141,26 @@ st2ctl reload --register-all
 
 # Robotframework requirements
 cd st2tests
-if [[ -z "$VERSION" ]]; then
-    PIP_VERSION=$(curl --silent https://raw.githubusercontent.com/StackStorm/st2/${BRANCH}/Makefile | grep 'PIP_VERSION ?= ' | awk '{ print $3 }')
-    VENV_VERSION=$(curl --silent https://raw.githubusercontent.com/StackStorm/st2/${BRANCH}/fixed-requirements.txt | grep '^virtualenv.*=' | tr '<>=' '   ' | awk '{ print $2 }')
-else
-    PIP_VERSION=$(curl --silent https://raw.githubusercontent.com/StackStorm/st2/v${VERSION}/Makefile | grep 'PIP_VERSION ?= ' | awk '{ print $3 }')
-    VENV_VERSION=$(curl --silent https://raw.githubusercontent.com/StackStorm/st2/v${VERSION}/fixed-requirements.txt | grep '^virtualenv.*=' | tr '<>=' '   ' | awk '{ print $2 }')
-fi
-# Fallback
+PIP_VERSION=$(curl --silent https://raw.githubusercontent.com/StackStorm/st2/${BRANCH}/Makefile | awk '/PIP_VERSION \?= / {print $3 }')
+
+# Fallback to using master branch if it wasn't found in the provided BRANCH.
 if [[ -z "$PIP_VERSION" ]]; then
-    PIP_VERSION=$(curl --silent https://raw.githubusercontent.com/StackStorm/st2/master/Makefile | grep 'PIP_VERSION ?= ' | awk '{ print $3 }')
+    PIP_VERSION=$(curl --silent https://raw.githubusercontent.com/StackStorm/st2/master/Makefile | awk '/PIP_VERSION \?= / {print $3 }')
 fi
+
 sudo ${PIP} install --upgrade "pip==$PIP_VERSION"
-sudo ${PIP} install --upgrade "virtualenv==$VENV_VERSION"
 
-# I'm not entirely sure what the original author of this script (who very well
-# could have been me) was thinking. At least on Ubuntu Xenial, installing the
-# Python virtualenv package will not install it in any of the system
-# directories, it will install it in your ~/.local/bin directory.
-# However, this must have worked at some point in time, and so instead of
-# calling the virtualenv binary  by it's full path (which may be different on
-# other operating systems), we simply extend PATH with $HOME/.local/bin to help
-# Bash find the virtualenv executable.
-# Also, it's 2021, but we still have to tell virtualenv to configure the
-# virtualenv to use Python 3.
-PATH=$PATH:$HOME/.local/bin virtualenv --no-download --python=$PYTHON3 venv
-. venv/bin/activate
-# Set pip and virtualenv within the virtualenv to ensure the Python 3-only
-# dependencies can be successfully installed
+rm -rf "$HOME/venv"
+${PY3BIN} -m venv "$HOME/venv"
+source "$HOME/venv/bin/activate"
+
+${PY3BIN} --version
+${PIP} --version
+# Update pip in the virtualenv to ensure dependencies can be successfully installed
 ${PIP} install --upgrade "pip==$PIP_VERSION"
-${PIP} install --upgrade "virtualenv==$VENV_VERSION"
 
-# Install the test dependencies
-${PIP} install -r test-requirements.txt
+# Install the test dependencies (these are generated in st2tests using pip-compile).
+${PIP} install -r test-requirements-${PY3VER}.txt
 
 
 # Restart st2 primarily reload the keyvalue configuration
