@@ -116,10 +116,7 @@ fi
 
 echo "Installing st2tests from '${BRANCH}' branch at location: $(pwd)..."
 # Can use --recurse-submodules with Git 2.13 and later
-#~ git clone --recursive -b ${BRANCH} --depth 1 https://github.com/StackStorm/st2tests.git
-echo "WARNING: Using nzlosh repo, revert to official StackStorm after testing."
-# temporarily use st2v3.9 update branch from nzlosh repo
-git clone --recursive -b st2v3.9_updates --depth 1 https://github.com/nzlosh/st2tests.git
+git clone --recursive -b ${BRANCH} --depth 1 https://github.com/StackStorm/st2tests.git
 
 echo "Installing Packs: tests, asserts, fixtures, webui..."
 sudo cp -R st2tests/packs/* /opt/stackstorm/packs/
