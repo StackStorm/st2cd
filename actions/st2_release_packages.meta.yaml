@@ -10,10 +10,10 @@ parameters:
     type: array
     immutable: true
     default:
-      - centos7
       - rocky8
-      - ubuntu18
+      - rocky9
       - ubuntu20
+      - ubuntu22
   version:
     type: string
     required: true

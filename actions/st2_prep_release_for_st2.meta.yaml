@@ -5,6 +5,7 @@ enabled: true
 runner_type: remote-shell-script
 entry_point: st2_prep_release_for_st2.sh
 parameters:
+    # This is the github repository name.
     project:
         type: string
         description: Project name for st2
@@ -15,6 +16,7 @@ parameters:
         description: Version to use for the release. Should include the patch e.g. 0.1.0
         required: true
         position: 1
+    # Name of the owner of the github repository. a.k.a. github organisation.
     fork:
         type: string
         description: Fork to use

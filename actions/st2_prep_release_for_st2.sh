@@ -42,7 +42,7 @@ echo "Currently at directory `pwd`..."
 
 # SET VERSION AND DATE IN CHANGELOG ON MASTER
 DATE=`date +%s`
-RELEASE_DATE=`date +"%B %d, %Y"`
+RELEASE_DATE=$(date --iso-8601=date)
 CHANGELOG_FILE="CHANGELOG.rst"
 RELEASE_STRING="${VERSION} - ${RELEASE_DATE}"
 DASH_HEADER_CMD="printf '%.0s-' {1..${#RELEASE_STRING}}"
