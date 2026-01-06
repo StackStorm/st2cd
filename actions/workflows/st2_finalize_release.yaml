@@ -1,33 +1,27 @@
 ---
 version: '1.0'
 description: Finalize st2 release
+
 input:
   - version
   - fork
   - host
   - cwd
+
 vars:
-  - local_repo_sfx:
+  - local_repo_sfx: <% "".join([now().format("%s"), "_", random(100, 999)]) %>
+  - next_patch_version: <% ctx().version.split('.')[0] + '.' + ctx().version.split('.')[1] + '.' + str(int(ctx().version.split('.')[2]) + 1) %>
+  - major_minor_version: <% ".".join(ctx().version.split('.').limit(2))%>
+
 tasks:
   init:
-    action: core.local
-    input:
-      cmd: echo `date +'%s'`_`awk -v min=100 -v max=999 'BEGIN{srand(); print int(min+rand()*(max-min+1))}'`
+    action: core.noop
     next:
       - when: <% succeeded() and (ctx().host = null) %>
-        publish:
-          - local_repo_sfx: <% result().stdout %>
-          - next_patch_version: <% ctx().version.split('.')[0] + '.' + ctx().version.split('.')[1] + '.' + str(int(ctx().version.split('.')[2]) + 1) %>
-          - major_minor_version: <% ctx().version.split('.')[0] + '.' + ctx().version.split('.')[1] %>
-        do:
-          - get_host
+        do: get_host
       - when: <% succeeded() and (ctx().host != null) %>
-        publish:
-          - local_repo_sfx: <% result().stdout %>
-          - next_patch_version: <% ctx().version.split('.')[0] + '.' + ctx().version.split('.')[1] + '.' + str(int(ctx().version.split('.')[2]) + 1) %>
-          - major_minor_version: <% ctx().version.split('.')[0] + '.' + ctx().version.split('.')[1] %>
-        do:
-          - finalize
+        do: finalize
+
   get_host:
     action: linux.dig
     input:
@@ -36,14 +30,14 @@ tasks:
       count: 1
     next:
       - when: <% succeeded() %>
+        do: finalize
         publish:
           - host: <% result().result[0] %>
-        do:
-          - finalize
+
   finalize:
     next:
-      - do:
-          - set_stable_version_datastore
+      - do: set_stable_version_datastore
+
   set_stable_version_datastore:
     action: st2cd.kvstore
     input:
@@ -52,8 +46,8 @@ tasks:
       value: <% ctx().major_minor_version %>
     next:
       - when: <% succeeded() %>
-        do:
-          - st2_tag_release
+        do: st2_tag_release
+
   st2_tag_release:
     action: st2cd.tag_release
     input:
@@ -66,8 +60,8 @@ tasks:
       cwd: <% ctx().cwd %>
     next:
       - when: <% succeeded() %>
-        do:
-          - st2_remove_patch_branch
+        do: st2_remove_patch_branch
+
   st2_remove_patch_branch:
     action: st2cd.git_delete_branch
     input:
@@ -78,8 +72,8 @@ tasks:
       cwd: <% ctx().cwd %>
     next:
       - when: <% succeeded() %>
-        do:
-          - push_st2client
+        do: push_st2client
+
   push_st2client:
     action: st2cd.pypi_upload
     input:
@@ -92,24 +86,22 @@ tasks:
       cwd: <% ctx().cwd %>
     next:
       - when: <% succeeded() %>
-        do:
-          - get_utc_date
+        do: get_utc_date
       - when: <% failed() %>
-        do:
-          - cleanup_on_failure
+        do: cleanup_on_failure
+
   get_utc_date:
     action: core.local
     input:
       cmd: date -u +%Y%m%d
     next:
       - when: <% succeeded() %>
+        do: vagrant_tag_release
         publish:
           - utc_date: <% result().stdout %>
-        do:
-          - vagrant_tag_release
       - when: <% failed() %>
-        do:
-          - cleanup_on_failure
+        do: cleanup_on_failure
+
   vagrant_tag_release:
     action: st2cd.vagrant_tag_release
     input:
@@ -122,11 +114,10 @@ tasks:
       cwd: <% ctx().cwd %>
     next:
       - when: <% succeeded() %>
-        do:
-          - ship_api_docs
+        do: ship_api_docs
       - when: <% failed() %>
-        do:
-          - cleanup_on_failure
+        do: cleanup_on_failure
+
   ship_api_docs:
     action: circle_ci.run_build
     input:
@@ -137,8 +128,7 @@ tasks:
         ST2_BRANCH: <% 'v' + ctx().major_minor_version %>
     next:
       - when: <% failed() %>
-        do:
-          - cleanup_on_failure
+        do: cleanup_on_failure
 
   cleanup_on_failure:
     action: core.remote
@@ -146,5 +136,4 @@ tasks:
       cmd: <% 'rm -rf ' + ctx().cwd + '/st2*' + ctx().local_repo_sfx + ' && rm -rf ~/.pypirc' %>
       hosts: <% ctx().host %>
     next:
-      - do:
-          - fail
+      - do: fail
