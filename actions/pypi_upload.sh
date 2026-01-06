@@ -1,58 +1,54 @@
 #!/bin/bash
 set -e
 
-REPO=$1
-PROJECT=$2
-VERSION=$3
-FORK=$4
-LOCAL_REPO=$5
-PYPI_USERNAME=$6
-PYPI_PASSWORD=$7
+REPO="$1"
+PROJECT="$2"
+VERSION="$3"
+FORK="$4"
+LOCAL_REPO="$5"
+PYPI_USERNAME="$6"
+PYPI_PASSWORD="$7"
 GIT_REPO="git@github.com:${FORK}/${REPO}.git"
-SHORT_VERSION=`echo ${VERSION} | cut -d "." -f1-2`
-BRANCH="v${SHORT_VERSION}"
-CWD=`pwd`
+BRANCH="v${VERSION%*.*}"
+CWD=$(pwd)
+VENV_PATH="~/venv-pypi"
 
+function cleanup()
+{
+    echo "Cleaning up pypi upload environment"
+    cd "${CWD}"
+    rm -rf "${LOCAL_REPO}" "${PYPIRC}" "${VENV_PATH}"
+}
 
-# CHECK IF BRANCH EXISTS
-BRANCH_EXISTS=`git ls-remote --heads ${GIT_REPO} | grep refs/heads/${BRANCH} || true`
-
-if [[ -z "${BRANCH_EXISTS}" ]]; then
+# Check the branch is actually available.
+if ! git ls-remote --heads "${GIT_REPO}" | grep -q "refs/heads/${BRANCH}"; then
     >&2 echo "ERROR: Branch ${BRANCH} does not exist in ${GIT_REPO}."
     exit 1
 fi
 
+# Generate local repository directory name if not provided.
+test -z "${LOCAL_REPO}" && LOCAL_REPO="${REPO}_$(date +'%s')_$(($RANDOM % 899 + 100))"
 
-# GIT CLONE AND BRANCH
-if [[ -z ${LOCAL_REPO} ]]; then
-    CURRENT_TIMESTAMP=`date +'%s'`
-    RANDOM_NUMBER=`awk -v min=100 -v max=999 'BEGIN{srand(); print int(min+rand()*(max-min+1))}'`
-    LOCAL_REPO=${REPO}_${CURRENT_TIMESTAMP}_${RANDOM_NUMBER}
-fi
+# Remove local repository if it already exists.
+test -d "${LOCAL_REPO}" && rm -rf "${LOCAL_REPO}"
+
+# Clean up on exit.
+trap cleanup EXIT
 
 echo "Cloning ${GIT_REPO} to ${LOCAL_REPO}..."
+git clone "${GIT_REPO}" "${LOCAL_REPO}"
 
-if [ -d "${LOCAL_REPO}" ]; then
-    rm -rf ${LOCAL_REPO}
-fi
-
-git clone ${GIT_REPO} ${LOCAL_REPO}
-
-cd ${LOCAL_REPO}
-echo "Currently at directory `pwd`..."
+cd "${LOCAL_REPO}"
+echo "Currently at directory $(pwd)..."
 echo "Checkout out branch ${BRANCH}..."
-git checkout -b ${BRANCH} origin/${BRANCH}
+git checkout -b "${BRANCH}" "origin/${BRANCH}"
 
-
-# WRITE PYPIRC
+# Create pypirc
 PYPIRC=~/.pypirc
 
-if [ -e "${PYPIRC}" ]; then
-    rm -rf ${PYPIRC}
-fi
+test -e "${PYPIRC}" &&  rm -f "${PYPIRC}"
 
-touch ${PYPIRC}
-cat <<pypirc >${PYPIRC}
+cat <<EOF >"${PYPIRC}"
 [distutils]
 index-servers =
     pypi
@@ -65,32 +61,33 @@ password: ${PYPI_PASSWORD}
 [pypitest]
 username: ${PYPI_USERNAME}
 password: ${PYPI_PASSWORD}
-pypirc
+EOF
 
-if [ ! -e "${PYPIRC}" ]; then
+if [[ ! -e "${PYPIRC}" ]]; then
     >&2 echo "ERROR: Unable to write file ${PYPIRC}"
     exit 1
 fi
 
-
 # Hack for cases where a git repo has multiple projects (i.e. st2/st2client)
-if [ "${REPO}" != "${PROJECT}" ]; then
-    cd ./${PROJECT}
+if [[ "${REPO}" != "${PROJECT}" ]]; then
+    cd "./${PROJECT}"
 fi
 
-echo "Currently at directory `pwd`..."
-sudo pip install -U twine wheel
+echo "Currently at directory $(pwd)..."
+echo "Setup virtual envronment for pypi"
+export DEBIAN_FRONTEND=noninteractive
+sudo apt -y install python3-venv
 
-# Work around for six import failures
-sudo pip install --upgrade "six==1.11.0"
+echo "Activate virtual environment"
+python3 -m venv "$VENV_PATH"
+source "${VENV_PATH}/bin/activate"
 
-python setup.py sdist bdist_wheel
+pip install -U twine wheel
+python3 setup.py sdist bdist_wheel
+twine --no-color upload --disable-progress-bar --verbose --skip-existing dist/* --repository pypi
+if [[ $? != 0 ]]; then
+    echo "Error uploading assets to pypi" >&2
+    exit 1
+fi
 
-twine upload --skip-existing dist/* -r pypi
-if [[ $? != 0 ]]; then exit 1; fi
-
-
-# CLEANUP
-cd ${CWD}
-rm -rf ${LOCAL_REPO}
-rm -rf ${PYPIRC}
+deactivate
