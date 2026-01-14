@@ -26,9 +26,9 @@ parameters:
         default: v{{version.split('.')[0]}}.{{version.split('.')[1]}}
         position: 3
     update_changelog:
-        type: boolean
+        type: string
         description: If true, update version in changelog.
-        default: false
+        default: "false"
         position: 4
     local_repo:
         type: string

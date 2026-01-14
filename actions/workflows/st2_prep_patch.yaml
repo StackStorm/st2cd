@@ -44,7 +44,7 @@ tasks:
       project: st2
       version: <% ctx().version %>
       fork: <% ctx().fork %>
-      update_changelog: true
+      update_changelog: "true"
       local_repo: <% 'st2_' + ctx().local_repo_sfx %>
       hosts: <% ctx().host %>
       cwd: <% ctx().cwd %>
